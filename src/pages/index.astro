@@ -1,0 +1,143 @@
+---
+import Layout from '../components/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const services = await getCollection('services');
+const featuredServices = services.filter(service => service.data.featured);
+const maintainerServices = services.filter(service => 
+  service.data.target_audience === 'maintainer' || service.data.target_audience === 'both'
+);
+const companyServices = services.filter(service => 
+  service.data.target_audience === 'company' || service.data.target_audience === 'both'
+);
+---
+
+<Layout title="OSS Wishlist - Get the help your project needs">
+  <!-- Hero Section -->
+  <section class="bg-gradient-to-br from-blue-50 to-indigo-100 py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div class="max-w-4xl mx-auto">
+        <h1 class="text-5xl font-bold text-gray-900 mb-6">
+          Connect open source <span class="text-blue-600">maintainers</span> with <span class="text-green-600">companies</span>
+        </h1>
+        <p class="text-xl text-gray-600 mb-8">
+          Every project has needs beyond code. Companies need sustainable dependencies. 
+          We bridge the gap with expert services for both maintainers and organizations.
+        </p>
+        
+        <!-- Audience Selection -->
+        <div class="grid md:grid-cols-2 gap-6 mb-8">
+          <div class="bg-white p-6 rounded-lg shadow-sm border">
+            <h3 class="text-xl font-semibold mb-2">For Maintainers</h3>
+            <p class="text-gray-600 mb-4">Get help scaling your project, building community, and creating sustainable funding.</p>
+            <a href="/maintainers" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors inline-block">
+              Explore Maintainer Services
+            </a>
+          </div>
+          <div class="bg-white p-6 rounded-lg shadow-sm border">
+            <h3 class="text-xl font-semibold mb-2">For Companies</h3>
+            <p class="text-gray-600 mb-4">Secure your supply chain, train employees, and support critical dependencies.</p>
+            <a href="/companies" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors inline-block">
+              Explore Company Services
+            </a>
+          </div>
+        </div>
+        
+        <div class="flex justify-center space-x-4">
+          <a href="/submit" class="bg-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors">
+            Create Your Wishlist
+          </a>
+          <a href="/catalog" class="border border-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+            Browse All Services
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it Works -->
+  <section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">How it works</h2>
+      </div>
+      
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="text-center">
+          <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span class="text-blue-600 text-2xl font-bold">1</span>
+          </div>
+          <h3 class="text-xl font-semibold mb-2">Create your wishlist</h3>
+          <p class="text-gray-600">Select the services your project needs from our catalog</p>
+        </div>
+        
+        <div class="text-center">
+          <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span class="text-green-600 text-2xl font-bold">2</span>
+          </div>
+          <h3 class="text-xl font-semibold mb-2">Share your list</h3>
+          <p class="text-gray-600">Add the wishlist link to your README or project docs</p>
+        </div>
+        
+        <div class="text-center">
+          <div class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span class="text-purple-600 text-2xl font-bold">3</span>
+          </div>
+          <h3 class="text-xl font-semibold mb-2">Get support</h3>
+          <p class="text-gray-600">Community members and sponsors fund the services you need</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Services -->
+  <section class="py-16 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">Popular Services</h2>
+        <p class="text-gray-600">Professional help for the challenges every project faces</p>
+      </div>
+      
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {featuredServices.map((service) => (
+          <div class="bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow">
+            <h3 class="text-xl font-semibold mb-2">{service.data.title}</h3>
+            <p class="text-gray-600 mb-4">{service.data.description}</p>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-500">{service.data.estimated_hours}</span>
+              <span class={`px-3 py-1 rounded-full text-sm font-medium ${
+                service.data.price_tier === 'low' ? 'bg-green-100 text-green-800' :
+                service.data.price_tier === 'medium' ? 'bg-blue-100 text-blue-800' :
+                'bg-purple-100 text-purple-800'
+              }`}>
+                {service.data.price_tier === 'low' ? '$200-400' :
+                 service.data.price_tier === 'medium' ? '$500-800' : '$1000+'}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+      
+      <div class="text-center mt-8">
+        <a href="/catalog" class="text-blue-600 font-semibold hover:text-blue-700">
+          View all services →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Call to Action -->
+  <section class="py-16 bg-blue-600">
+    <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold text-white mb-4">
+        Ready to get the help your project needs?
+      </h2>
+      <p class="text-blue-100 mb-8 text-lg">
+        Create your wishlist in minutes and start connecting with supporters who can help your project thrive.
+      </p>
+      <a href="/submit" class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+        Create Your Wishlist Now
+      </a>
+    </div>
+  </section>
+</Layout>

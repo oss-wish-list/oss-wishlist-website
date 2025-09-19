@@ -1,0 +1,115 @@
+---
+import Layout from '../components/Layout.astro';
+import WishlistForm from '../components/WishlistForms.tsx';
+---
+
+<Layout title="Create Your Project Wishlist - OSS Wishlist">
+  <!-- Hero Section -->
+  <section class="py-16 bg-gradient-to-br from-purple-50 to-blue-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h1 class="text-5xl font-bold text-gray-900 mb-6">
+          Create Your <span class="text-purple-600">Project Wishlist</span>
+        </h1>
+        <p class="text-xl text-gray-600 max-w-4xl mx-auto mb-8">
+          Share what your open source project needs to thrive. From governance help to security audits, 
+          funding strategy to community building - let supporters know how they can help make your project sustainable.
+        </p>
+        
+        <div class="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-8">
+          <div class="bg-white p-4 rounded-lg shadow-sm border">
+            <div class="text-2xl mb-2">🎯</div>
+            <h3 class="font-semibold text-gray-900">Be Specific</h3>
+            <p class="text-sm text-gray-600">Detail exactly what help you need</p>
+          </div>
+          <div class="bg-white p-4 rounded-lg shadow-sm border">
+            <div class="text-2xl mb-2">🌟</div>
+            <h3 class="font-semibold text-gray-900">Get Discovered</h3>
+            <p class="text-sm text-gray-600">Companies and supporters browse wishlists</p>
+          </div>
+          <div class="bg-white p-4 rounded-lg shadow-sm border">
+            <div class="text-2xl mb-2">🤝</div>
+            <h3 class="font-semibold text-gray-900">Connect & Grow</h3>
+            <p class="text-sm text-gray-600">Build relationships with potential sponsors</p>
+          </div>
+        </div>
+
+        <div class="flex justify-center space-x-4">
+          <a href="/wishlists" class="border border-purple-300 text-purple-700 px-6 py-2 rounded-lg hover:bg-purple-50 transition-colors">
+            Browse Example Wishlists
+          </a>
+          <a href="#form" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+            Create Your Wishlist
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Form Section -->
+  <section id="form" class="py-16 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <WishlistForm client:load />
+    </div>
+  </section>
+
+  <!-- Examples Section -->
+  <section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">What Maintainers Are Asking For</h2>
+        <p class="text-xl text-gray-600">Real examples of support requests from the community</p>
+      </div>
+      
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="bg-gray-50 p-6 rounded-lg border">
+          <div class="flex items-center mb-3">
+            <img class="w-8 h-8 rounded" src="/oss-wish.webp" alt="Project logo" />
+            <div class="ml-3">
+              <h3 class="font-semibold">vue-test-utils</h3>
+              <p class="text-sm text-gray-600">Vue.js testing library</p>
+            </div>
+          </div>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li>• Security audit for v2.0 release</li>
+            <li>• Documentation restructure</li>
+            <li>• Community onboarding process</li>
+          </ul>
+          <div class="mt-4 text-xs text-gray-500">Looking for $5K-10K support</div>
+        </div>
+
+        <div class="bg-gray-50 p-6 rounded-lg border">
+          <div class="flex items-center mb-3">
+            <img class="w-8 h-8 rounded" src="/oss-wish.webp" alt="Project logo" />
+            <div class="ml-3">
+              <h3 class="font-semibold">rust-cli-tools</h3>
+              <p class="text-sm text-gray-600">Command line utilities in Rust</p>
+            </div>
+          </div>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li>• Project governance setup</li>
+            <li>• Contributor mentorship program</li>
+            <li>• Funding strategy development</li>
+          </ul>
+          <div class="mt-4 text-xs text-gray-500">Seeking ongoing sponsorship</div>
+        </div>
+
+        <div class="bg-gray-50 p-6 rounded-lg border">
+          <div class="flex items-center mb-3">
+            <img class="w-8 h-8 rounded" src="/oss-wish.webp" alt="Project logo" />
+            <div class="ml-3">
+              <h3 class="font-semibold">ml-training-lib</h3>
+              <p class="text-sm text-gray-600">Machine learning utilities</p>
+            </div>
+          </div>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li>• Performance optimization</li>
+            <li>• Enterprise features roadmap</li>
+            <li>• Community growth strategy</li>
+          </ul>
+          <div class="mt-4 text-xs text-gray-500">Budget: $15K-25K</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

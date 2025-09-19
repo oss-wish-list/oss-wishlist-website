@@ -1,0 +1,134 @@
+name: Process Wishlist Submission
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  process-wishlist:
+    if: contains(github.event.issue.labels.*.name, 'wishlist')
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Extract wishlist data
+        id: extract
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+        run: |
+          # Extract project information from issue body
+          project_name=$(echo "$ISSUE_BODY" | grep -A1 "Project Name:" | tail -1 | sed 's/^[[:space:]]*//' | sed 's/\*\*//g')
+          username=$(echo "$ISSUE_BODY" | grep -A1 "Maintainer:" | tail -1 | sed 's/^[[:space:]]*//' | sed 's/@//g' | sed 's/\*\*//g')
+          repo_url=$(echo "$ISSUE_BODY" | grep -A1 "Repository:" | tail -1 | sed 's/^[[:space:]]*//' | sed 's/\*\*//g')
+          contact=$(echo "$ISSUE_BODY" | grep -A1 "Contact:" | tail -1 | sed 's/^[[:space:]]*//' | sed 's/\*\*//g')
+          
+          # Extract services (lines that start with "- " after "Services Requested")
+          services=$(echo "$ISSUE_BODY" | sed -n '/Services Requested:/,/Additional Notes:/p' | grep '^- ' | sed 's/^- //' || echo "")
+          
+          # Extract notes
+          notes=$(echo "$ISSUE_BODY" | sed -n '/Additional Notes:/,$p' | tail -n +2 | head -n -2 || echo "")
+          
+          echo "project_name=$project_name" >> $GITHUB_OUTPUT
+          echo "username=$username" >> $GITHUB_OUTPUT
+          echo "repo_url=$repo_url" >> $GITHUB_OUTPUT
+          echo "contact=$contact" >> $GITHUB_OUTPUT
+          echo "services<<EOF" >> $GITHUB_OUTPUT
+          echo "$services" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          echo "notes<<EOF" >> $GITHUB_OUTPUT
+          echo "$notes" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      
+      - name: Create wishlist file
+        env:
+          PROJECT_NAME: ${{ steps.extract.outputs.project_name }}
+          USERNAME: ${{ steps.extract.outputs.username }}
+          REPO_URL: ${{ steps.extract.outputs.repo_url }}
+          CONTACT: ${{ steps.extract.outputs.contact }}
+          SERVICES: ${{ steps.extract.outputs.services }}
+          NOTES: ${{ steps.extract.outputs.notes }}
+        run: |
+          # Create wishlist markdown file
+          mkdir -p src/content/wishlists
+          
+          cat > "src/content/wishlists/${USERNAME}.md" << EOF
+          ---
+          project_name: "$PROJECT_NAME"
+          username: "$USERNAME"
+          repo_url: "$REPO_URL"
+          contact_email: "$CONTACT"
+          services: [$(echo "$SERVICES" | sed 's/.*/"&"/' | tr '\n' ',' | sed 's/,$//' | sed 's/,/, /g')]
+          created_date: $(date -u +"%Y-%m-%d")
+          status: "active"
+          ---
+          
+          # ${PROJECT_NAME} Wishlist
+          
+          **Repository:** [$REPO_URL]($REPO_URL)  
+          **Maintainer:** @$USERNAME  
+          **Contact:** $CONTACT
+          
+          ## Services Needed
+          
+          $SERVICES
+          
+          $(if [ -n "$NOTES" ]; then echo "## Additional Notes"; echo; echo "$NOTES"; fi)
+          
+          ---
+          
+          ## How to Support This Project
+          
+          If you'd like to sponsor one of these services, click the links below:
+          
+          EOF
+          
+          # Add funding links for each service (you'll need to customize this)
+          echo "$SERVICES" | while IFS= read -r service; do
+            if [ -n "$service" ]; then
+              echo "- **$service**: [Fund this service](https://github.com/sponsors/yourusername)" >> "src/content/wishlists/${USERNAME}.md"
+            fi
+          done
+      
+      - name: Update issue with wishlist link
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          USERNAME: ${{ steps.extract.outputs.username }}
+        run: |
+          # Add comment to issue with the generated wishlist link
+          gh issue comment $ISSUE_NUMBER --body "✅ **Wishlist Created!**
+
+          Your wishlist has been generated and is available at:
+          https://oss-wishlist.github.io/wishlist/$USERNAME
+
+          You can now add this link to your project's README or share it with supporters!
+
+          ## Next Steps:
+          1. Add the wishlist link to your repository README
+          2. Share with your community and supporters  
+          3. We'll notify you when someone sponsors a service
+
+          Thank you for using OSS Wishlist! 🌟"
+      
+      - name: Commit and push wishlist
+        env:
+          USERNAME: ${{ steps.extract.outputs.username }}
+          PROJECT_NAME: ${{ steps.extract.outputs.project_name }}
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "OSS Wishlist Bot"
+          git add "src/content/wishlists/${USERNAME}.md"
+          git commit -m "Add wishlist for $PROJECT_NAME (@$USERNAME)" || exit 0
+          git push
+      
+      - name: Close issue
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          gh issue close $ISSUE_NUMBER --comment "Wishlist processed successfully! 🎉"
