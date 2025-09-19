@@ -3,6 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [ astro ]
+  # No pull_request trigger: PRs use ci-build.yml to avoid Pages artifact path
   workflow_dispatch:
 
 permissions:
@@ -16,6 +17,8 @@ concurrency:
 
 jobs:
   build:
+    # Extra safeguard: don't run if somehow invoked in a PR context
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
