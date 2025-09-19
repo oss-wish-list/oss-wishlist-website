@@ -1,58 +1,10 @@
-name: Deploy to GitHub Pages
+name: DISABLED Temporary Removal
 
 on:
-  push:
-    branches: [ astro ]
-  # No pull_request trigger: PRs use ci-build.yml to avoid Pages artifact path
-  workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
+  workflow_call:
 
 jobs:
-  build:
-    # Extra safeguard: don't run if somehow invoked in a PR context
-    if: github.event_name != 'pull_request'
+  noop:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build with Astro
-        run: npm run build
-
-      - name: Upload Pages Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: github-pages
-          path: ./dist/
-          if-no-files-found: error
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - run: echo "Deployment workflow intentionally disabled."
