@@ -170,6 +170,29 @@ The site will be built to the `dist/` directory.
 npm run preview
 ```
 
+### Deploy to GitHub Pages
+
+This project is configured for automatic deployment to GitHub Pages:
+
+1. **Enable GitHub Pages**:
+   - Go to your repository settings
+   - Navigate to "Pages" in the sidebar
+   - Under "Source", select "GitHub Actions"
+
+2. **Configure Repository**:
+   - Ensure the `astro` branch is your main development branch
+   - The workflow will automatically deploy when you push to `astro`
+
+3. **Access Your Site**:
+   - Your site will be available at: `https://oss-wish-list.github.io/oss-wishlist-website`
+   - Updates are deployed automatically on every push to `astro`
+
+4. **Local Testing for GitHub Pages**:
+   ```bash
+   npm run build:gh-pages
+   npm run preview
+   ```
+
 ### Deploy to Netlify
 
 1. Connect your GitHub repository to Netlify

@@ -3,7 +3,7 @@ export interface Props {
   title: string;
   description: string;
   category: string;
-  price_tier: 'low' | 'medium' | 'high';
+  price_tier: 'low' | 'medium' | 'high' | 'enterprise';
   estimated_hours: string;
   slug: string;
 }
@@ -13,7 +13,8 @@ const { title, description, category, price_tier, estimated_hours, slug } = Astr
 const priceTiers = {
   low: { label: '$200-400', color: 'bg-green-100 text-green-800' },
   medium: { label: '$500-800', color: 'bg-blue-100 text-blue-800' },
-  high: { label: '$1000+', color: 'bg-purple-100 text-purple-800' }
+  high: { label: '$1000+', color: 'bg-purple-100 text-purple-800' },
+  enterprise: { label: 'Enterprise', color: 'bg-gray-100 text-gray-800' }
 };
 ---
 

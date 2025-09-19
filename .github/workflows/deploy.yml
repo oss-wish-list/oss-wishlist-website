@@ -2,9 +2,9 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
+    branches: [ astro ]
   pull_request:
-    branches: [ main ]
+    branches: [ astro ]
 
 permissions:
   contents: read
@@ -45,7 +45,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/astro'
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
