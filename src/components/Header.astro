@@ -1,0 +1,69 @@
+---
+import '../styles/global.css';
+
+export interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = "Get the help your open source project needs" } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/webp" href="/oss-wish.webp" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+  </head>
+  <body class="bg-gray-50 min-h-screen">
+    <header class="bg-white shadow-sm border-b">
+      <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <div class="flex items-center space-x-4">
+            <img src="/oss-wish.webp" alt="OSS Wishlist" class="h-8 w-8" />
+            <a href="/" class="text-xl font-bold text-gray-900">OSS Wishlist</a>
+          </div>
+          <div class="flex space-x-6">
+            <a href="/catalog" class="text-gray-700 hover:text-gray-900">Service Catalog</a>
+            <a href="/submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+              Submit Request
+            </a>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="bg-gray-900 text-white py-12 mt-20">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+          <p class="text-gray-400">
+            Open Source Wishlist - Connecting maintainers with the services they need
+          </p>
+          <div class="mt-4 flex justify-center space-x-6">
+            <a href="https://github.com/oss-wishlist" class="text-gray-400 hover:text-white">
+              GitHub
+            </a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style is:global>
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    font-family: system-ui, sans-serif;
+  }
+</style>

@@ -1,0 +1,115 @@
+---
+import Layout from '../../components/Layout.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const services = await getCollection('services');
+  return services.map(service => ({
+    params: { slug: service.slug },
+    props: { service },
+  }));
+}
+
+const { service } = Astro.props;
+const { Content } = await service.render();
+
+const priceTiers = {
+  low: { label: '$200-400', color: 'bg-green-100 text-green-800' },
+  medium: { label: '$500-800', color: 'bg-blue-100 text-blue-800' },
+  high: { label: '$1000+', color: 'bg-purple-100 text-purple-800' },
+  enterprise: { label: 'Enterprise', color: 'bg-gray-100 text-gray-800' }
+};
+---
+
+<Layout title={`${service.data.title} - OSS Wishlist`} description={service.data.description}>
+  <section class="py-16 bg-gray-50">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Back Button -->
+      <div class="mb-8">
+        <a href="/catalog" class="text-blue-600 hover:text-blue-700 flex items-center">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          Back to Catalog
+        </a>
+      </div>
+
+      <!-- Service Header -->
+      <div class="bg-white p-8 rounded-lg shadow-sm border mb-8">
+        <div class="flex justify-between items-start mb-4">
+          <div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">{service.data.title}</h1>
+            <p class="text-xl text-gray-600">{service.data.description}</p>
+          </div>
+          <span class={`px-4 py-2 rounded-full font-medium ${priceTiers[service.data.price_tier as keyof typeof priceTiers].color}`}>
+            {priceTiers[service.data.price_tier as keyof typeof priceTiers].label}
+          </span>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6 pt-6 border-t">
+          <div>
+            <h3 class="font-medium text-gray-900 mb-1">Category</h3>
+            <p class="text-gray-600">{service.data.category}</p>
+          </div>
+          <div>
+            <h3 class="font-medium text-gray-900 mb-1">Time Estimate</h3>
+            <p class="text-gray-600">{service.data.estimated_hours}</p>
+          </div>
+          <div>
+            <h3 class="font-medium text-gray-900 mb-1">Service Level</h3>
+            <p class="text-gray-600 capitalize">{service.data.price_tier} complexity</p>
+          </div>
+        </div>
+
+        {service.data.tags && (
+          <div class="pt-6 border-t mt-6">
+            <h3 class="font-medium text-gray-900 mb-3">Tags</h3>
+            <div class="flex flex-wrap gap-2">
+              {service.data.tags.map(tag => (
+                <span class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <!-- Service Content -->
+      <div class="bg-white p-8 rounded-lg shadow-sm border">
+        <div class="prose prose-lg max-w-none">
+          <Content />
+        </div>
+      </div>
+
+      <!-- Call to Action -->
+      <div class="mt-8 text-center">
+        <div class="bg-blue-50 p-8 rounded-lg border border-blue-200">
+          <h2 class="text-2xl font-bold text-gray-900 mb-4">
+            Need this service for your project?
+          </h2>
+          <p class="text-gray-600 mb-6">
+            Add it to your wishlist and share with your community to get support
+          </p>
+          <a href="/submit" 
+             class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+            Add to Wishlist
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .prose {
+    color: #374151;
+  }
+  .prose h1, .prose h2, .prose h3 {
+    color: #111827;
+  }
+  .prose h2 {
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 0.5rem;
+  }
+</style>

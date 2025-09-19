@@ -1,0 +1,138 @@
+---
+import Layout from '../components/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const services = await getCollection('services');
+const categories = [...new Set(services.map(service => service.data.category))];
+
+const priceTiers = {
+  low: { label: '$200-400', color: 'bg-green-100 text-green-800' },
+  medium: { label: '$500-800', color: 'bg-blue-100 text-blue-800' },
+  high: { label: '$1000+', color: 'bg-purple-100 text-purple-800' },
+  enterprise: { label: 'Enterprise', color: 'bg-gray-100 text-gray-800' }
+};
+---
+
+<Layout title="Service Catalog - OSS Wishlist" description="Browse all available services for open source projects">
+  <section class="py-16 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">Service Catalog</h1>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+          Professional services designed specifically for open source project needs
+        </p>
+      </div>
+
+      <!-- Category Filter -->
+      <div class="mb-8 text-center">
+        <div class="flex flex-wrap justify-center gap-2">
+          <button class="filter-btn active px-4 py-2 rounded-full text-sm font-medium bg-blue-600 text-white" 
+                  data-category="all">
+            All Services
+          </button>
+          {categories.map(category => (
+            <button class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-700 border hover:bg-gray-50" 
+                    data-category={category}>
+              {category}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <!-- Services Grid -->
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8" id="services-grid">
+        {services.map((service) => (
+          <div class="service-card bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow" 
+               data-category={service.data.category}>
+            <div class="flex justify-between items-start mb-4">
+              <h3 class="text-xl font-semibold text-gray-900">{service.data.title}</h3>
+              <span class={`px-3 py-1 rounded-full text-sm font-medium ${priceTiers[service.data.price_tier as keyof typeof priceTiers].color}`}>
+                {priceTiers[service.data.price_tier as keyof typeof priceTiers].label}
+              </span>
+            </div>
+            
+            <p class="text-gray-600 mb-4">{service.data.description}</p>
+            
+            <div class="space-y-2 mb-6">
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-500">Category:</span>
+                <span class="font-medium">{service.data.category}</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-500">Time estimate:</span>
+                <span class="font-medium">{service.data.estimated_hours}</span>
+              </div>
+            </div>
+
+            {service.data.tags && (
+              <div class="mb-4">
+                <div class="flex flex-wrap gap-2">
+                  {service.data.tags.map(tag => (
+                    <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div class="pt-4 border-t">
+              <a href={`/services/${service.slug}`} 
+                 class="text-blue-600 font-medium hover:text-blue-700">
+                Learn more →
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- Call to Action -->
+      <div class="text-center mt-16">
+        <div class="bg-white p-8 rounded-lg shadow-sm border">
+          <h2 class="text-2xl font-bold text-gray-900 mb-4">
+            Ready to get help for your project?
+          </h2>
+          <p class="text-gray-600 mb-6">
+            Create a wishlist with the services you need and share it with your community
+          </p>
+          <a href="/submit" 
+             class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+            Create Your Wishlist
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  // Category filtering
+  document.addEventListener('DOMContentLoaded', function() {
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const serviceCards = document.querySelectorAll('.service-card');
+
+    filterButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const category = button.getAttribute('data-category');
+        
+        // Update active button
+        filterButtons.forEach(btn => {
+          btn.classList.remove('active', 'bg-blue-600', 'text-white');
+          btn.classList.add('bg-white', 'text-gray-700');
+        });
+        button.classList.add('active', 'bg-blue-600', 'text-white');
+        button.classList.remove('bg-white', 'text-gray-700');
+
+        // Filter cards
+        serviceCards.forEach(card => {
+          const cardCategory = card.getAttribute('data-category');
+          if (category === 'all' || cardCategory === category) {
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    });
+  });
+</script>

@@ -1,0 +1,20 @@
+{
+  "price_tiers": {
+    "low": {
+      "label": "$200-400",
+      "amount": 300,
+      "color": "green"
+    },
+    "medium": {
+      "label": "$500-800", 
+      "amount": 650,
+      "color": "blue"
+    },
+    "high": {
+      "label": "$1000+",
+      "amount": 1200,
+      "color": "purple"
+    }
+  },
+  "github_sponsors_url": "https://github.com/sponsors/yourusername"
+}

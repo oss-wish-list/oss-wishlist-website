@@ -1,0 +1,48 @@
+---
+title: "Community strategy"
+description: "TBD"
+category: "Community"
+target_audience: "both"
+service_type: "consulting"
+price_tier: "medium"
+estimated_hours: "8-12 hours"
+tags: ["governance", "community", "contribution"]
+featured: true
+---
+
+# Community strategy
+
+## What's Included
+
+- **Governance Model Design**: Create a governance structure that fits your project's size and needs
+- **Contributor Guidelines**: Establish clear guidelines for how people can contribute
+- **Decision Making Process**: Define how decisions are made and who has authority
+- **Code of Conduct**: Implement or update community standards
+- **Documentation**: Create governance documentation in your repository
+
+## Deliverables
+
+- Governance model document
+- Updated CONTRIBUTING.md
+- Decision-making framework
+- Code of conduct (if needed)
+- Implementation plan
+
+## Timeline
+
+Typically completed within 2-3 weeks from start date.
+
+## Perfect For
+
+- Projects outgrowing informal structure
+- Teams adding new maintainers
+- Projects seeking foundation acceptance
+- Communities experiencing conflicts
+
+## Process
+
+1. **Discovery Call** - Understand your project's current state and needs
+2. **Structure Design** - Create governance framework tailored to your project
+3. **Documentation** - Write clear, actionable governance documents
+4. **Implementation** - Help you roll out the new structure
+5. **Follow-up** - 30-day check-in to ensure smooth adoption
