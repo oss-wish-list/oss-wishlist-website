@@ -193,6 +193,58 @@ This project is configured for automatic deployment to GitHub Pages:
    npm run preview
    ```
 
+## 🚀 Deployment Options
+
+You can deploy this site to GitHub Pages using either of two methods:
+
+### Option A: GitHub Pages Native (Actions Pages Pipeline)
+Uses the `deploy.yml` workflow with the GitHub Pages infrastructure.
+
+Pros:
+- Integrated environment & history
+- Automatic HTTPS and custom domain support
+- Uses Pages deployment UI
+
+Cons:
+- Currently may surface a deprecated `upload-artifact v3` warning if upstream actions internally still reference it.
+
+### Option B: gh-pages Branch (Classic Push)
+Uses `deploy-gh-pages.yml` to build and push static files to a `gh-pages` branch.
+
+Pros:
+- Bypasses Pages artifact pipeline entirely
+- No dependency on internal artifact action versions
+- Simple and transparent
+
+Cons:
+- No Pages build logs in UI
+- Must manage base path manually
+
+### Switching Between Methods
+
+1. Go to GitHub repository Settings → Pages.
+2. Choose Source:
+   - For Option A: Select GitHub Actions.
+   - For Option B: Select Deploy from Branch → `gh-pages` branch → `/ (root)`.
+3. Commit and push to `astro` branch to trigger deployment.
+
+### Local Test with Base Path
+If deploying under a repository subpath (Pages default for org/user project sites):
+```bash
+npm run build
+npm run preview
+```
+(Already configured via `base` in `astro.config.mjs` if needed.)
+
+### Troubleshooting
+| Symptom | Likely Cause | Fix |
+|---------|--------------|-----|
+| Deprecated upload-artifact v3 warning | Internal Pages pipeline action | Switch to gh-pages workflow (Option B) |
+| 404 for assets after branch deploy | Missing/incorrect `base` config | Set `base` in `astro.config.mjs` or remove if using apex/custom domain |
+| Site not updating | Wrong Pages source selected | Reconfigure Pages settings |
+
+---
+
 ### Deploy to Netlify
 
 1. Connect your GitHub repository to Netlify
