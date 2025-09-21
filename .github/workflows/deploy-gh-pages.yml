@@ -1,39 +1,12 @@
-name: Deploy (gh-pages branch)
+name: Deploy (Stubbed)
 
 on:
   push:
     branches: [ astro ]
   workflow_dispatch:
 
-permissions:
-  contents: write
-
 jobs:
-  build-and-publish:
+  noop:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npm run build
-
-      - name: Deploy to gh-pages branch
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
-          publish_branch: gh-pages
-          force_orphan: true
-          user_name: 'OSS Wishlist Bot'
-          user_email: 'action@github.com'
-          commit_message: 'Deploy: ${{ github.sha }}'
+      - run: echo "Deployment temporarily stubbed. Restore previous YAML to re-enable publishing."

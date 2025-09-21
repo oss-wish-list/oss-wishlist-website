@@ -121,9 +121,9 @@ ${formData.notes || 'None'}
 
   const getPriceDisplay = (tier: string) => {
     const prices = {
-      low: '$200-400',
-      medium: '$500-800',
-      high: '$1000+'
+      low: 'Budget',
+      medium: 'Standard',
+      high: 'Premium'
     };
     return prices[tier as keyof typeof prices] || tier;
   };
@@ -224,9 +224,6 @@ ${formData.notes || 'None'}
                       <p className="text-gray-600 text-sm mt-1">{service.data.description}</p>
                       <p className="text-gray-500 text-xs mt-2">{service.data.estimated_hours}</p>
                     </div>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriceColor(service.data.price_tier)}`}>
-                      {getPriceDisplay(service.data.price_tier)}
-                    </span>
                   </div>
                 </div>
               </label>

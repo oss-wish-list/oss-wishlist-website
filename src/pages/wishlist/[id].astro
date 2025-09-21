@@ -1,16 +1,18 @@
 ---
 import Layout from '../../components/Layout.astro';
 
-export async function getStaticPaths() {
+expo      why_support: `Supporting Example Web Framework Utilities means supporting the entire web development ecosystem. Our library is used by hundreds of thousands of developers worldwide, and improvements to our tooling directly impact the productivity and happiness of the web development community.
+
+By sponsoring our security audit, you'll be helping ensure that web applications everywhere have access to secure, reliable development tools. Your support will be prominently featured in our documentation and release announcements.`,async function getStaticPaths() {
   // In a real implementation, this would fetch from a database
   const wishlists = [
     {
-      id: 'vue-test-utils',
-      project_name: 'Vue Test Utils',
-      username: 'sarah-chen',
-      repo_url: 'https://github.com/vuejs/test-utils',
-      description: 'Official unit testing utility library for Vue.js',
-      detailed_description: `Vue Test Utils is the official unit testing utility library for Vue.js. It provides a set of utility functions for testing Vue components in isolation. The library is used by thousands of Vue.js applications worldwide and is a critical part of the Vue.js ecosystem.
+      id: 'example-web-framework-utils',
+      project_name: 'Example Web Framework Utilities',
+      username: 'example-maintainer-1',
+      repo_url: 'https://github.com/example/web-framework-utils',
+      description: 'Example utility library for modern web development',
+      detailed_description: `Example Web Framework Utilities is a utility library for modern web development. It provides a set of utility functions for building web applications. The library is used by thousands of web applications worldwide and is a critical part of the web development ecosystem.
 
 Our v2.0 release is approaching, and we want to ensure the highest security and quality standards. We're also looking to improve our documentation and onboarding process to help more developers contribute effectively.`,
       github_stars: '3.2k',
@@ -46,13 +48,13 @@ Our v2.0 release is approaching, and we want to ensure the highest security and 
       budget_details: 'Looking for either individual service sponsors or a comprehensive package. Open to both one-time funding and ongoing sponsorship arrangements.',
       contact_email: 'sarah@example.com',
       contact_methods: [
-        { type: 'email', value: 'sarah@example.com', label: 'Direct Email' },
-        { type: 'twitter', value: '@sarahc_dev', label: 'Twitter' },
-        { type: 'discord', value: 'Vue.js Community Discord', label: 'Discord' }
+        { type: 'email', value: 'maintainer1@example.com', label: 'Direct Email' },
+        { type: 'twitter', value: '@example_maintainer', label: 'Twitter' },
+        { type: 'discord', value: 'Example Community Discord', label: 'Discord' }
       ],
       created_date: '2024-09-15',
       updated_date: '2024-09-15',
-      tags: ['Vue.js', 'Testing', 'JavaScript', 'Frontend'],
+      tags: ['Web Development', 'Utilities', 'Framework', 'Frontend'],
       urgency: 'medium',
       project_stage: 'mature',
       team_size: '3 core maintainers',
@@ -64,15 +66,15 @@ Our v2.0 release is approaching, and we want to ensure the highest security and 
 By sponsoring our security audit, you'll be helping ensure that Vue.js applications everywhere have access to secure, reliable testing tools. Your support will be prominently featured in our documentation and release announcements.`,
       impact_metrics: [
         'Used by 500,000+ developers monthly',
-        'Core dependency for 80% of Vue.js projects',
+        'Core dependency for 80% of web development projects',
         '3,200 GitHub stars and growing',
-        'Featured in official Vue.js documentation'
+        'Featured in official web development documentation'
       ],
       recent_achievements: [
         'Released TypeScript rewrite increasing type safety',
         'Reduced bundle size by 40% in latest version',
-        'Added support for Vue 3 Composition API',
-        'Improved test execution speed by 60%'
+        'Added support for modern web standards',
+        'Improved performance by 60%'
       ]
     }
   ];
@@ -110,7 +112,7 @@ const stageColors = {
   <!-- Back Navigation -->
   <div class="bg-gray-50 py-4">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <a href="/wishlists" class="text-blue-600 hover:text-blue-700 flex items-center">
+      <a href={`${import.meta.env.BASE_URL}/wishlists`} class="text-orange-600 hover:text-orange-700 flex items-center">
         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
         </svg>
@@ -314,11 +316,11 @@ const stageColors = {
       <div class="flex justify-center space-x-4">
         <a 
           href={`mailto:${wishlist.contact_email}?subject=Support for ${wishlist.project_name}`}
-          class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+          class="bg-white text-orange-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
         >
           Contact Maintainer
         </a>
-        <a href="/wishlists" class="border border-blue-300 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+        <a href={`${import.meta.env.BASE_URL}/wishlists`} class="border border-orange-300 text-white px-8 py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors">
           Browse Other Projects
         </a>
       </div>

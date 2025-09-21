@@ -11,18 +11,18 @@ const companyServices = services.filter(service =>
 
 <Layout title="Enterprise Open Source Services - OSS Wishlist" description="Expert services to help companies secure dependencies, train employees, and build sustainable open source strategies.">
   <!-- Hero Section -->
-  <section class="bg-gradient-to-br from-green-50 to-blue-100 py-20">
+  <section class="bg-gradient-to-br from-orange-50 to-red-100 py-20">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="max-w-4xl mx-auto text-center">
         <h1 class="text-5xl font-bold text-gray-900 mb-6">
-          Open Source Services for <span class="text-green-600">Companies</span>
+          Open Source Services for <span class="text-orange-600">Ecosystem Guardians</span>
         </h1>
         <p class="text-xl text-gray-600 mb-8">
           Secure your supply chain, empower your developers, and build strategic relationships 
           with the open source maintainers your business depends on.
         </p>
         <div class="flex justify-center space-x-4">
-          <a href="/submit" class="bg-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors">
+          <a href={`${import.meta.env.BASE_URL}/submit`} class="bg-orange-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors">
             Get Started
           </a>
           <a href="#services" class="border border-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
@@ -37,7 +37,7 @@ const companyServices = services.filter(service =>
   <section class="py-16 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-12">
-        <h2 class="text-3xl font-bold text-gray-900 mb-4">Why Companies Choose Our Services</h2>
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">Why Ecosystem Guardians Choose Our Services</h2>
         <p class="text-xl text-gray-600">Reduce risk, increase efficiency, and build sustainable tech strategies</p>
       </div>
       
@@ -53,8 +53,8 @@ const companyServices = services.filter(service =>
         </div>
         
         <div class="text-center p-6">
-          <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
             </svg>
           </div>
@@ -63,8 +63,8 @@ const companyServices = services.filter(service =>
         </div>
         
         <div class="text-center p-6">
-          <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
             </svg>
           </div>
@@ -89,7 +89,7 @@ const companyServices = services.filter(service =>
             "We're acquiring a company and need to understand the security and sustainability 
             risks in their open source dependencies."
           </p>
-          <span class="text-sm text-blue-600 font-medium">→ Dependency Security Audit</span>
+          <span class="text-sm text-orange-600 font-medium">→ Dependency Security Audit</span>
         </div>
         
         <div class="bg-white p-6 rounded-lg shadow-sm">
@@ -98,7 +98,7 @@ const companyServices = services.filter(service =>
             "Our developers want to contribute to open source but we need to ensure 
             they follow company policies and don't leak proprietary code."
           </p>
-          <span class="text-sm text-blue-600 font-medium">→ Employee Open Source Training</span>
+          <span class="text-sm text-orange-600 font-medium">→ Employee Open Source Training</span>
         </div>
         
         <div class="bg-white p-6 rounded-lg shadow-sm">
@@ -107,7 +107,7 @@ const companyServices = services.filter(service =>
             "One of our core dependencies is maintained by a single person who's 
             expressing burnout. How do we reduce this risk?"
           </p>
-          <span class="text-sm text-blue-600 font-medium">→ Dependency Analysis + Strategic Support</span>
+          <span class="text-sm text-orange-600 font-medium">→ Dependency Analysis + Strategic Support</span>
         </div>
         
         <div class="bg-white p-6 rounded-lg shadow-sm">
@@ -116,7 +116,7 @@ const companyServices = services.filter(service =>
             "We need to meet SOC2/ISO27001 requirements and auditors are asking 
             about our open source supply chain security."
           </p>
-          <span class="text-sm text-blue-600 font-medium">→ Security Audit + Compliance Documentation</span>
+          <span class="text-sm text-orange-600 font-medium">→ Security Audit + Compliance Documentation</span>
         </div>
       </div>
     </div>
@@ -127,7 +127,7 @@ const companyServices = services.filter(service =>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-12">
         <h2 class="text-3xl font-bold text-gray-900 mb-4">Enterprise Services</h2>
-        <p class="text-xl text-gray-600">Comprehensive solutions for companies of all sizes</p>
+        <p class="text-xl text-gray-600">Comprehensive solutions for ecosystem guardians of all sizes</p>
       </div>
       
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -146,7 +146,7 @@ const companyServices = services.filter(service =>
   </section>
 
   <!-- ROI Section -->
-  <section class="py-16 bg-blue-50">
+  <section class="py-16 bg-orange-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-12">
         <h2 class="text-3xl font-bold text-gray-900 mb-4">Return on Investment</h2>
@@ -154,33 +154,33 @@ const companyServices = services.filter(service =>
       
       <div class="grid md:grid-cols-3 gap-8">
         <div class="text-center">
-          <div class="text-4xl font-bold text-blue-600 mb-2">85%</div>
+          <div class="text-4xl font-bold text-orange-600 mb-2">85%</div>
           <p class="text-gray-700">Reduction in security incidents after dependency audits</p>
         </div>
         
         <div class="text-center">
-          <div class="text-4xl font-bold text-green-600 mb-2">3x</div>
+          <div class="text-4xl font-bold text-orange-600 mb-2">3x</div>
           <p class="text-gray-700">Increase in quality contributions after employee training</p>
         </div>
         
         <div class="text-center">
-          <div class="text-4xl font-bold text-purple-600 mb-2">$500K</div>
-          <p class="text-gray-700">Average cost savings from proactive dependency management</p>
+          <div class="text-4xl font-bold text-red-600 mb-2">50%</div>
+          <p class="text-gray-700">Reduction in dependency-related incidents after proactive management</p>
         </div>
       </div>
     </div>
   </section>
 
   <!-- Enterprise CTA -->
-  <section class="py-16 bg-green-600">
+  <section class="py-16 bg-orange-600">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
       <h2 class="text-3xl font-bold text-white mb-4">Ready to Secure Your Open Source Strategy?</h2>
-      <p class="text-xl text-green-100 mb-8">Join industry leaders who've transformed their approach to open source</p>
+      <p class="text-xl text-orange-100 mb-8">Join industry leaders who've transformed their approach to open source</p>
       <div class="flex justify-center space-x-4">
-        <a href="/submit" class="bg-white text-green-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+        <a href={`${import.meta.env.BASE_URL}/submit`} class="bg-white text-orange-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
           Schedule Consultation
         </a>
-        <a href="mailto:enterprise@oss-wishlist.com" class="border border-green-300 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors">
+        <a href="mailto:enterprise@oss-wishlist.com" class="border border-orange-300 text-white px-8 py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors">
           Contact Sales
         </a>
       </div>
