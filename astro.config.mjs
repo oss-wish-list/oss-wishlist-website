@@ -6,6 +6,7 @@ import react from '@astrojs/react';
 export default defineConfig({
   site: 'https://oss-wish-list.github.io',
   base: '/oss-wishlist-website',
+  output: 'hybrid',
   integrations: [tailwind(), react()],
   markdown: {
     shikiConfig: {

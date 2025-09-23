@@ -2,263 +2,648 @@ import { useState, useEffect } from 'react';
 
 interface Service {
   id: string;
-  data: {
-    title: string;
+  title: string;
+  description: string;
+  category: string;
+  slug?: string;
+}
+
+interface WishlistFormProps {
+  services?: Service[];
+}
+
+interface GitHubUser {
+  id: number;
+  login: string;
+  name: string | null;
+  email: string | null;
+  avatar_url: string;
+  repositories: GitHubRepository[];
+  authenticated: boolean;
+}
+
+interface GitHubRepository {
+  id: number;
+  name: string;
+  full_name: string;
+  description: string | null;
+  html_url: string;
+  stargazers_count: number;
+  language: string | null;
+}
+
+const WishlistForm = ({ services = [] }: WishlistFormProps) => {
+  const [user, setUser] = useState<GitHubUser | null>(null);
+  const [selectedRepo, setSelectedRepo] = useState<GitHubRepository | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState<{
+    issueNumber: number;
+    issueUrl: string;
+    issueTitle: string;
+  } | null>(null);
+  const [useManualEntry, setUseManualEntry] = useState(false);
+  const [manualRepoUrl, setManualRepoUrl] = useState('');
+  const [manualRepoData, setManualRepoData] = useState<{
+    name: string;
     description: string;
-    category: string;
-    price_tier: string;
-    estimated_hours: string;
-  };
-}
-
-interface FormData {
-  projectName: string;
-  username: string;
-  repoUrl: string;
-  email: string;
-  services: string[];
-  notes: string;
-}
-
-const WishlistForm = () => {
-  const [services, setServices] = useState<Service[]>([]);
-  const [formData, setFormData] = useState<FormData>({
-    projectName: '',
-    username: '',
-    repoUrl: '',
-    email: '',
-    services: [],
-    notes: ''
+    url: string;
+    username: string;
+  } | null>(null);
+  
+  // Step management
+  const [currentStep, setCurrentStep] = useState<'auth' | 'repo' | 'wishlist'>('auth');
+  
+  // Wishlist form state
+  const [wishlistData, setWishlistData] = useState({
+    selectedServices: [] as string[],
+    urgency: 'medium' as 'low' | 'medium' | 'high',
+    timeline: '',
+    organizationType: 'individual' as 'individual' | 'company' | 'nonprofit' | 'foundation',
+    organizationName: '',
+    additionalNotes: ''
   });
-  const [isLoading, setIsLoading] = useState(false);
+
+  // Available services from content collections
+  const availableServices = services.length > 0 ? services : [
+    { id: 'community-strategy', title: 'Community Strategy', description: 'Help building and growing your community', category: 'Community' },
+    { id: 'governance-setup', title: 'Governance Setup', description: 'Establish project governance and decision-making processes', category: 'Governance' },
+    { id: 'security-audit', title: 'Security Audit', description: 'Security review and vulnerability assessment', category: 'Security' },
+    { id: 'funding-strategy', title: 'Funding Strategy', description: 'Help securing sponsorship and funding', category: 'Strategy' },
+    { id: 'documentation', title: 'Documentation', description: 'Improve project documentation and guides', category: 'Documentation' },
+    { id: 'marketing', title: 'Marketing & Outreach', description: 'Promote your project and grow adoption', category: 'Marketing' }
+  ];
 
   useEffect(() => {
-    // In a real implementation, you'd fetch this from your services data
-    // For now, we'll use placeholder data
-    setServices([
-      {
-        id: 'governance-setup',
-        data: {
-          title: 'Governance Setup',
-          description: 'Establish project governance structure and guidelines',
-          category: 'Governance',
-          price_tier: 'medium',
-          estimated_hours: '8-12 hours'
-        }
-      },
-      {
-        id: 'community-strategy',
-        data: {
-          title: 'Community Strategy',
-          description: 'Develop comprehensive community growth plan',
-          category: 'Community',
-          price_tier: 'high',
-          estimated_hours: '10-15 hours'
-        }
-      },
-      {
-        id: 'security-audit',
-        data: {
-          title: 'Security Audit',
-          description: 'Comprehensive security review of codebase',
-          category: 'Security',
-          price_tier: 'high',
-          estimated_hours: '15-20 hours'
-        }
-      }
-    ]);
+    checkAuthCallback();
   }, []);
 
+  const checkAuthCallback = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const authStatus = urlParams.get('auth');
+    const error = urlParams.get('error');
+        
+    if (authStatus === 'success') {
+      window.location.href = '/oss-wishlist-website/submit';
+    } else if (error) {
+      setError(`Authentication failed: ${error.replace('_', ' ')}`);
+    }
+  };
+
+  const initiateGitHubAuth = () => {
+    setLoading(true);
+    setError('');
+    window.location.href = '/oss-wishlist-website/api/auth/github';
+  };
+
+  const parseGitHubUrl = (url: string) => {
+    try {
+      const cleanUrl = url.replace(/\.git$/, '');
+      const match = cleanUrl.match(/github\.com\/([^\/]+)\/([^\/\?#]+)/);
+      
+      if (match) {
+        const [, username, repoName] = match;
+        return {
+          username,
+          name: repoName,
+          description: 'Repository entered manually',
+          url: `https://github.com/${username}/${repoName}`
+        };
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  };
+
+  const handleManualRepoSubmit = () => {
+    setError('');
+    const repoData = parseGitHubUrl(manualRepoUrl);
+    
+    if (!repoData) {
+      setError('Please enter a valid GitHub repository URL (e.g., https://github.com/username/repository)');
+      return;
+    }
+    
+    setManualRepoData(repoData);
+    setCurrentStep('repo');
+  };
+
+  const proceedToWishlist = () => {
+    if ((user && selectedRepo) || manualRepoData) {
+      setCurrentStep('wishlist');
+    }
+  };
+
   const handleServiceToggle = (serviceId: string) => {
-    setFormData(prev => ({
+    setWishlistData(prev => ({
       ...prev,
-      services: prev.services.includes(serviceId)
-        ? prev.services.filter(id => id !== serviceId)
-        : [...prev.services, serviceId]
+      selectedServices: prev.selectedServices.includes(serviceId)
+        ? prev.selectedServices.filter(id => id !== serviceId)
+        : [...prev.selectedServices, serviceId]
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmitWishlist = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
     
-    // Generate GitHub issue body
-    const selectedServiceNames = services
-      .filter(service => formData.services.includes(service.id))
-      .map(service => service.data.title);
+    if (wishlistData.selectedServices.length === 0) {
+      setError('Please select at least one service');
+      return;
+    }
 
-    const issueBody = `## Wishlist Request
+    setLoading(true);
+    setError('');
 
-### Project Information
-- **Project Name:** ${formData.projectName}
-- **Repository:** ${formData.repoUrl}
-- **Maintainer:** @${formData.username}
-- **Contact:** ${formData.email}
+    try {
+      const repoInfo = manualRepoData || (selectedRepo && user ? {
+        name: selectedRepo.name,
+        url: selectedRepo.html_url,
+        username: user.login,
+        description: selectedRepo.description || ''
+      } : null);
 
-### Services Requested
-${selectedServiceNames.map(name => `- ${name}`).join('\n')}
+      if (!repoInfo) {
+        throw new Error('Repository information is missing');
+      }
 
-### Additional Notes
-${formData.notes || 'None'}
+      const selectedServiceTitles = wishlistData.selectedServices.map(
+        serviceId => availableServices.find(s => s.id === serviceId)?.title || serviceId
+      );
+
+      const issueTitle = `Wishlist: ${repoInfo.name} - ${selectedServiceTitles.join(', ')}`;
+      const issueBody = `# 🎯 OSS Project Wishlist
+
+## 📁 Project Information
+- **Project:** [${repoInfo.name}](${repoInfo.url})
+- **Maintainer:** @${repoInfo.username}
+- **Description:** ${repoInfo.description}
+
+## 🛠️ Services Requested
+${wishlistData.selectedServices.map(serviceId => {
+  const service = availableServices.find(s => s.id === serviceId);
+  const serviceLink = service?.slug ? `${window.location.origin}${import.meta.env.BASE_URL}/services/${service.slug}` : '';
+  return `- **${service?.title || serviceId}** (${service?.category || 'General'})
+  ${service?.description || 'No description available'}${serviceLink ? `
+  📖 [Learn more about this service](${serviceLink})` : ''}`;
+}).join('\n')}
+
+## ⏰ Project Details
+- **Urgency:** ${wishlistData.urgency.charAt(0).toUpperCase() + wishlistData.urgency.slice(1)}
+- **Timeline:** ${wishlistData.timeline || 'Flexible'}
+
+## 🏢 Organization
+- **Type:** ${wishlistData.organizationType.charAt(0).toUpperCase() + wishlistData.organizationType.slice(1)}
+${wishlistData.organizationName ? `- **Name:** ${wishlistData.organizationName}` : ''}
+
+## 📝 Additional Notes
+${wishlistData.additionalNotes || 'None provided'}
 
 ---
-*This wishlist was created via the OSS Wishlist platform*`;
+💝 **Ready to help?** Comment below or reach out to the maintainer!
 
-    const issueTitle = `Wishlist: ${formData.projectName}`;
-    const repoOwner = 'oss-wishlist'; // Your GitHub org
-    const repoName = 'wishlists'; // Repository for wishlist issues
-    
-    const issueUrl = `https://github.com/${repoOwner}/${repoName}/issues/new?` +
-      `title=${encodeURIComponent(issueTitle)}&` +
-      `body=${encodeURIComponent(issueBody)}&` +
-      `labels=wishlist`;
+*Created via [OSS Wishlist Platform](${window.location.origin})*
+`;
 
-    // Open GitHub issue creation in new tab
-    window.open(issueUrl, '_blank');
-    
-    setIsLoading(false);
+      // Submit directly to our API instead of opening GitHub
+      const response = await fetch(`${import.meta.env.BASE_URL}/api/submit-wishlist`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: issueTitle,
+          body: issueBody,
+          labels: ['wishlist', `${wishlistData.urgency}-priority`]
+        })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to create wishlist');
+      }
+
+      // Success! Store the result
+      setSuccess({
+        issueNumber: result.issue.number,
+        issueUrl: result.issue.url,
+        issueTitle: result.issue.title
+      });
+      
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create wishlist');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const getPriceDisplay = (tier: string) => {
-    const prices = {
-      low: 'Budget',
-      medium: 'Standard',
-      high: 'Premium'
-    };
-    return prices[tier as keyof typeof prices] || tier;
-  };
-
-  const getPriceColor = (tier: string) => {
-    const colors = {
-      low: 'bg-green-100 text-green-800',
-      medium: 'bg-blue-100 text-blue-800',
-      high: 'bg-purple-100 text-purple-800'
-    };
-    return colors[tier as keyof typeof colors] || 'bg-gray-100 text-gray-800';
-  };
-
-  return (
-    <div className="max-w-4xl mx-auto">
-      <form onSubmit={handleSubmit} className="space-y-8">
-        {/* Project Information */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h3 className="text-lg font-semibold mb-4">Project Information</h3>
-          <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Project Name *
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.projectName}
-                onChange={(e) => setFormData(prev => ({ ...prev, projectName: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="My Awesome Project"
-              />
-            </div>
+  // Step 1: Authentication
+  if (currentStep === 'auth') {
+    return (
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-white p-8 rounded-lg shadow-sm border mb-8">
+          <div className="max-w-md mx-auto text-center">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Create Your Wishlist</h3>
+            <p className="text-gray-600 text-sm mb-6">
+              Choose how you'd like to add your GitHub repository
+            </p>
             
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                GitHub Username *
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.username}
-                onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="octocat"
-              />
-            </div>
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
+                <p className="text-red-800 text-sm">{error}</p>
+              </div>
+            )}
             
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Repository URL *
-              </label>
-              <input
-                type="url"
-                required
-                value={formData.repoUrl}
-                onChange={(e) => setFormData(prev => ({ ...prev, repoUrl: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="https://github.com/username/project"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Contact Email *
-              </label>
-              <input
-                type="email"
-                required
-                value={formData.email}
-                onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="you@example.com"
-              />
+            <div className="space-y-4">
+              {/* GitHub OAuth Option */}
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                <h4 className="font-semibold text-green-800 mb-2">Option 1: Sign in with GitHub</h4>
+                <p className="text-green-700 text-sm mb-3">
+                  🔒 Authenticate securely to access your repositories
+                </p>
+                <button
+                  onClick={initiateGitHubAuth}
+                  disabled={loading}
+                  className="w-full bg-gray-900 text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-800 disabled:bg-gray-400"
+                >
+                  {loading ? 'Connecting...' : 'Sign in with GitHub'}
+                </button>
+              </div>
+              
+              {/* Manual Entry Option */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h4 className="font-semibold text-blue-800 mb-2">Option 2: Enter Repository URL</h4>
+                <p className="text-blue-700 text-sm mb-3">
+                  📝 Manually enter your GitHub repository URL
+                </p>
+                <button
+                  onClick={() => setUseManualEntry(true)}
+                  className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700"
+                >
+                  Enter Repository URL
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Services Selection */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h3 className="text-lg font-semibold mb-4">Select Services Needed</h3>
-          <div className="space-y-3">
-            {services.map((service) => (
-              <label
-                key={service.id}
-                className="flex items-start space-x-3 p-4 border rounded-lg hover:bg-gray-50 cursor-pointer"
-              >
-                <input
-                  type="checkbox"
-                  checked={formData.services.includes(service.id)}
-                  onChange={() => handleServiceToggle(service.id)}
-                  className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <div className="flex-1">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h4 className="font-medium text-gray-900">{service.data.title}</h4>
-                      <p className="text-gray-600 text-sm mt-1">{service.data.description}</p>
-                      <p className="text-gray-500 text-xs mt-2">{service.data.estimated_hours}</p>
+        {/* Manual Entry Form */}
+        {useManualEntry && (
+          <div className="bg-white p-8 rounded-lg shadow-sm border mb-8">
+            <div className="max-w-md mx-auto">
+              <h3 className="text-xl font-bold text-gray-900 mb-2 text-center">Enter Repository URL</h3>
+              <p className="text-gray-600 text-sm mb-4 text-center">
+                Paste your GitHub repository URL below
+              </p>
+              
+              <div className="space-y-4">
+                <div>
+                  <label htmlFor="repo-url" className="block text-sm font-medium text-gray-700 mb-2">
+                    GitHub Repository URL
+                  </label>
+                  <input
+                    id="repo-url"
+                    type="url"
+                    value={manualRepoUrl}
+                    onChange={(e) => setManualRepoUrl(e.target.value)}
+                    placeholder="https://github.com/username/repository"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+                
+                <div className="flex space-x-3">
+                  <button
+                    onClick={handleManualRepoSubmit}
+                    disabled={!manualRepoUrl.trim()}
+                    className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400"
+                  >
+                    Continue
+                  </button>
+                  <button
+                    onClick={() => {
+                      setUseManualEntry(false);
+                      setManualRepoUrl('');
+                      setError('');
+                    }}
+                    className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                  >
+                    Back
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Step 2: Repository Selection/Confirmation
+  if (currentStep === 'repo') {
+    if (manualRepoData) {
+      return (
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white p-6 rounded-lg shadow-sm border mb-8">
+            <div className="max-w-md mx-auto">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 text-center">
+                Confirm Repository Details
+              </h3>
+              
+              <div className="bg-gray-50 border rounded-lg p-4 mb-6">
+                <h4 className="font-semibold text-gray-900">{manualRepoData.name}</h4>
+                <p className="text-sm text-gray-600 mt-1">{manualRepoData.description}</p>
+                <p className="text-sm text-blue-600 mt-2">{manualRepoData.url}</p>
+                <p className="text-sm text-gray-500 mt-2">Maintainer: @{manualRepoData.username}</p>
+              </div>
+              
+              <div className="flex space-x-3">
+                <button
+                  onClick={proceedToWishlist}
+                  className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700"
+                >
+                  Create Wishlist
+                </button>
+                <button
+                  onClick={() => {
+                    setManualRepoData(null);
+                    setManualRepoUrl('');
+                    setCurrentStep('auth');
+                  }}
+                  className="px-4 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                >
+                  Back
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // OAuth repository selection (simplified for now)
+    return (
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-white p-8 rounded-lg shadow-sm border">
+          <div className="text-center">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Repository Selection</h3>
+            <p className="text-gray-600 mb-6">OAuth authentication is in progress...</p>
+            <button
+              onClick={() => setCurrentStep('auth')}
+              className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+            >
+              Go Back
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Step 3: Wishlist Creation Form
+  if (currentStep === 'wishlist') {
+    // Show success state if wishlist was created
+    if (success) {
+      return (
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white p-8 rounded-lg shadow-sm border">
+            <div className="text-center">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
+                <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">🎉 Wishlist Created Successfully!</h3>
+              <p className="text-gray-600 mb-6">
+                Your wishlist has been submitted as GitHub issue #{success.issueNumber}
+              </p>
+              
+              <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                <h4 className="font-semibold text-gray-900 mb-2">{success.issueTitle}</h4>
+                <p className="text-sm text-gray-600">
+                  Your wishlist is now visible to potential contributors and supporters.
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <a
+                  href={success.issueUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 inline-flex items-center justify-center"
+                >
+                  <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd"></path>
+                  </svg>
+                  View Issue on GitHub
+                </a>
+                <button
+                  onClick={() => {
+                    setSuccess(null);
+                    setCurrentStep('auth');
+                    setWishlistData({
+                      selectedServices: [],
+                      urgency: 'medium',
+                      timeline: '',
+                      organizationType: 'individual',
+                      organizationName: '',
+                      additionalNotes: ''
+                    });
+                  }}
+                  className="bg-gray-200 text-gray-800 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300"
+                >
+                  Create Another Wishlist
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="max-w-4xl mx-auto">
+        <form onSubmit={handleSubmitWishlist} className="space-y-8">
+          {/* Header */}
+          <div className="bg-white p-6 rounded-lg shadow-sm border">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">🎯 Create Your Wishlist</h2>
+            <p className="text-gray-600">
+              Select the services you need help with for your project.
+            </p>
+          </div>
+
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <p className="text-red-800">{error}</p>
+            </div>
+          )}
+
+          {/* Services Selection */}
+          <div className="bg-white p-6 rounded-lg shadow-sm border">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              🛠️ Services Needed <span className="text-red-500">*</span>
+            </h3>
+            <div className="grid gap-4 md:grid-cols-2">
+              {availableServices.map((service) => (
+                <div
+                  key={service.id}
+                  onClick={() => handleServiceToggle(service.id)}
+                  className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                    wishlistData.selectedServices.includes(service.id)
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-gray-900">{service.title}</h4>
+                      <p className="text-sm text-gray-600 mt-1">{service.description}</p>
+                      <div className="flex items-center justify-between mt-2">
+                        <span className="inline-block bg-gray-100 px-2 py-1 rounded text-xs text-gray-600">
+                          {service.category}
+                        </span>
+                        {service.slug && (
+                          <a
+                            href={`${import.meta.env.BASE_URL}/services/${service.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-blue-600 hover:text-blue-800 underline"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            Learn more →
+                          </a>
+                        )}
+                      </div>
                     </div>
+                    {wishlistData.selectedServices.includes(service.id) && (
+                      <div className="ml-2 text-blue-600 text-lg">✓</div>
+                    )}
                   </div>
                 </div>
-              </label>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* Additional Notes */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h3 className="text-lg font-semibold mb-4">Additional Notes</h3>
-          <textarea
-            value={formData.notes}
-            onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
-            rows={4}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Any additional context about your project's needs..."
-          />
-        </div>
+          {/* Project Details */}
+          <div className="bg-white p-6 rounded-lg shadow-sm border">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">⏰ Project Details</h3>
+            <div className="grid gap-6 md:grid-cols-2">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Urgency
+                </label>
+                <select
+                  value={wishlistData.urgency}
+                  onChange={(e) => setWishlistData(prev => ({ ...prev, urgency: e.target.value as any }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="low">🟢 Low - Flexible timeline</option>
+                  <option value="medium">🟡 Medium - Preferred timeline</option>
+                  <option value="high">🔴 High - Urgent need</option>
+                </select>
+              </div>
 
-        {/* Submit Button */}
-        <div className="text-center">
-          <button
-            type="submit"
-            disabled={isLoading || formData.services.length === 0}
-            className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-          >
-            {isLoading ? 'Creating Wishlist...' : 'Create Wishlist'}
-          </button>
-          <p className="text-sm text-gray-600 mt-2">
-            This will open GitHub to create your wishlist issue
-          </p>
-        </div>
-      </form>
-    </div>
-  );
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Timeline
+                </label>
+                <input
+                  type="text"
+                  value={wishlistData.timeline}
+                  onChange={(e) => setWishlistData(prev => ({ ...prev, timeline: e.target.value }))}
+                  placeholder="e.g., 'Within 3 months', 'Q1 2024', 'Flexible'"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Organization Details */}
+          <div className="bg-white p-6 rounded-lg shadow-sm border">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">🏢 Organization Details</h3>
+            <div className="grid gap-6 md:grid-cols-2">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Organization Type
+                </label>
+                <select
+                  value={wishlistData.organizationType}
+                  onChange={(e) => setWishlistData(prev => ({ ...prev, organizationType: e.target.value as any }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="individual">👤 Individual maintainer</option>
+                  <option value="company">🏢 Company</option>
+                  <option value="nonprofit">🌍 Nonprofit organization</option>
+                  <option value="foundation">🏛️ Foundation</option>
+                </select>
+              </div>
+
+              {wishlistData.organizationType !== 'individual' && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Organization Name
+                  </label>
+                  <input
+                    type="text"
+                    value={wishlistData.organizationName}
+                    onChange={(e) => setWishlistData(prev => ({ ...prev, organizationName: e.target.value }))}
+                    placeholder="Enter organization name"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Additional Notes */}
+          <div className="bg-white p-6 rounded-lg shadow-sm border">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">📝 Additional Notes</h3>
+            <textarea
+              value={wishlistData.additionalNotes}
+              onChange={(e) => setWishlistData(prev => ({ ...prev, additionalNotes: e.target.value }))}
+              rows={4}
+              placeholder="Any additional information about your project, specific requirements, or context that would help supporters understand your needs..."
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+
+          {/* Submit */}
+          <div className="bg-white p-6 rounded-lg shadow-sm border">
+            <div className="flex justify-between items-center">
+              <button
+                type="button"
+                onClick={() => setCurrentStep('repo')}
+                className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+              >
+                ← Back
+              </button>
+              <button
+                type="submit"
+                disabled={loading || wishlistData.selectedServices.length === 0}
+                className="px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400 flex items-center space-x-2"
+              >
+                {loading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                    <span>Creating...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>🚀 Create Wishlist</span>
+                  </>
+                )}
+              </button>
+            </div>
+            <p className="text-sm text-gray-500 mt-2 text-center">
+              This will create a GitHub issue with your wishlist details
+            </p>
+          </div>
+        </form>
+      </div>
+    );
+  }
+
+  return null;
 };
 
 export default WishlistForm;

@@ -1,6 +1,17 @@
 ---
 import Layout from '../components/Layout.astro';
 import WishlistForm from '../components/WishlistForms.tsx';
+import { getCollection } from 'astro:content';
+
+// Fetch services from content collections
+const services = await getCollection('services');
+const servicesData = services.map(service => ({
+  id: service.slug,
+  title: service.data.title,
+  description: service.data.description,
+  category: service.data.category,
+  slug: service.slug
+}));
 ---
 
 <Layout title="Create Your Project Wishlist - OSS Wishlist">
@@ -25,7 +36,7 @@ import WishlistForm from '../components/WishlistForms.tsx';
           <div class="bg-white p-4 rounded-lg shadow-sm border">
             <div class="text-2xl mb-2">🌟</div>
             <h3 class="font-semibold text-gray-900">Get Discovered</h3>
-            <p class="text-sm text-gray-600">Companies and supporters browse wishlists</p>
+            <p class="text-sm text-gray-600">Ecosystem Guardians (companies, individuals, foundations, supporters) browse wishlists</p>
           </div>
           <div class="bg-white p-4 rounded-lg shadow-sm border">
             <div class="text-2xl mb-2">🤝</div>
@@ -49,7 +60,7 @@ import WishlistForm from '../components/WishlistForms.tsx';
   <!-- Form Section -->
   <section id="form" class="py-16 bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <WishlistForm client:load />
+      <WishlistForm client:load services={servicesData} />
     </div>
   </section>
 
@@ -64,10 +75,10 @@ import WishlistForm from '../components/WishlistForms.tsx';
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
         <div class="bg-gray-50 p-6 rounded-lg border">
           <div class="flex items-center mb-3">
-            <img class="w-8 h-8 rounded" src="/oss-wish.webp" alt="Project logo" />
+            <img class="w-8 h-8 rounded" src="/oss-wish.webp" alt="Example Web Framework Utilities logo" />
             <div class="ml-3">
-              <h3 class="font-semibold">vue-test-utils</h3>
-              <p class="text-sm text-gray-600">Vue.js testing library</p>
+              <h3 class="font-semibold">Example Web Framework Utilities</h3>
+              <p class="text-sm text-gray-600">JavaScript web development utilities</p>
             </div>
           </div>
           <ul class="text-sm text-gray-700 space-y-1">
@@ -80,9 +91,9 @@ import WishlistForm from '../components/WishlistForms.tsx';
 
         <div class="bg-gray-50 p-6 rounded-lg border">
           <div class="flex items-center mb-3">
-            <img class="w-8 h-8 rounded" src="/oss-wish.webp" alt="Project logo" />
+            <img class="w-8 h-8 rounded" src="/oss-wish.webp" alt="Example CLI Tools Suite logo" />
             <div class="ml-3">
-              <h3 class="font-semibold">rust-cli-tools</h3>
+              <h3 class="font-semibold">Example CLI Tools Suite</h3>
               <p class="text-sm text-gray-600">Command line utilities in Rust</p>
             </div>
           </div>
@@ -96,14 +107,14 @@ import WishlistForm from '../components/WishlistForms.tsx';
 
         <div class="bg-gray-50 p-6 rounded-lg border">
           <div class="flex items-center mb-3">
-            <img class="w-8 h-8 rounded" src="/oss-wish.webp" alt="Project logo" />
+            <img class="w-8 h-8 rounded" src="/oss-wish.webp" alt="Example ML Training Library logo" />
             <div class="ml-3">
-              <h3 class="font-semibold">ml-training-lib</h3>
-              <p class="text-sm text-gray-600">Machine learning utilities</p>
+              <h3 class="font-semibold">Example ML Training Library</h3>
+              <p class="text-sm text-gray-600">Machine learning training utilities</p>
             </div>
           </div>
           <ul class="text-sm text-gray-700 space-y-1">
-            <li>• Performance optimization</li>
+            <li>• Performance optimization consulting</li>
             <li>• Enterprise features roadmap</li>
             <li>• Community growth strategy</li>
           </ul>

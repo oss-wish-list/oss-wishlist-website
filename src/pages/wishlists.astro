@@ -2,115 +2,11 @@
 import Layout from '../components/Layout.astro';
 import { getCollection } from 'astro:content';
 
-// In a real implementation, this would fetch from a database
-// For now, we'll create some example wishlists
-const wishlists = [
-  {
-    id: 'example-vue-test-utils',
-    project_name: 'Example Web Framework Utilities',
-    username: 'example-maintainer-1',
-    repo_url: 'https://github.com/example/web-framework-utils',
-    description: 'Example utility library for modern web development',
-    github_stars: '3.2k',
-    monthly_downloads: '2.1M',
-    services_needed: [
-      'Security audit for v2.0 release',
-      'Documentation restructure and improvement',
-      'Community onboarding process development',
-      'Performance optimization consulting'
-    ],
-    budget_range: '$5K-10K',
-    contact_email: 'maintainer1@example.com',
-    created_date: '2024-09-15',
-    tags: ['Web Development', 'Utilities', 'Framework'],
-    urgency: 'medium',
-    project_stage: 'mature'
-  },
-  {
-    id: 'example-rust-cli-tools',
-    project_name: 'Example CLI Tools Suite',
-    username: 'example-maintainer-2',
-    repo_url: 'https://github.com/example/cli-tools',
-    description: 'A collection of fast, reliable command-line utilities',
-    github_stars: '847',
-    monthly_downloads: '45K',
-    services_needed: [
-      'Project governance setup',
-      'Contributor mentorship program',
-      'Funding strategy development',
-      'Community growth consulting'
-    ],
-    budget_range: 'Seeking ongoing sponsorship',
-    contact_email: 'maintainer2@example.com',
-    created_date: '2024-09-10',
-    tags: ['CLI', 'Tools', 'Utilities'],
-    urgency: 'low',
-    project_stage: 'growing'
-  },
-  {
-    id: 'example-ml-training-lib',
-    project_name: 'Example Data Processing Library',
-    username: 'example-maintainer-3',
-    repo_url: 'https://github.com/example/data-processing-lib',
-    description: 'Lightweight data processing utilities for researchers',
-    github_stars: '1.5k',
-    monthly_downloads: '78K',
-    services_needed: [
-      'Performance optimization and benchmarking',
-      'Enterprise features roadmap planning',
-      'Community growth strategy',
-      'Security audit and best practices'
-    ],
-    budget_range: '$15K-25K',
-    contact_email: 'maintainer3@example.com',
-    created_date: '2024-09-12',
-    tags: ['Data Processing', 'Analytics', 'Research'],
-    urgency: 'high',
-    project_stage: 'scaling'
-  },
-  {
-    id: 'example-web-accessibility-tools',
-    project_name: 'Example Testing Tools',
-    username: 'example-maintainer-4',
-    repo_url: 'https://github.com/example/testing-tools',
-    description: 'Automated testing and reporting tools for web developers',
-    github_stars: '924',
-    monthly_downloads: '12K',
-    services_needed: [
-      'Documentation and tutorial creation',
-      'Integration with popular frameworks',
-      'Community outreach and advocacy',
-      'Sustainability and funding strategy'
-    ],
-    budget_range: '$3K-8K',
-    contact_email: 'maintainer4@example.com',
-    created_date: '2024-09-08',
-    tags: ['Testing', 'Web Development', 'Tools'],
-    urgency: 'medium',
-    project_stage: 'growing'
-  },
-  {
-    id: 'example-devops-automation',
-    project_name: 'Example Automation Suite',
-    username: 'example-maintainer-5',
-    repo_url: 'https://github.com/example/automation-suite',
-    description: 'Open source automation tools for CI/CD pipelines',
-    github_stars: '2.8k',
-    monthly_downloads: '156K',
-    services_needed: [
-      'Security audit and compliance review',
-      'Enterprise integration consulting',
-      'Training and certification program',
-      'Strategic roadmap development'
-    ],
-    budget_range: '$20K-35K',
-    contact_email: 'maintainer5@example.com',
-    created_date: '2024-09-05',
-    tags: ['Automation', 'CI/CD', 'Development Tools'],
-    urgency: 'high',
-    project_stage: 'enterprise-ready'
-  }
-];
+// Get wishlists from content collections
+const allWishlists = await getCollection('wishlists');
+const wishlists = allWishlists
+  .filter(wishlist => wishlist.data.status === 'active')
+  .sort((a, b) => b.data.created_date.getTime() - a.data.created_date.getTime());
 
 const urgencyColors = {
   low: 'bg-green-100 text-green-800',
@@ -171,14 +67,10 @@ const stageColors = {
   <!-- Stats Section -->
   <section class="py-12 bg-white border-b">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid md:grid-cols-4 gap-8 text-center">
+      <div class="grid md:grid-cols-3 gap-8 text-center">
         <div>
           <div class="text-3xl font-bold text-orange-600">{wishlists.length}</div>
           <p class="text-gray-600">Active Wishlists</p>
-        </div>
-        <div>
-          <div class="text-3xl font-bold text-green-600">$125K+</div>
-          <p class="text-gray-600">Total Support Requested</p>
         </div>
         <div>
           <div class="text-3xl font-bold text-red-600">15+</div>
@@ -199,7 +91,6 @@ const stageColors = {
         <div class="flex flex-wrap gap-2">
           <button class="px-4 py-2 bg-white border rounded-lg hover:bg-gray-50 transition-colors">All Projects</button>
           <button class="px-4 py-2 bg-white border rounded-lg hover:bg-gray-50 transition-colors">High Urgency</button>
-          <button class="px-4 py-2 bg-white border rounded-lg hover:bg-gray-50 transition-colors">$10K+ Budget</button>
           <button class="px-4 py-2 bg-white border rounded-lg hover:bg-gray-50 transition-colors">Popular (1K+ stars)</button>
         </div>
         <div class="flex gap-2">
@@ -212,7 +103,6 @@ const stageColors = {
           </select>
           <select class="px-3 py-2 bg-white border rounded-lg">
             <option>Sort by Recent</option>
-            <option>Sort by Budget</option>
             <option>Sort by Popularity</option>
             <option>Sort by Urgency</option>
           </select>
@@ -242,7 +132,7 @@ const stageColors = {
 
       <div id="wishlistsGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
         {wishlists.map((wishlist) => (
-          <div class="wishlist-card bg-white border rounded-lg shadow-sm hover:shadow-md transition-shadow p-6" data-project-name={wishlist.project_name.toLowerCase()}>
+          <div class="wishlist-card bg-white border rounded-lg shadow-sm hover:shadow-md transition-shadow p-6">
             <!-- Project Header -->
             <div class="flex items-start justify-between mb-4">
               <div class="flex items-center space-x-3">
@@ -250,16 +140,16 @@ const stageColors = {
                   📦
                 </div>
                 <div>
-                  <h3 class="text-lg font-semibold text-gray-900">{wishlist.project_name}</h3>
-                  <p class="text-sm text-gray-600">@{wishlist.username}</p>
+                  <h3 class="text-lg font-semibold text-gray-900">{wishlist.data.project_name}</h3>
+                  <p class="text-sm text-gray-600">@{wishlist.data.maintainer.username}</p>
                 </div>
               </div>
               <div class="flex space-x-2">
-                <span class={`px-2 py-1 text-xs rounded-full ${urgencyColors[wishlist.urgency]}`}>
-                  {wishlist.urgency} priority
+                <span class={`px-2 py-1 text-xs rounded-full ${urgencyColors[wishlist.data.urgency]}`}>
+                  {wishlist.data.urgency} priority
                 </span>
-                <span class={`px-2 py-1 text-xs rounded-full ${stageColors[wishlist.project_stage]}`}>
-                  {wishlist.project_stage}
+                <span class={`px-2 py-1 text-xs rounded-full ${stageColors[wishlist.data.project_stage]}`}>
+                  {wishlist.data.project_stage}
                 </span>
               </div>
             </div>
@@ -270,57 +160,53 @@ const stageColors = {
                 <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
                 </svg>
-                {wishlist.github_stars}
+                {wishlist.data.github_stars?.toLocaleString() || 'N/A'}
               </span>
               <span class="flex items-center">
                 <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                 </svg>
-                {wishlist.monthly_downloads}/mo
+                {wishlist.data.monthly_downloads || 'N/A'}/mo
               </span>
             </div>
 
             <!-- Description -->
-            <p class="text-gray-700 mb-4">{wishlist.description}</p>
+            <p class="text-gray-700 mb-4">{wishlist.body.slice(0, 150)}...</p>
 
             <!-- Services Needed -->
             <div class="mb-4">
               <h4 class="font-medium text-gray-900 mb-2">Looking for:</h4>
-              <ul class="text-sm text-gray-700 space-y-1">
-                {wishlist.services_needed.slice(0, 3).map((service) => (
-                  <li class="flex items-center">
-                    <span class="w-1.5 h-1.5 bg-indigo-400 rounded-full mr-2"></span>
+                            <ul class="text-sm text-gray-600 space-y-1">
+                {wishlist.data.services_needed.slice(0, 3).map((service) => (
+                  <li class="flex items-start">
+                    <span class="text-orange-500 mr-2">•</span>
                     {service}
                   </li>
                 ))}
-                {wishlist.services_needed.length > 3 && (
-                  <li class="text-indigo-600 text-xs">+ {wishlist.services_needed.length - 3} more...</li>
+                {wishlist.data.services_needed.length > 3 && (
+                  <li class="text-orange-600 text-xs">+ {wishlist.data.services_needed.length - 3} more...</li>
                 )}
               </ul>
             </div>
 
             <!-- Tags -->
             <div class="flex flex-wrap gap-2 mb-4">
-              {wishlist.tags.map((tag) => (
+              {wishlist.data.tags.map((tag) => (
                 <span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">{tag}</span>
               ))}
             </div>
 
-            <!-- Budget and Actions -->
+            <!-- Actions -->
             <div class="flex items-center justify-between pt-4 border-t">
-              <div>
-                <span class="text-sm text-gray-600">Budget: </span>
-                <span class="font-medium text-green-600">{wishlist.budget_range}</span>
-              </div>
               <div class="flex space-x-2">
-                                <a 
-                  href={`${import.meta.env.BASE_URL}/wishlist/${wishlist.id}`}
-                  class="bg-orange-600 text-white px-4 py-2 rounded text-sm hover:bg-orange-700 transition-colors"
+                <a 
+                  href={`${import.meta.env.BASE_URL}/wishlist/${wishlist.slug}`}
+                  class="bg-gray-100 text-gray-700 px-4 py-2 rounded text-sm hover:bg-gray-200 transition-colors"
                 >
                   View Details
                 </a>
                 <a 
-                  href={wishlist.repo_url}
+                  href={wishlist.data.repo_url}
                   target="_blank"
                   rel="noopener noreferrer" 
                   class="border border-gray-300 text-gray-700 px-4 py-2 rounded text-sm hover:bg-gray-50 transition-colors"
@@ -328,6 +214,12 @@ const stageColors = {
                   GitHub
                 </a>
               </div>
+              <a 
+                href={`${import.meta.env.BASE_URL}/experts?wishlist=${encodeURIComponent(wishlist.slug)}&project=${encodeURIComponent(wishlist.data.project_name)}`}
+                class="bg-orange-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-orange-700 transition-colors"
+              >
+                Fulfill This List
+              </a>
             </div>
           </div>
         ))}
