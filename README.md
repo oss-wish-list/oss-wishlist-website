@@ -156,6 +156,14 @@ Main layout component providing:
 
 ## 🚀 Deployment
 
+All GitHub Actions workflows in this repository are currently STUBBED (no-op) while early development focuses on content and structure. They only echo a message and do not build, deploy, or transform issues.
+
+To re-enable any workflow:
+1. Open the corresponding file in `.github/workflows/`.
+2. Replace the single `noop` job with the previous logic (retrieve from git history if needed).
+3. Commit and push. Recreate any required branch protection status checks.
+4. Push a test commit to ensure the workflow runs as expected.
+
 ### Build for Production
 
 ```bash
@@ -170,9 +178,9 @@ The site will be built to the `dist/` directory.
 npm run preview
 ```
 
-### Deploy to GitHub Pages
+### Deploy to GitHub Pages (Disabled / Stubbed)
 
-This project is configured for automatic deployment to GitHub Pages:
+This project was previously configured for automatic deployment to GitHub Pages. The deployment workflow files are currently stubbed.
 
 1. **Enable GitHub Pages**:
    - Go to your repository settings
@@ -197,7 +205,7 @@ This project is configured for automatic deployment to GitHub Pages:
 
 You can deploy this site to GitHub Pages using either of two methods:
 
-### Option A: GitHub Pages Native (Actions Pages Pipeline)
+### Option A: GitHub Pages Native (Actions Pages Pipeline) [Currently Disabled]
 Uses the `deploy.yml` workflow with the GitHub Pages infrastructure.
 
 Pros:
@@ -208,7 +216,7 @@ Pros:
 Cons:
 - Currently may surface a deprecated `upload-artifact v3` warning if upstream actions internally still reference it.
 
-### Option B: gh-pages Branch (Classic Push)
+### Option B: gh-pages Branch (Classic Push) [Currently Disabled]
 Uses `deploy-gh-pages.yml` to build and push static files to a `gh-pages` branch.
 
 Pros:
@@ -220,7 +228,7 @@ Cons:
 - No Pages build logs in UI
 - Must manage base path manually
 
-### Switching Between Methods
+### Switching Between Methods (When Re-enabled)
 
 1. Go to GitHub repository Settings → Pages.
 2. Choose Source:
@@ -236,7 +244,7 @@ npm run preview
 ```
 (Already configured via `base` in `astro.config.mjs` if needed.)
 
-### Troubleshooting
+### Troubleshooting (When Workflows Re-enabled)
 | Symptom | Likely Cause | Fix |
 |---------|--------------|-----|
 | Deprecated upload-artifact v3 warning | Internal Pages pipeline action | Switch to gh-pages workflow (Option B) |
