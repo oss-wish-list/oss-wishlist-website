@@ -1,13 +1,18 @@
 ---
-title: "Governance Setup"
-description: "Establish project governance structure, contributor guidelines, and decision-making processes"
-category: "Governance"
-target_audience: "maintainer"
+title: "Project and Community Governance"
+description: "Establish trusted project governance structure, contributor guidelines, and decision-making processes"
+type: "service"
 service_type: "consulting"
-price_tier: "medium"
-estimated_hours: "8-12 hours"
-tags: ["governance", "structure", "guidelines"]
+estimated_hours: "40-60 hours"
+tags: ["community", "governance"]
 featured: true
+prerequisites: "Active open source project needing governance structure for decisition making, and things like fund distribution"
+deliverables:
+  - "Governance model document"
+  - "Updated CONTRIBUTING.md"
+  - "Decision-making framework"
+  - "Code of conduct (if needed)"
+  - "Implementation plan"
 ---
 
 # Governance Setup Service

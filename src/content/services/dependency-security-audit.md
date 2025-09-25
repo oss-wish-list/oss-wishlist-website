@@ -1,32 +1,26 @@
 ---
-title: "Dependency Security Audit"
-description: "Comprehensive security assessment of your company's open source dependencies with vulnerability analysis and remediation recommendations."
-category: "Security"
-target_audience: "company"
+title: "Security Audit"
+description: "Comprehensive security assessment, and implementation  of project security recommendations."
+type: "service"
 service_type: "audit"
-price_tier: "enterprise"
 estimated_hours: "40-60 hours"
-tags: ["security", "audit", "dependencies", "compliance"]
+tags: ["security"]
 featured: true
-prerequisites: "Access to company repositories and dependency manifests"
+prerequisites: "Project with over 1k downloads"
 deliverables: 
-  - "Detailed security audit report"
-  - "Vulnerability assessment matrix"
+  - "(private) detailed Asecurity audit report"
   - "Remediation roadmap with priorities"
-  - "Security policy recommendations"
+  - "Maintainer training"
   - "Executive summary for stakeholders"
 ---
 
 ## Service Overview
 
-Help your company understand and mitigate security risks in your open source supply chain. Our comprehensive dependency audit provides actionable insights to strengthen your security posture.
+WOrking with project maintainers to identify vulnerabilities, through threat modelling, automated testing as well as recommendations and assistance implementing best practices for a secure future.
 
 ## What's Included
 
 ### Security Assessment
-- Automated scanning of all dependencies across repositories
-- Manual review of critical components
-- License compliance analysis
 - Supply chain risk assessment
 
 ### Vulnerability Analysis
@@ -34,12 +28,6 @@ Help your company understand and mitigate security risks in your open source sup
 - Zero-day vulnerability potential assessment
 - Transitive dependency risk evaluation
 - Patch availability and compatibility review
-
-### Compliance & Governance
-- Open source license compliance check
-- Company policy alignment review
-- Industry standard compliance (SOC2, ISO 27001)
-- Regulatory requirement mapping
 
 ### Remediation Planning
 - Prioritized action plan based on risk levels
@@ -62,15 +50,4 @@ You'll receive a comprehensive package including:
 - **Technical Report** - Detailed analysis for engineering teams
 - **Risk Matrix** - Visual representation of security priorities
 - **Action Plan** - Step-by-step remediation guide
-- **Policy Templates** - Governance frameworks for ongoing security
-
-## Who This Is For
-
-- **CTOs and Engineering Leaders** managing large codebases
-- **Security Teams** implementing supply chain security
-- **Compliance Officers** ensuring regulatory adherence
-- **Companies** preparing for security audits or certifications
-
-## Get Started
-
-Ready to secure your open source supply chain? Contact us to discuss your specific needs and get a customized assessment plan.
+- **Policy Templates** - Governance frameworks for ongoing securitys

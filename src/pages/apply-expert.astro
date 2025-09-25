@@ -1,0 +1,400 @@
+---
+import Layout from '../components/Layout.astro';
+---
+
+<Layout title="Apply to be an Expert - OSS Wishlist" description="Join our community of verified open source experts. Help projects succeed while building your professional network.">
+  <div class="max-w-4xl mx-auto px-4 py-12">
+    <!-- Header -->
+    <div class="text-center mb-12">
+      <div class="mb-4">
+        <a 
+          href={`${import.meta.env.BASE_URL}/experts`}
+          class="text-blue-600 hover:text-blue-700 font-medium text-sm"
+        >
+          ← Back to Experts
+        </a>
+      </div>
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">
+        🚀 Become an <span class="text-blue-600">OSS Expert</span>
+      </h1>
+      <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+        Join our community of verified experts and help open source projects thrive. 
+        Connect with maintainers who need your expertise.
+      </p>
+    </div>
+
+    <!-- Benefits Section -->
+    <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-8 mb-12">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Why Join Our Expert Network?</h2>
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="text-center">
+          <div class="text-3xl mb-3">💼</div>
+          <h3 class="font-semibold text-gray-900 mb-2">Get Hired</h3>
+          <p class="text-sm text-gray-700">Connect with projects that need your specific skills and get paid for your expertise.</p>
+        </div>
+        <div class="text-center">
+          <div class="text-3xl mb-3">🌟</div>
+          <h3 class="font-semibold text-gray-900 mb-2">Build Reputation</h3>
+          <p class="text-sm text-gray-700">Showcase your expertise and build credibility in the open source community.</p>
+        </div>
+        <div class="text-center">
+          <div class="text-3xl mb-3">🤝</div>
+          <h3 class="font-semibold text-gray-900 mb-2">Give Back</h3>
+          <p class="text-sm text-gray-700">Help open source projects succeed and contribute to the ecosystem's growth.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Application Form -->
+    <div class="bg-white rounded-lg shadow-sm border p-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">Expert Application</h2>
+      
+      <form id="expertApplicationForm" class="space-y-6">
+        <!-- Personal Information -->
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <label for="fullName" class="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+            <input 
+              type="text" 
+              id="fullName" 
+              name="fullName" 
+              required 
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+              placeholder="Your full name"
+            />
+          </div>
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+            <input 
+              type="email" 
+              id="email" 
+              name="email" 
+              required 
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+              placeholder="your@email.com"
+            />
+          </div>
+        </div>
+
+        <!-- Professional Info -->
+        <div>
+          <label for="title" class="block text-sm font-medium text-gray-700 mb-2">Professional Title *</label>
+          <input 
+            type="text" 
+            id="title" 
+            name="title" 
+            required 
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+            placeholder="e.g., Senior Software Engineer, Community Manager, Security Consultant"
+          />
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <label for="company" class="block text-sm font-medium text-gray-700 mb-2">Current Company/Organization</label>
+            <input 
+              type="text" 
+              id="company" 
+              name="company" 
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+              placeholder="Your current employer or 'Independent'"
+            />
+          </div>
+          <div>
+            <label for="location" class="block text-sm font-medium text-gray-700 mb-2">Location</label>
+            <input 
+              type="text" 
+              id="location" 
+              name="location" 
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+              placeholder="City, Country or Remote"
+            />
+          </div>
+        </div>
+
+        <!-- Experience -->
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <label for="experience" class="block text-sm font-medium text-gray-700 mb-2">Years of Experience *</label>
+            <select 
+              id="experience" 
+              name="experience" 
+              required 
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">Select experience level</option>
+              <option value="3-5">3-5 years</option>
+              <option value="5-8">5-8 years</option>
+              <option value="8-12">8-12 years</option>
+              <option value="12+">12+ years</option>
+            </select>
+          </div>
+          <div>
+            <label for="hourlyRate" class="block text-sm font-medium text-gray-700 mb-2">Hourly Rate Range (USD)</label>
+            <select 
+              id="hourlyRate" 
+              name="hourlyRate" 
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">Prefer not to specify</option>
+              <option value="50-100">$50-100/hour</option>
+              <option value="100-150">$100-150/hour</option>
+              <option value="150-200">$150-200/hour</option>
+              <option value="200-300">$200-300/hour</option>
+              <option value="300+">$300+/hour</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Expertise Areas -->
+        <div>
+          <label for="specialties" class="block text-sm font-medium text-gray-700 mb-2">Areas of Expertise *</label>
+          <div class="grid md:grid-cols-3 gap-3 mb-3">
+            <label class="flex items-center">
+              <input type="checkbox" name="specialties" value="Community Strategy" class="mr-2 rounded">
+              <span class="text-sm">Community Strategy</span>
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" name="specialties" value="Security Audits" class="mr-2 rounded">
+              <span class="text-sm">Security Audits</span>
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" name="specialties" value="Performance Optimization" class="mr-2 rounded">
+              <span class="text-sm">Performance Optimization</span>
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" name="specialties" value="Developer Relations" class="mr-2 rounded">
+              <span class="text-sm">Developer Relations</span>
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" name="specialties" value="Documentation" class="mr-2 rounded">
+              <span class="text-sm">Documentation</span>
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" name="specialties" value="Open Source Governance" class="mr-2 rounded">
+              <span class="text-sm">Open Source Governance</span>
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" name="specialties" value="Project Management" class="mr-2 rounded">
+              <span class="text-sm">Project Management</span>
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" name="specialties" value="CI/CD & DevOps" class="mr-2 rounded">
+              <span class="text-sm">CI/CD & DevOps</span>
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" name="specialties" value="Funding Strategy" class="mr-2 rounded">
+              <span class="text-sm">Funding Strategy</span>
+            </label>
+          </div>
+          <textarea 
+            id="otherSpecialties" 
+            name="otherSpecialties" 
+            rows="2" 
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+            placeholder="Other specialties not listed above..."
+          ></textarea>
+        </div>
+
+        <!-- Bio -->
+        <div>
+          <label for="bio" class="block text-sm font-medium text-gray-700 mb-2">Professional Bio *</label>
+          <textarea 
+            id="bio" 
+            name="bio" 
+            required 
+            rows="4" 
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+            placeholder="Tell us about your background, experience, and what makes you a great expert for our network (2-3 sentences)..."
+          ></textarea>
+        </div>
+
+        <!-- Social/Contact -->
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <label for="github" class="block text-sm font-medium text-gray-700 mb-2">GitHub Username</label>
+            <input 
+              type="text" 
+              id="github" 
+              name="github" 
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+              placeholder="yourusername"
+            />
+            <p class="text-xs text-gray-500 mt-1">For GitHub Sponsors integration</p>
+          </div>
+          <div>
+            <label for="linkedin" class="block text-sm font-medium text-gray-700 mb-2">LinkedIn Profile</label>
+            <input 
+              type="url" 
+              id="linkedin" 
+              name="linkedin" 
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+              placeholder="https://linkedin.com/in/yourprofile"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label for="website" class="block text-sm font-medium text-gray-700 mb-2">Website/Portfolio</label>
+          <input 
+            type="url" 
+            id="website" 
+            name="website" 
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+            placeholder="https://yourwebsite.com"
+          />
+        </div>
+
+        <!-- Notable Projects -->
+        <div>
+          <label for="projects" class="block text-sm font-medium text-gray-700 mb-2">Notable Open Source Projects</label>
+          <textarea 
+            id="projects" 
+            name="projects" 
+            rows="3" 
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+            placeholder="List notable open source projects you've contributed to, maintained, or founded..."
+          ></textarea>
+        </div>
+
+        <!-- Availability -->
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <label for="availability" class="block text-sm font-medium text-gray-700 mb-2">Availability</label>
+            <select 
+              id="availability" 
+              name="availability" 
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="available">Available immediately</option>
+              <option value="limited">Limited availability</option>
+              <option value="project-based">Project-based only</option>
+              <option value="future">Available in future</option>
+            </select>
+          </div>
+          <div class="flex items-center">
+            <input type="checkbox" id="proBono" name="proBono" class="mr-2 rounded">
+            <label for="proBono" class="text-sm text-gray-700">I accept pro bono cases in some situations</label>
+          </div>
+        </div>
+
+        <!-- Additional Info -->
+        <div>
+          <label for="additionalInfo" class="block text-sm font-medium text-gray-700 mb-2">Additional Information</label>
+          <textarea 
+            id="additionalInfo" 
+            name="additionalInfo" 
+            rows="3" 
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+            placeholder="Anything else you'd like us to know? Certifications, languages, preferred project types, etc."
+          ></textarea>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="text-center pt-6">
+          <button 
+            type="submit" 
+            class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+          >
+            🚀 Submit Expert Application
+          </button>
+        </div>
+
+        <div class="text-sm text-gray-600 text-center">
+          <p>By submitting this form, you agree to be contacted about joining our expert network. We'll review your application and get back to you within 5-7 business days.</p>
+        </div>
+      </form>
+    </div>
+
+    <!-- What Happens Next -->
+    <div class="mt-12 bg-gray-50 rounded-lg p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-3">What Happens Next?</h3>
+      <div class="space-y-2 text-gray-700">
+        <div class="flex items-start">
+          <span class="text-blue-600 mr-2">1.</span>
+          <span>We review your application within 5-7 business days</span>
+        </div>
+        <div class="flex items-start">
+          <span class="text-blue-600 mr-2">2.</span>
+          <span>If approved, we'll create your expert profile and verify your expertise</span>
+        </div>
+        <div class="flex items-start">
+          <span class="text-blue-600 mr-2">3.</span>
+          <span>You'll start receiving opportunities to help open source projects</span>
+        </div>
+        <div class="flex items-start">
+          <span class="text-blue-600 mr-2">4.</span>
+          <span>Get connected with projects that match your skills and interests</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Handle form submission
+    document.getElementById('expertApplicationForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(this);
+      const data = Object.fromEntries(formData);
+      
+      // Collect selected specialties
+      const specialties = Array.from(document.querySelectorAll('input[name="specialties"]:checked'))
+        .map(cb => cb.value);
+      data.specialties = specialties;
+      
+      try {
+        // For now, create a GitHub issue with the application
+        const issueBody = `
+# Expert Application
+
+**Name:** ${data.fullName}
+**Email:** ${data.email}
+**Title:** ${data.title}
+**Company:** ${data.company}
+**Location:** ${data.location}
+**Experience:** ${data.experience} years
+**Hourly Rate:** ${data.hourlyRate}
+
+**Specialties:** ${specialties.join(', ')}
+${data.otherSpecialties ? `**Other Specialties:** ${data.otherSpecialties}` : ''}
+
+**Bio:** ${data.bio}
+
+**GitHub:** ${data.github}
+**LinkedIn:** ${data.linkedin}
+**Website:** ${data.website}
+
+**Notable Projects:** ${data.projects}
+**Availability:** ${data.availability}
+**Pro Bono:** ${data.proBono ? 'Yes' : 'No'}
+
+**Additional Info:** ${data.additionalInfo}
+        `;
+
+        const response = await fetch('/oss-wishlist-website/api/repositories', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            title: `Expert Application: ${data.fullName}`,
+            body: issueBody,
+            labels: ['expert-application', 'pending-review']
+          })
+        });
+
+        if (response.ok) {
+          // Show success message
+          alert('✅ Application submitted successfully! We\'ll review it and get back to you within 5-7 business days.');
+          this.reset();
+        } else {
+          throw new Error('Failed to submit application');
+        }
+      } catch (error) {
+        console.error('Error submitting application:', error);
+        alert('❌ There was an error submitting your application. Please try again or contact us directly.');
+      }
+    });
+  </script>
+</Layout>

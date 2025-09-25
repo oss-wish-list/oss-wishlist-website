@@ -2,13 +2,13 @@
 export interface Props {
   title: string;
   description: string;
-  category: string;
   price_tier: 'low' | 'medium' | 'high' | 'enterprise';
   estimated_hours: string;
   slug: string;
+  tags: string[];
 }
 
-const { title, description, category, price_tier, estimated_hours, slug } = Astro.props;
+const { title, description, price_tier, estimated_hours, slug, tags } = Astro.props;
 
 const priceTiers = {
   low: { label: 'Budget', color: 'bg-orange-100 text-orange-800' },
@@ -26,9 +26,17 @@ const priceTiers = {
     </div>
   </div>
   
-  <div class="flex justify-between items-center mb-4">
-    <span class="text-sm text-gray-500">Category: {category}</span>
-    <span class="text-sm text-gray-500">Est. {estimated_hours}</span>
+  <div class="mb-4">
+    <div class="flex justify-between items-center mb-3">
+      <span class="text-sm text-gray-500">Est. {estimated_hours}</span>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      {tags.map(tag => (
+        <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">
+          {tag}
+        </span>
+      ))}
+    </div>
   </div>
   
   <a 

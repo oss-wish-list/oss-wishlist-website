@@ -1,10 +1,8 @@
 ---
 title: "Project Governance Setup"
 description: "Establish clear governance structures, decision-making processes, and contributor guidelines to scale your open source project sustainably."
-category: "Governance"
-target_audience: "maintainer"
+type: "service"
 service_type: "consulting"
-price_tier: "medium"
 estimated_hours: "10-20 hours"
 tags: ["governance", "processes", "contributors", "scaling"]
 featured: true
