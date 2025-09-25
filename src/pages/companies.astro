@@ -135,10 +135,10 @@ const companyServices = services.filter(service =>
           <ServiceCard
             title={service.data.title}
             description={service.data.description}
-            category={service.data.category}
             price_tier={service.data.price_tier}
             estimated_hours={service.data.estimated_hours}
             slug={service.slug}
+            tags={service.data.tags}
           />
         ))}
       </div>

@@ -3,30 +3,48 @@ import Layout from '../components/Layout.astro';
 import { getCollection } from 'astro:content';
 
 const services = await getCollection('services');
-const categories = [...new Set(services.map(service => service.data.category))];
+const allTags = [...new Set(services.flatMap(service => service.data.tags))];
 ---
 
-<Layout title="Service Catalog - OSS Wishlist" description="Browse all available services for open source projects">
+<Layout title="Services & Resources - OSS Wishlist" description="Browse all available services and resources for open source projects">
   <section class="py-16 bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-12">
-        <h1 class="text-4xl font-bold text-gray-900 mb-4">Service Catalog</h1>
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">Services & Resources</h1>
         <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-          Professional services designed specifically for open source project needs
+          Professional services and technology resources designed specifically for open source project needs
         </p>
       </div>
 
-      <!-- Category Filter -->
+      <!-- Type Filter -->
+      <div class="mb-6 text-center">
+        <div class="flex flex-wrap justify-center gap-2">
+          <button class="type-filter-btn active px-6 py-3 rounded-lg text-sm font-medium bg-blue-600 text-white" 
+                  data-type="all">
+            All
+          </button>
+          <button class="type-filter-btn px-6 py-3 rounded-lg text-sm font-medium bg-white text-gray-700 border hover:bg-gray-50" 
+                  data-type="service">
+            Services
+          </button>
+          <button class="type-filter-btn px-6 py-3 rounded-lg text-sm font-medium bg-white text-gray-700 border hover:bg-gray-50" 
+                  data-type="resource">
+            Resources
+          </button>
+        </div>
+      </div>
+
+      <!-- Tag Filter -->
       <div class="mb-8 text-center">
         <div class="flex flex-wrap justify-center gap-2">
-          <button class="filter-btn active px-4 py-2 rounded-full text-sm font-medium bg-blue-600 text-white" 
-                  data-category="all">
-            All Services
+          <button class="tag-filter-btn active px-4 py-2 rounded-full text-sm font-medium bg-orange-600 text-white" 
+                  data-tag="all">
+            All Tags
           </button>
-          {categories.map(category => (
-            <button class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-700 border hover:bg-gray-50" 
-                    data-category={category}>
-              {category}
+          {allTags.map(tag => (
+            <button class="tag-filter-btn px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-700 border hover:bg-gray-50" 
+                    data-tag={tag}>
+              {tag}
             </button>
           ))}
         </div>
@@ -36,18 +54,24 @@ const categories = [...new Set(services.map(service => service.data.category))];
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8" id="services-grid">
         {services.map((service) => (
           <div class="service-card bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow" 
-               data-category={service.data.category}>
+               data-tags={service.data.tags.join(' ')}
+               data-type={service.data.type}>
             <div class="flex justify-between items-start mb-4">
-              <h3 class="text-xl font-semibold text-gray-900">{service.data.title}</h3>
+              <div>
+                <h3 class="text-xl font-semibold text-gray-900">{service.data.title}</h3>
+                <span class={`inline-block px-2 py-1 text-xs font-medium rounded-full mt-1 ${
+                  service.data.type === 'resource' 
+                    ? 'bg-green-100 text-green-800' 
+                    : 'bg-blue-100 text-blue-800'
+                }`}>
+                  {service.data.type === 'resource' ? 'Resource' : 'Service'}
+                </span>
+              </div>
             </div>
             
             <p class="text-gray-600 mb-4">{service.data.description}</p>
             
             <div class="space-y-2 mb-6">
-              <div class="flex justify-between text-sm">
-                <span class="text-gray-500">Category:</span>
-                <span class="font-medium">{service.data.category}</span>
-              </div>
               <div class="flex justify-between text-sm">
                 <span class="text-gray-500">Time estimate:</span>
                 <span class="font-medium">{service.data.estimated_hours}</span>
@@ -96,32 +120,62 @@ const categories = [...new Set(services.map(service => service.data.category))];
 </Layout>
 
 <script>
-  // Category filtering
+  // Dual filtering (type and tag)
   document.addEventListener('DOMContentLoaded', function() {
-    const filterButtons = document.querySelectorAll('.filter-btn');
+    const typeFilterButtons = document.querySelectorAll('.type-filter-btn');
+    const tagFilterButtons = document.querySelectorAll('.tag-filter-btn');
     const serviceCards = document.querySelectorAll('.service-card');
+    
+    let currentType = 'all';
+    let currentTag = 'all';
 
-    filterButtons.forEach(button => {
+    function filterCards() {
+      serviceCards.forEach(card => {
+        const cardType = card.getAttribute('data-type');
+        const cardTags = card.getAttribute('data-tags');
+        
+        const typeMatch = currentType === 'all' || cardType === currentType;
+        const tagMatch = currentTag === 'all' || cardTags.includes(currentTag);
+        
+        if (typeMatch && tagMatch) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    // Type filtering
+    typeFilterButtons.forEach(button => {
       button.addEventListener('click', () => {
-        const category = button.getAttribute('data-category');
+        currentType = button.getAttribute('data-type');
         
         // Update active button
-        filterButtons.forEach(btn => {
+        typeFilterButtons.forEach(btn => {
           btn.classList.remove('active', 'bg-blue-600', 'text-white');
           btn.classList.add('bg-white', 'text-gray-700');
         });
         button.classList.add('active', 'bg-blue-600', 'text-white');
         button.classList.remove('bg-white', 'text-gray-700');
+        
+        filterCards();
+      });
+    });
 
-        // Filter cards
-        serviceCards.forEach(card => {
-          const cardCategory = card.getAttribute('data-category');
-          if (category === 'all' || cardCategory === category) {
-            card.style.display = 'block';
-          } else {
-            card.style.display = 'none';
-          }
+    // Tag filtering
+    tagFilterButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        currentTag = button.getAttribute('data-tag');
+        
+        // Update active button
+        tagFilterButtons.forEach(btn => {
+          btn.classList.remove('active', 'bg-orange-600', 'text-white');
+          btn.classList.add('bg-white', 'text-gray-700');
         });
+        button.classList.add('active', 'bg-orange-600', 'text-white');
+        button.classList.remove('bg-white', 'text-gray-700');
+        
+        filterCards();
       });
     });
   });

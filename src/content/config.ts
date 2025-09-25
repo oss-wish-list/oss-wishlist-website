@@ -5,18 +5,8 @@ const services = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string(),
-    category: z.enum([
-      'Governance', 
-      'Community', 
-      'Security', 
-      'Developer Relations', 
-      'Leadership',
-      'Training',
-      'Consulting',
-      'Auditing',
-      'Support'
-    ]),
-    target_audience: z.enum(['maintainer', 'company', 'both']),
+    type: z.enum(['service', 'resource']).default('service'),
+    target_audience: z.enum(['maintainer', 'company', 'both']).optional(),
     service_type: z.enum([
       'one-time',
       'ongoing', 
@@ -24,11 +14,16 @@ const services = defineCollection({
       'consulting',
       'audit',
       'training',
-      'support'
+      'support',
+      'credit',
+      'budget',
+      'hosting',
+      'tool'
     ]),
-    price_tier: z.enum(['low', 'medium', 'high', 'enterprise']),
-    estimated_hours: z.string(),
-    tags: z.array(z.string()).optional(),
+    price_tier: z.enum(['low', 'medium', 'high', 'enterprise']).optional(),
+    estimated_hours: z.string().optional(),
+    estimated_value: z.string().optional(),
+    tags: z.array(z.string()),
     featured: z.boolean().default(false),
     prerequisites: z.string().optional(),
     deliverables: z.array(z.string()).optional(),
@@ -107,12 +102,7 @@ const experts = defineCollection({
       'Governance', 
       'Community', 
       'Security', 
-      'Developer Relations', 
-      'Leadership',
-      'Training',
-      'Consulting',
-      'Auditing',
-      'Support'
+      'Leadership'
     ])),
     technologies: z.array(z.string()).optional(),
     

@@ -1,0 +1,28 @@
+---
+import { getGitHubAuthUrl, generateState } from '../lib/github-oauth';
+
+const clientId = import.meta.env.GITHUB_CLIENT_ID;
+const redirectUri = import.meta.env.GITHUB_REDIRECT_URI;
+const state = generateState();
+
+const authUrl = getGitHubAuthUrl(clientId, redirectUri, state);
+---
+
+<html>
+<head>
+  <title>OAuth Test</title>
+</head>
+<body>
+  <h1>OAuth Configuration Test</h1>
+  <p><strong>Client ID:</strong> {clientId}</p>
+  <p><strong>Redirect URI:</strong> {redirectUri}</p>
+  <p><strong>State:</strong> {state}</p>
+  <p><strong>Full OAuth URL:</strong></p>
+  <textarea style="width: 100%; height: 100px;">{authUrl}</textarea>
+  
+  <br><br>
+  <a href={authUrl} style="padding: 10px; background: blue; color: white; text-decoration: none;">
+    Test GitHub OAuth
+  </a>
+</body>
+</html>

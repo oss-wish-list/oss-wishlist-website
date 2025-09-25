@@ -36,11 +36,7 @@ const { Content } = await service.render();
           </div>
         </div>
 
-        <div class="grid md:grid-cols-3 gap-6 pt-6 border-t">
-          <div>
-            <h3 class="font-medium text-gray-900 mb-1">Category</h3>
-            <p class="text-gray-600">{service.data.category}</p>
-          </div>
+        <div class="grid md:grid-cols-2 gap-6 pt-6 border-t">
           <div>
             <h3 class="font-medium text-gray-900 mb-1">Time Estimate</h3>
             <p class="text-gray-600">{service.data.estimated_hours}</p>
@@ -50,6 +46,15 @@ const { Content } = await service.render();
             <p class="text-gray-600 capitalize">{service.data.price_tier} complexity</p>
           </div>
         </div>
+
+        {service.data.prerequisites && (
+          <div class="pt-6 border-t mt-6">
+            <h3 class="font-medium text-gray-900 mb-3">Prerequisites</h3>
+            <div class="p-4 bg-blue-50 rounded-lg border border-blue-100">
+              <p class="text-blue-800">{service.data.prerequisites}</p>
+            </div>
+          </div>
+        )}
 
         {service.data.tags && (
           <div class="pt-6 border-t mt-6">
@@ -65,15 +70,8 @@ const { Content } = await service.render();
         )}
       </div>
 
-      <!-- Service Content -->
-      <div class="bg-white p-8 rounded-lg shadow-sm border">
-        <div class="prose prose-lg max-w-none">
-          <Content />
-        </div>
-      </div>
-
       <!-- Call to Action -->
-      <div class="mt-8 text-center">
+      <div class="mb-8 text-center">
         <div class="bg-blue-50 p-8 rounded-lg border border-blue-200">
           <h2 class="text-2xl font-bold text-gray-900 mb-4">
             Need this service for your project?
@@ -85,6 +83,13 @@ const { Content } = await service.render();
              class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
             Add to Wishlist
           </a>
+        </div>
+      </div>
+
+      <!-- Service Content -->
+      <div class="bg-white p-8 rounded-lg shadow-sm border">
+        <div class="prose prose-lg max-w-none">
+          <Content />
         </div>
       </div>
     </div>
