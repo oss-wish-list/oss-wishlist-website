@@ -29,7 +29,7 @@ interface Service {
   estimated_hours: string;
 }
 
-interface Expert {
+interface Practitioner {
   id: string;
   name: string;
   title: string;
@@ -38,10 +38,10 @@ interface Expert {
 
 interface WishlistFormProps {
   services?: Service[];
-  experts?: Expert[];
+  practitioners?: Practitioner[];
 }
 
-const WishlistForm = ({ services = [], experts = [] }: WishlistFormProps) => {
+const WishlistForm = ({ services = [], practitioners = [] }: WishlistFormProps) => {
   const [user, setUser] = useState<GitHubUser | null>(null);
   const [selectedRepo, setSelectedRepo] = useState<GitHubRepository | null>(null);
   const [loading, setLoading] = useState(false);
@@ -61,7 +61,7 @@ const WishlistForm = ({ services = [], experts = [] }: WishlistFormProps) => {
   // Wishlist form state
   const [wishlistData, setWishlistData] = useState({
     selectedServices: [] as string[],
-    selectedExperts: [] as string[],
+    selectedPractitioners: [] as string[],
     urgency: 'medium' as 'low' | 'medium' | 'high',
     timeline: '',
     budgetRange: '',
@@ -144,12 +144,12 @@ const WishlistForm = ({ services = [], experts = [] }: WishlistFormProps) => {
     }));
   };
 
-  const handleExpertToggle = (expertId: string) => {
+  const handlePractitionerToggle = (practitionerId: string) => {
     setWishlistData(prev => ({
       ...prev,
-      selectedExperts: prev.selectedExperts.includes(expertId)
-        ? prev.selectedExperts.filter(id => id !== expertId)
-        : [...prev.selectedExperts, expertId]
+      selectedPractitioners: prev.selectedPractitioners.includes(practitionerId)
+        ? prev.selectedPractitioners.filter(id => id !== practitionerId)
+        : [...prev.selectedPractitioners, practitionerId]
     }));
   };
 
@@ -213,7 +213,7 @@ const WishlistForm = ({ services = [], experts = [] }: WishlistFormProps) => {
           website: wishlistData.organizationWebsite || undefined,
         } : undefined,
         services_needed: wishlistData.selectedServices,
-        preferred_experts: wishlistData.selectedExperts,
+        preferred_practitioners: wishlistData.selectedPractitioners,
         urgency: wishlistData.urgency,
         timeline: wishlistData.timeline,
         budget_range: wishlistData.budgetRange,
@@ -232,9 +232,9 @@ const WishlistForm = ({ services = [], experts = [] }: WishlistFormProps) => {
 ## Services Requested
 ${wishlistData.selectedServices.map(service => `- ${services.find(s => s.id === service)?.title || service}`).join('\n')}
 
-## Preferred Experts
-${wishlistData.selectedExperts.length > 0 
-  ? wishlistData.selectedExperts.map(expert => `- ${experts.find(e => e.id === expert)?.name || expert}`).join('\n')
+## Preferred Practitioners
+${wishlistData.selectedPractitioners.length > 0 
+  ? wishlistData.selectedPractitioners.map(practitioner => `- ${practitioners.find(e => e.id === practitioner)?.name || practitioner}`).join('\n')
   : 'No specific preference'}
 
 ## Project Details
@@ -516,7 +516,7 @@ ${JSON.stringify(wishlistPayload, null, 2)}
           <div className="bg-white p-6 rounded-lg shadow-sm border">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Create Your Wishlist</h2>
             <p className="text-gray-600">
-              Select the services and experts you'd like help from for your project.
+              Select the services and practitioners you'd like help from for your project.
             </p>
           </div>
 
@@ -561,36 +561,36 @@ ${JSON.stringify(wishlistPayload, null, 2)}
             </div>
           </div>
 
-          {/* Experts Selection */}
-          {experts.length > 0 && (
+          {/* Practitioners Selection */}
+          {practitioners.length > 0 && (
             <div className="bg-white p-6 rounded-lg shadow-sm border">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Preferred Experts (Optional)
+                Preferred Practitioners (Optional)
               </h3>
               <div className="grid gap-4 md:grid-cols-2">
-                {experts.map((expert) => (
+                {practitioners.map((practitioner) => (
                   <div
-                    key={expert.id}
-                    onClick={() => handleExpertToggle(expert.id)}
+                    key={practitioner.id}
+                    onClick={() => handlePractitionerToggle(practitioner.id)}
                     className={`p-4 border rounded-lg cursor-pointer transition-colors ${
-                      wishlistData.selectedExperts.includes(expert.id)
+                      wishlistData.selectedPractitioners.includes(practitioner.id)
                         ? 'border-blue-500 bg-blue-50'
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <h4 className="font-semibold text-gray-900">{expert.name}</h4>
-                        <p className="text-sm text-gray-600 mt-1">{expert.title}</p>
+                        <h4 className="font-semibold text-gray-900">{practitioner.name}</h4>
+                        <p className="text-sm text-gray-600 mt-1">{practitioner.title}</p>
                         <div className="flex flex-wrap gap-1 mt-2">
-                          {expert.specialties.slice(0, 3).map((specialty) => (
+                          {practitioner.specialties.slice(0, 3).map((specialty) => (
                             <span key={specialty} className="text-xs bg-gray-100 px-2 py-1 rounded">
                               {specialty}
                             </span>
                           ))}
                         </div>
                       </div>
-                      {wishlistData.selectedExperts.includes(expert.id) && (
+                      {wishlistData.selectedPractitioners.includes(practitioner.id) && (
                         <div className="ml-2 text-blue-600">✓</div>
                       )}
                     </div>
@@ -745,7 +745,7 @@ ${JSON.stringify(wishlistPayload, null, 2)}
               value={wishlistData.additionalNotes}
               onChange={(e) => setWishlistData(prev => ({ ...prev, additionalNotes: e.target.value }))}
               rows={4}
-              placeholder="Any additional information about your project, specific requirements, or context that would help experts understand your needs..."
+              placeholder="Any additional information about your project, specific requirements, or context that would help practitioners understand your needs..."
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>

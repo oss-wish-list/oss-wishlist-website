@@ -22,12 +22,12 @@ organization:
 
 # Wishlist Details  
 services_needed:
-  - "Security audit for v2.0 release"
-  - "Documentation restructure and improvement" 
-  - "Community onboarding process development"
-  - "Performance optimization consulting"
+  - "Security Audit"
+  - "Developer Relations Strategy" 
+  - "New Maintainer/Leader Onboarding"
+  - "Moderation and Incident Response Strategy"
 
-preferred_experts: ["emma-irwin", "alex-chen"]
+preferred_practitioners: ["emma-irwin", "alex-chen"]
 urgency: "medium"
 timeline: "Q1 2025"
 budget_range: "5k-20k"
@@ -50,7 +50,7 @@ Example Web Framework Utilities is a comprehensive testing library that provides
 
 ## What We're Looking For
 
-We're seeking expert help to take our project to the next level. Our main focus areas are:
+We're seeking practitioner help to take our project to the next level. Our main focus areas are:
 
 ### Security Audit
 We're preparing for a major v2.0 release and want to ensure our security practices are rock-solid. We need a comprehensive security review covering:
@@ -74,7 +74,7 @@ We want to build a thriving contributor community:
 - Community event planning
 
 ### Performance Optimization
-As our user base grows, we need expert guidance on:
+As our user base grows, we need practitioner guidance on:
 - Bundle size optimization
 - Runtime performance improvements
 - Benchmarking setup
@@ -86,8 +86,8 @@ We're a small but dedicated team of developers who are passionate about develope
 
 ## Timeline & Budget
 
-We're looking to complete these initiatives by Q1 2025. We have allocated a budget of $5k-20k for expert consulting services, depending on the scope of work.
+We're looking to complete these initiatives by Q1 2025. We have allocated a budget of $5k-20k for practitioner consulting services, depending on the scope of work.
 
 ## Get In Touch
 
-If you're an expert in any of these areas and would like to help us grow, please reach out! We're particularly interested in working with consultants who have experience with open source projects and understand the unique challenges we face.
+If you're an practitioner in any of these areas and would like to help us grow, please reach out! We're particularly interested in working with consultants who have experience with open source projects and understand the unique challenges we face.

@@ -13,16 +13,16 @@ maintainer:
   display_name: "Alex Developer"
   email: "alex@example.com"
   github_id: 23456789
-  bio: "Systems programmer with expertise in CLI tools and Rust development"
+  bio: "Systems programmer with practitionerise in CLI tools and Rust development"
 
 # Wishlist Details  
 services_needed:
-  - "Project governance setup"
-  - "Contributor mentorship program development"  
-  - "Funding strategy and sustainability planning"
-  - "Community growth and engagement"
+  - "Project and Community Governance"
+  - "New Maintainer/Leader Onboarding"  
+  - "Funding Strategy Development"
+  - "Developer Relations Strategy"
 
-preferred_experts: ["emma-irwin", "david-kim"]
+preferred_practitioners: ["emma-irwin", "david-kim"]
 urgency: "low"
 timeline: "Ongoing"
 budget_range: "ongoing-sponsorship"

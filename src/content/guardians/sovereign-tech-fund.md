@@ -1,17 +1,16 @@
 ---
-name: "Sovereign Tech Fund"
+name: "Example Company 2"
 type: "foundation"
-description: "A German government initiative that supports the development, improvement and maintenance of open digital infrastructure with a focus on security, resilience, technological diversity, and the strengthening of the open source ecosystem."
-logo_url: "https://www.sovereigntechfund.de/img/STF_logo_en.svg"
-website: "https://www.sovereigntechfund.de"
-location: "Berlin, Germany"
+description: "A technology foundation that supports the development, improvement and maintenance of open digital infrastructure with a focus on sustainability, project governance, and ecosystem growth."
+website: "https://example2.org"
+location: "Global"
 
 # Contact Information
-contact_email: "info@sovereigntechfund.de"
-github_org: "sovereigntechfund"
+contact_email: "info@example2.org"
+github_org: "example2"
 social_media:
-  twitter: "sovtechfund"
-  linkedin: "sovereign-tech-fund"
+  twitter: "example2"
+  linkedin: "example-company-2"
 
 # Guardian Focus
 focus_areas: 
@@ -43,60 +42,60 @@ verified: true
 tags: ["funding", "infrastructure", "sustainability", "government", "europe"]
 ---
 
-## About Sovereign Tech Fund
+## About Example Company 2
 
-The Sovereign Tech Fund (STF) is an innovative funding mechanism that supports the development, improvement, and maintenance of open digital infrastructure. As a project of the German Federal Ministry for Economic Affairs and Climate Action, STF strengthens the open source ecosystem with a particular focus on security, resilience, and technological diversity.
+Example Company 2 is a technology foundation that provides innovative funding and support for the development, improvement, and maintenance of open digital infrastructure. We focus on strengthening the open source ecosystem with particular emphasis on sustainability, project governance, and long-term ecosystem health.
 
 ## Mission
 
-STF works to ensure that open source projects essential to digital infrastructure receive the support they need to remain secure, maintained, and sustainable for the long term.
+Example Company 2 works to ensure that open source projects essential to digital infrastructure receive the support they need to remain secure, well-maintained, and sustainable for the long term.
 
 ## Key Programs
 
-### Improve & Maintain
-Direct funding for maintainers of critical open source infrastructure projects to improve security, add features, and ensure long-term maintenance.
+### Project Sustainability Program
+Direct funding for maintainers of critical open source infrastructure projects to improve sustainability, add features, and ensure long-term maintenance.
 
 **Focus Areas:**
-- Security improvements and audits
-- Dependency updates and maintenance
+- Long-term project sustainability
+- Governance structure improvements
 - Documentation and user experience
 - Performance optimizations
-- Community building
+- Community building and growth
 
-### Contribute Back Challenges
-Targeted funding for specific improvements to widely-used open source projects, often in response to identified vulnerabilities or critical needs.
+### Infrastructure Support Initiative
+Targeted funding for specific improvements to widely-used open source projects, focusing on infrastructure reliability and ecosystem health.
 
-### Infrastructure & Trust
-Supporting the broader ecosystem through improved tooling, security practices, and transparency mechanisms.
+### Ecosystem Growth Program
+Supporting the broader ecosystem through improved tooling, governance practices, and community development mechanisms.
 
 ## What We Fund
 
-STF prioritizes projects that:
+Example Company 2 prioritizes projects that:
 - Are critical to digital infrastructure
 - Have significant user bases or ecosystem impact
 - Face maintenance or sustainability challenges
-- Can benefit from security improvements
-- Serve the public interest
+- Can benefit from governance improvements
+- Serve the broader open source community
 
 ### Typical Funding Areas
-- **Security audits and improvements**
+- **Project governance and sustainability planning**
 - **Maintenance work on critical dependencies**
 - **Documentation and accessibility improvements**
 - **Performance and scalability work**
-- **Community governance and sustainability**
+- **Community building and ecosystem growth**
 
 ## Application Process
 
 1. **Check Eligibility**: Projects should be open source and serve critical infrastructure needs
 2. **Submit Proposal**: Detailed application with clear goals and deliverables
-3. **Review Process**: Technical and impact assessment by STF team
-4. **Funding Decision**: Transparent decision-making with feedback
-5. **Project Execution**: Regular check-ins and progress reports
+3. **Review Process**: Technical and impact assessment by our team
+4. **Funding Decision**: Transparent decision-making with constructive feedback
+5. **Project Execution**: Regular check-ins and progress monitoring
 
 ## Success Stories
 
-STF has successfully funded improvements to major open source projects including security audits, dependency updates, and critical bug fixes that benefit millions of users worldwide.
+Example Company 2 has successfully funded improvements to major open source projects including governance structures, sustainability planning, and community building initiatives that benefit thousands of users worldwide.
 
-## Geographic Focus
+## Our Approach
 
-While based in Germany, STF supports open source projects globally, with a particular emphasis on projects that serve European digital infrastructure needs.
+We support open source projects globally, with a focus on creating sustainable, well-governed projects that can thrive long-term and serve as examples for the broader ecosystem.

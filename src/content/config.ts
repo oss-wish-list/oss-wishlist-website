@@ -61,7 +61,7 @@ const wishlists = defineCollection({
     
     // Wishlist Details
     services_needed: z.array(z.string()),
-    preferred_experts: z.array(z.string()).optional(), // expert IDs
+    preferred_practitioners: z.array(z.string()).optional(), // practitioner IDs
     urgency: z.enum(['low', 'medium', 'high']),
     timeline: z.string().optional(),
     budget_range: z.enum(['volunteer', 'under-1k', '1k-5k', '5k-20k', '20k-50k', '50k-plus', 'ongoing-sponsorship']).optional(),
@@ -78,7 +78,7 @@ const wishlists = defineCollection({
   }),
 });
 
-const experts = defineCollection({
+const practitioners = defineCollection({
   type: 'content',
   schema: z.object({
     name: z.string(),
@@ -98,13 +98,6 @@ const experts = defineCollection({
     
     // Expertise
     specialties: z.array(z.string()),
-    service_categories: z.array(z.enum([
-      'Governance', 
-      'Community', 
-      'Security', 
-      'Leadership'
-    ])),
-    technologies: z.array(z.string()).optional(),
     
     // Availability & Pricing
     availability: z.enum(['available', 'limited', 'unavailable']).default('available'),
@@ -175,9 +168,20 @@ const guardians = defineCollection({
   }),
 });
 
+const faq = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    category: z.string(),
+    order: z.number().optional(),
+  }),
+});
+
 export const collections = {
   services,
   wishlists,
-  experts,
+  practitioners,
   guardians,
+  faq,
 };

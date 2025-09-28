@@ -1,0 +1,452 @@
+---
+import Layout from '../../components/Layout.astro';
+import { getCollection } from 'astro:content';
+
+// Disable prerendering for this dynamic route
+export const prerender = false;
+
+// Get the dynamic route parameters
+const { wishlist } = Astro.params;
+
+// Get practitioners and data
+const practitioners = await getCollection('practitioners');
+const wishlists = await getCollection('wishlists');
+const services = await getCollection('services');
+
+// Create a lookup map for services by title
+const servicesByTitle = services.reduce((acc, service) => {
+  acc[service.data.title] = service;
+  return acc;
+}, {});
+
+// Find the wishlist data
+let wishlistData = null;
+
+if (wishlist) {
+  wishlistData = wishlists.find(w => w.slug === wishlist);
+}
+---
+
+<Layout title="Fulfill a Wishlist">
+  <main class="min-h-screen bg-gray-50 py-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="bg-white rounded-lg shadow-lg p-8">
+        <h1 class="text-5xl font-bold text-gray-900 mb-8">
+          Fulfill an <span class="text-orange-500">OSS</span> Wishlist
+        </h1>
+        
+        <p class="text-gray-600 mb-8">
+          Thank you for your interest in supporting open source projects. Please fill out this form to begin the fulfillment process for a wishlist.
+        </p>
+
+        <form class="space-y-6" method="POST" action="/api/fulfill-wishlist">
+          <!-- Wishlist Selection -->
+          <div>
+            <label for="wishlist" class="block text-sm font-medium text-gray-700 mb-2">
+              Wishlist to Fulfill:
+            </label>
+            {wishlistData ? (
+              <input 
+                type="text" 
+                id="wishlist" 
+                name="wishlist" 
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 bg-gray-50"
+                value={`${wishlistData.data.project_name} (${wishlistData.slug})`}
+                readonly
+                required
+              />
+            ) : (
+              <div class="bg-red-50 border border-red-200 rounded-md p-4">
+                <p class="text-red-800">Please access this page via a "Fulfill This List" button from a wishlist.</p>
+                <p class="mt-2"><a href="/oss-wishlist-website/wishlists" class="text-red-600 underline">Go to Wishlists</a></p>
+              </div>
+            )}
+          </div>
+
+          <!-- Items to Fund (Wishes) -->
+          {wishlistData && (
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-3">
+                Which specific wishes do you want to fulfill?
+              </label>
+              <div class="space-y-3 mb-4">
+                <p class="text-sm text-green-700 mb-4">
+                  <strong>Wishes available for fulfillment</strong> from <strong>{wishlistData.data.project_name}</strong>:
+                </p>
+                {wishlistData.data.services_needed?.map((serviceName: string) => {
+                  const serviceDetails = servicesByTitle[serviceName];
+                  return (
+                    <div class="border border-gray-200 rounded-lg p-4 hover:border-gray-300 transition-colors">
+                      <div class="flex items-start">
+                        <input 
+                          type="checkbox" 
+                          id={`service-${serviceName.replace(/\s+/g, '-').toLowerCase()}`}
+                          name="funded-services" 
+                          value={serviceName}
+                          class="mt-1 mr-3 h-4 w-4 text-gray-600 focus:ring-gray-500 border-gray-300 rounded"
+                        />
+                        <div class="flex-1">
+                          <label 
+                            for={`service-${serviceName.replace(/\s+/g, '-').toLowerCase()}`}
+                            class="block text-sm font-medium text-gray-900 cursor-pointer"
+                          >
+                            {serviceName}
+                          </label>
+                          {serviceDetails && (
+                            <div class="mt-2 space-y-1">
+                              <p class="text-sm text-gray-600">
+                                {serviceDetails.data.description}
+                              </p>
+                              <div class="flex flex-wrap gap-4 text-xs text-gray-500">
+                                {serviceDetails.data.estimated_hours && (
+                                  <span><strong>Time:</strong> {serviceDetails.data.estimated_hours}</span>
+                                )}
+                                {serviceDetails.data.service_type && (
+                                  <span><strong>Type:</strong> {serviceDetails.data.service_type}</span>
+                                )}
+                                {serviceDetails.data.prerequisites && (
+                                  <span><strong>Prerequisites:</strong> {serviceDetails.data.prerequisites}</span>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          <!-- Additional Items -->
+          <div>
+            <label for="additional-items" class="block text-sm font-medium text-gray-600 mb-2">
+              Additional items or notes (optional):
+            </label>
+            <textarea 
+              id="additional-items" 
+              name="additional-items" 
+              rows="3" 
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+              placeholder="Any additional items, requirements, or special notes..."
+            ></textarea>
+          </div>
+
+          <!-- Practitioner Selection -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-3">
+              Practitioner Selection
+            </label>
+            <div class="space-y-3">
+              <div>
+                <input 
+                  type="radio" 
+                  id="select-practitioner" 
+                  name="practitioner-choice" 
+                  value="select" 
+                  class="mr-2"
+                  required
+                />
+                <label for="select-practitioner" class="text-sm text-gray-700">
+                  Select from our recommended practitioners
+                </label>
+              </div>
+              <div class="ml-6" id="practitioner-dropdown" style="display: none;">
+                <label for="practitioner-select" class="block text-sm font-medium text-gray-600 mb-2">
+                  Choose an practitioner:
+                </label>
+                <select 
+                  id="practitioner-select"
+                  name="selected-practitioner" 
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+                >
+                  <option value="">Select an practitioner...</option>
+                  {practitioners.map(practitioner => (
+                    <option value={practitioner.slug}>
+                      {practitioner.data.name} - {practitioner.data.title} ({practitioner.data.specialties?.join(', ') || 'Multiple specialties'})
+                    </option>
+                  ))}
+                </select>
+                <div id="practitioner-info" class="mt-3 p-3 bg-gray-50 rounded-md" style="display: none;">
+                  <div id="practitioner-details"></div>
+                </div>
+              </div>
+              
+              <div>
+                <input 
+                  type="radio" 
+                  id="provide-practitioner" 
+                  name="practitioner-choice" 
+                  value="provide" 
+                  class="mr-2"
+                />
+                <label for="provide-practitioner" class="text-sm text-gray-700">
+                  I will provide my own practitioner
+                </label>
+              </div>
+              <div class="ml-6" id="custom-practitioner" style="display: none;">
+                <input 
+                  type="text" 
+                  name="custom-practitioner-name" 
+                  placeholder="Practitioner name and contact information"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Process Agreement -->
+          <div class="bg-gray-50 p-4 rounded-md">
+            <div class="flex items-start">
+              <input 
+                type="checkbox" 
+                id="process-agreement" 
+                name="process-agreement" 
+                class="mt-1 mr-3"
+                required
+              />
+              <label for="process-agreement" class="text-sm text-gray-700">
+                <strong>Process Agreement:</strong> If I am providing my own practitioner, I understand and agree to follow the OSS Wishlist process for fulfilling and reporting on wishes. This includes regular progress updates, adherence to project timelines, and completion reports upon project delivery.
+              </label>
+            </div>
+          </div>
+
+          <!-- Timeline -->
+          <div>
+            <label for="timeline" class="block text-sm font-medium text-gray-700 mb-2">
+              Proposed Timeline
+            </label>
+            <input 
+              type="text" 
+              id="timeline" 
+              name="timeline" 
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+              placeholder="e.g., 3 months, Q2 2024, etc."
+              required
+            />
+          </div>
+
+          <!-- Contact Information -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="contact-person" class="block text-sm font-medium text-gray-700 mb-2">
+                Contact Person
+              </label>
+              <input 
+                type="text" 
+                id="contact-person" 
+                name="contact-person" 
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+                required
+              />
+            </div>
+            
+            <div>
+              <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                Email Address
+              </label>
+              <input 
+                type="email" 
+                id="email" 
+                name="email" 
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+                required
+              />
+            </div>
+          </div>
+
+          <!-- Company -->
+          <div>
+            <label for="company" class="block text-sm font-medium text-gray-700 mb-2">
+              Company/Organization
+            </label>
+            <input 
+              type="text" 
+              id="company" 
+              name="company" 
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+              required
+            />
+          </div>
+
+          <!-- Reason for Fulfillment -->
+          <div>
+            <label for="reason" class="block text-sm font-medium text-gray-700 mb-2">
+              Reason for Fulfillment
+            </label>
+            <textarea 
+              id="reason" 
+              name="reason" 
+              rows="4" 
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+              placeholder="Please describe why you want to fulfill this wishlist and how it aligns with your goals..."
+              required
+            ></textarea>
+          </div>
+
+          <!-- Submit Button -->
+          {wishlistData && (
+            <div class="pt-6">
+              <button 
+                type="submit" 
+                class="w-full bg-gray-600 text-white px-6 py-3 rounded-md font-medium hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+              >
+                Submit Fulfillment Request for {wishlistData.data.project_name}
+              </button>
+            </div>
+          )}
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <script define:vars={{ 
+    practitionerData: practitioners.reduce((acc, practitioner) => {
+      acc[practitioner.slug] = {
+        name: practitioner.data.name,
+        title: practitioner.data.title,
+        bio: practitioner.data.bio,
+        specialties: practitioner.data.specialties || [],
+        location: practitioner.data.location || 'Not specified',
+        languages: practitioner.data.languages || []
+      };
+      return acc;
+    }, {})
+  }}>
+    // Show/hide practitioner selection fields based on radio button selection
+    const selectPractitionerRadio = document.getElementById('select-practitioner');
+    const providePractitionerRadio = document.getElementById('provide-practitioner');
+    const practitionerDropdown = document.getElementById('practitioner-dropdown');
+    const customPractitioner = document.getElementById('custom-practitioner');
+    const practitionerSelect = document.getElementById('practitioner-select');
+    const practitionerInfo = document.getElementById('practitioner-info');
+    const practitionerDetails = document.getElementById('practitioner-details');
+
+    function togglePractitionerFields() {
+      if (selectPractitionerRadio && selectPractitionerRadio.checked) {
+        if (practitionerDropdown) practitionerDropdown.style.display = 'block';
+        if (customPractitioner) customPractitioner.style.display = 'none';
+        if (practitionerInfo) practitionerInfo.style.display = 'none';
+        const practitionerSelectEl = document.querySelector('select[name="selected-practitioner"]');
+        const customPractitionerEl = document.querySelector('input[name="custom-practitioner-name"]');
+        if (practitionerSelectEl) practitionerSelectEl.required = true;
+        if (customPractitionerEl) customPractitionerEl.required = false;
+      } else if (providePractitionerRadio && providePractitionerRadio.checked) {
+        if (practitionerDropdown) practitionerDropdown.style.display = 'none';
+        if (customPractitioner) customPractitioner.style.display = 'block';
+        if (practitionerInfo) practitionerInfo.style.display = 'none';
+        const practitionerSelectEl = document.querySelector('select[name="selected-practitioner"]');
+        const customPractitionerEl = document.querySelector('input[name="custom-practitioner-name"]');
+        if (practitionerSelectEl) practitionerSelectEl.required = false;
+        if (customPractitionerEl) customPractitionerEl.required = true;
+      }
+    }
+
+    // Show practitioner details when selected
+    function showPractitionerDetails() {
+      if (!practitionerSelect) return;
+      const selectedPractitioner = practitionerSelect.value;
+      if (selectedPractitioner && practitionerData[selectedPractitioner] && practitionerDetails) {
+        const practitioner = practitionerData[selectedPractitioner];
+        practitionerDetails.innerHTML = `
+          <div class="flex items-start space-x-3">
+            <div class="flex-1">
+              <h4 class="font-medium text-gray-900">${practitioner.name}</h4>
+              <p class="text-sm text-gray-600 mb-2">${practitioner.title}</p>
+              <p class="text-sm text-gray-700 mb-2">${practitioner.bio}</p>
+              <div class="flex flex-wrap gap-4 text-xs text-gray-500">
+                <span><strong>Specialties:</strong> ${practitioner.specialties.join(', ')}</span>
+                <span><strong>Location:</strong> ${practitioner.location}</span>
+                <span><strong>Languages:</strong> ${practitioner.languages.join(', ')}</span>
+              </div>
+            </div>
+          </div>
+        `;
+        if (practitionerInfo) practitionerInfo.style.display = 'block';
+      } else {
+        if (practitionerInfo) practitionerInfo.style.display = 'none';
+      }
+    }
+
+    if (selectPractitionerRadio) selectPractitionerRadio.addEventListener('change', togglePractitionerFields);
+    if (providePractitionerRadio) providePractitionerRadio.addEventListener('change', togglePractitionerFields);
+    if (practitionerSelect) practitionerSelect.addEventListener('change', showPractitionerDetails);
+
+    // Form submission handler
+    const form = document.querySelector('form');
+    if (form) {
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault(); // Prevent default form submission
+        
+        // Form validation
+        const serviceCheckboxes = document.querySelectorAll('input[name="funded-services"]');
+        const additionalItems = document.getElementById('additional-items');
+        
+        if (serviceCheckboxes.length > 0) {
+          const checkedServices = document.querySelectorAll('input[name="funded-services"]:checked');
+          if (checkedServices.length === 0 && (!additionalItems || !additionalItems.value.trim())) {
+            alert('Please select at least one wish from the wishlist or provide additional items description.');
+            return false;
+          }
+        }
+
+        // Get submit button to show loading state
+        const submitButton = form.querySelector('button[type="submit"]');
+        const originalText = submitButton.textContent;
+        submitButton.disabled = true;
+        submitButton.textContent = 'Submitting...';
+
+        try {
+          // Submit form data
+          const formData = new FormData(form);
+          const response = await fetch('/oss-wishlist-website/api/fulfill-wishlist', {
+            method: 'POST',
+            body: formData
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            // Show success message
+            form.innerHTML = `
+              <div class="text-center py-12">
+                <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-4">Thank You!</h3>
+                <p class="text-gray-600 mb-6">
+                  Your fulfillment request has been submitted successfully. We will review your request and get back to you soon.
+                </p>
+                <div class="space-y-2 text-sm text-gray-500">
+                  <p>Submission ID: ${Date.now()}</p>
+                  <p>We'll contact you at: ${formData.get('email')}</p>
+                </div>
+                <div class="mt-8">
+                  <a href="/oss-wishlist-website/wishlists" class="bg-gray-600 text-white px-6 py-3 rounded-md font-medium hover:bg-gray-700 transition-colors">
+                    View More Wishlists
+                  </a>
+                </div>
+              </div>
+            `;
+          } else {
+            throw new Error(result.message || 'Failed to submit request');
+          }
+        } catch (error) {
+          console.error('Error submitting form:', error);
+          alert('Sorry, there was an error submitting your request. Please try again.');
+          
+          // Restore submit button
+          submitButton.disabled = false;
+          submitButton.textContent = originalText;
+        }
+      });
+    }
+  </script>
+        </form>
+      </div>
+    </div>
+  </main>
+</Layout>

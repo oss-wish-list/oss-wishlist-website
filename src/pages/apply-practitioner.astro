@@ -2,40 +2,40 @@
 import Layout from '../components/Layout.astro';
 ---
 
-<Layout title="Apply to be an Expert - OSS Wishlist" description="Join our community of verified open source experts. Help projects succeed while building your professional network.">
+<Layout title="Apply to be an Practitioner - OSS Wishlist" description="Join our community of verified open source practitioners. Help projects succeed while building your professional network.">
   <div class="max-w-4xl mx-auto px-4 py-12">
     <!-- Header -->
     <div class="text-center mb-12">
       <div class="mb-4">
         <a 
-          href={`${import.meta.env.BASE_URL}/experts`}
-          class="text-blue-600 hover:text-blue-700 font-medium text-sm"
+          href={`${import.meta.env.BASE_URL}/practitioners`}
+          class="text-gray-600 hover:text-gray-700 font-medium text-sm"
         >
-          ← Back to Experts
+          ← Back to Practitioners
         </a>
       </div>
       <h1 class="text-4xl font-bold text-gray-900 mb-4">
-        🚀 Become an <span class="text-blue-600">OSS Expert</span>
+        🚀 Become an <span class="text-gray-600">OSS Practitioner</span>
       </h1>
       <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-        Join our community of verified experts and help open source projects thrive. 
-        Connect with maintainers who need your expertise.
+        Join our community of verified practitioners and help open source projects thrive. 
+        Connect with maintainers who need your practitionerise.
       </p>
     </div>
 
     <!-- Benefits Section -->
     <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-8 mb-12">
-      <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Why Join Our Expert Network?</h2>
+      <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Why Join Our Practitioner Network?</h2>
       <div class="grid md:grid-cols-3 gap-6">
         <div class="text-center">
           <div class="text-3xl mb-3">💼</div>
           <h3 class="font-semibold text-gray-900 mb-2">Get Hired</h3>
-          <p class="text-sm text-gray-700">Connect with projects that need your specific skills and get paid for your expertise.</p>
+          <p class="text-sm text-gray-700">Connect with projects that need your specific skills and get paid for your practitionerise.</p>
         </div>
         <div class="text-center">
           <div class="text-3xl mb-3">🌟</div>
           <h3 class="font-semibold text-gray-900 mb-2">Build Reputation</h3>
-          <p class="text-sm text-gray-700">Showcase your expertise and build credibility in the open source community.</p>
+          <p class="text-sm text-gray-700">Showcase your practitionerise and build credibility in the open source community.</p>
         </div>
         <div class="text-center">
           <div class="text-3xl mb-3">🤝</div>
@@ -47,9 +47,9 @@ import Layout from '../components/Layout.astro';
 
     <!-- Application Form -->
     <div class="bg-white rounded-lg shadow-sm border p-8">
-      <h2 class="text-2xl font-bold text-gray-900 mb-6">Expert Application</h2>
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">Practitioner Application</h2>
       
-      <form id="expertApplicationForm" class="space-y-6">
+      <form id="practitionerApplicationForm" class="space-y-6">
         <!-- Personal Information -->
         <div class="grid md:grid-cols-2 gap-6">
           <div>
@@ -146,9 +146,9 @@ import Layout from '../components/Layout.astro';
           </div>
         </div>
 
-        <!-- Expertise Areas -->
+        <!-- Practitionerise Areas -->
         <div>
-          <label for="specialties" class="block text-sm font-medium text-gray-700 mb-2">Areas of Expertise *</label>
+          <label for="specialties" class="block text-sm font-medium text-gray-700 mb-2">Areas of Practitionerise *</label>
           <div class="grid md:grid-cols-3 gap-3 mb-3">
             <label class="flex items-center">
               <input type="checkbox" name="specialties" value="Community Strategy" class="mr-2 rounded">
@@ -205,7 +205,7 @@ import Layout from '../components/Layout.astro';
             required 
             rows="4" 
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-            placeholder="Tell us about your background, experience, and what makes you a great expert for our network (2-3 sentences)..."
+            placeholder="Tell us about your background, experience, and what makes you a great practitioner for our network (2-3 sentences)..."
           ></textarea>
         </div>
 
@@ -296,12 +296,12 @@ import Layout from '../components/Layout.astro';
             type="submit" 
             class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
           >
-            🚀 Submit Expert Application
+            🚀 Submit Practitioner Application
           </button>
         </div>
 
         <div class="text-sm text-gray-600 text-center">
-          <p>By submitting this form, you agree to be contacted about joining our expert network. We'll review your application and get back to you within 5-7 business days.</p>
+          <p>By submitting this form, you agree to be contacted about joining our practitioner network. We'll review your application and get back to you within 5-7 business days.</p>
         </div>
       </form>
     </div>
@@ -311,19 +311,19 @@ import Layout from '../components/Layout.astro';
       <h3 class="text-lg font-semibold text-gray-900 mb-3">What Happens Next?</h3>
       <div class="space-y-2 text-gray-700">
         <div class="flex items-start">
-          <span class="text-blue-600 mr-2">1.</span>
+          <span class="text-gray-600 mr-2">1.</span>
           <span>We review your application within 5-7 business days</span>
         </div>
         <div class="flex items-start">
-          <span class="text-blue-600 mr-2">2.</span>
-          <span>If approved, we'll create your expert profile and verify your expertise</span>
+          <span class="text-gray-600 mr-2">2.</span>
+          <span>If approved, we'll create your practitioner profile and verify your practitionerise</span>
         </div>
         <div class="flex items-start">
-          <span class="text-blue-600 mr-2">3.</span>
+          <span class="text-gray-600 mr-2">3.</span>
           <span>You'll start receiving opportunities to help open source projects</span>
         </div>
         <div class="flex items-start">
-          <span class="text-blue-600 mr-2">4.</span>
+          <span class="text-gray-600 mr-2">4.</span>
           <span>Get connected with projects that match your skills and interests</span>
         </div>
       </div>
@@ -332,7 +332,7 @@ import Layout from '../components/Layout.astro';
 
   <script>
     // Handle form submission
-    document.getElementById('expertApplicationForm').addEventListener('submit', async function(e) {
+    document.getElementById('practitionerApplicationForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       
       const formData = new FormData(this);
@@ -346,7 +346,7 @@ import Layout from '../components/Layout.astro';
       try {
         // For now, create a GitHub issue with the application
         const issueBody = `
-# Expert Application
+# Practitioner Application
 
 **Name:** ${data.fullName}
 **Email:** ${data.email}
@@ -378,9 +378,9 @@ ${data.otherSpecialties ? `**Other Specialties:** ${data.otherSpecialties}` : ''
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            title: `Expert Application: ${data.fullName}`,
+            title: `Practitioner Application: ${data.fullName}`,
             body: issueBody,
-            labels: ['expert-application', 'pending-review']
+            labels: ['practitioner-application', 'pending-review']
           })
         });
 
