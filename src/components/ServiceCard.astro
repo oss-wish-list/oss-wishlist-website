@@ -11,10 +11,10 @@ export interface Props {
 const { title, description, price_tier, estimated_hours, slug, tags } = Astro.props;
 
 const priceTiers = {
-  low: { label: 'Budget', color: 'bg-orange-100 text-orange-800' },
-  medium: { label: 'Standard', color: 'bg-orange-200 text-orange-900' },
-  high: { label: 'Premium', color: 'bg-red-100 text-red-800' },
-  enterprise: { label: 'Enterprise', color: 'bg-gray-100 text-gray-800' }
+  low: { label: 'Budget', color: 'bg-gray-100 text-gray-800' },
+  medium: { label: 'Standard', color: 'bg-gray-200 text-gray-900' },
+  high: { label: 'Premium', color: 'bg-slate-100 text-slate-800' },
+  enterprise: { label: 'Enterprise', color: 'bg-gray-300 text-gray-900' }
 };
 ---
 
@@ -41,7 +41,7 @@ const priceTiers = {
   
   <a 
     href={`${import.meta.env.BASE_URL}/services/${slug}`} 
-    class="inline-block bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700 transition-colors text-sm font-medium"
+    class="inline-block bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition-colors text-sm font-medium"
   >
     Learn More
   </a>

@@ -2,7 +2,7 @@
 name: "Christos Bacharakis"
 title: "Community and developer relations"
 company: ""
-bio: "Community building expert helping open source projects grow sustainable, inclusive communities. Former DevRel at GitLab and community lead for major OSS projects with experience scaling communities from dozens to thousands of contributors with Mozila."
+bio: "Community building practitioner helping open source projects grow sustainable, inclusive communities. Former DevRel at GitLab and community lead for major OSS projects with experience scaling communities from dozens to thousands of contributors with Mozila."
 avatar_url: "https://avatars.githubusercontent.com/u/1435040?v=4"
 location: "Berlin, Germany"
 languages: ["English", "Greek", "German"]
@@ -17,8 +17,6 @@ specialties:
   - "Community"
   - "Developer Relations"
   - "Open Source Governance"
-service_categories: ["Community", "Leadership"]
-technologies: ["GitHub", "Discord", "Discourse", "Analytics", "Documentation"]
 
 # Availability & Pricing
 availability: "available"

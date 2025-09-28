@@ -28,12 +28,40 @@ const logoUrl = `${import.meta.env.BASE_URL}/logo.png`;
             <img src={logoUrl} alt="Open Source Wishlist" class="h-8 w-8" />
             <a href={import.meta.env.BASE_URL} class="text-xl font-bold text-gray-900">Open Source Wishlist</a>
           </div>
-          <div class="flex space-x-6">
+          <div class="flex space-x-6 items-center">
             <a href={`${import.meta.env.BASE_URL}/wishlists`} class="text-gray-700 hover:text-gray-900">Browse Wishlists</a>
             <a href={`${import.meta.env.BASE_URL}/catalog`} class="text-gray-700 hover:text-gray-900">Service Catalog</a>
-            <a href={`${import.meta.env.BASE_URL}/experts`} class="text-gray-700 hover:text-gray-900">Our Experts</a>
+            <a href={`${import.meta.env.BASE_URL}/practitioners`} class="text-gray-700 hover:text-gray-900">Our Practitioners</a>
             <a href={`${import.meta.env.BASE_URL}/ecosystem-guardians`} class="text-gray-700 hover:text-gray-900">Ecosystem Guardians</a>
-            <a href={`${import.meta.env.BASE_URL}/submit`} class="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700">
+            
+            <!-- About Dropdown -->
+            <div class="relative" id="about-dropdown">
+              <button 
+                class="text-gray-700 hover:text-gray-900 flex items-center space-x-1"
+                aria-expanded="false"
+                aria-haspopup="true"
+                id="about-dropdown-button"
+              >
+                <span>About</span>
+                <svg class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </button>
+              
+              <!-- Dropdown Menu -->
+              <div 
+                id="about-menu"
+                class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none hidden z-50"
+                role="menu"
+                aria-orientation="vertical"
+              >
+                <div class="py-1" role="none">
+                  <a href={`${import.meta.env.BASE_URL}/faq`} class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">FAQ</a>
+                </div>
+              </div>
+            </div>
+            
+            <a href={`${import.meta.env.BASE_URL}/maintainers`} class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700">
               Create Wishlist
             </a>
           </div>
@@ -49,7 +77,7 @@ const logoUrl = `${import.meta.env.BASE_URL}/logo.png`;
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center">
           <p class="text-gray-400">
-            Open Source Wishlist - Connecting maintainers with the services they need
+            Open source maintainers need help. Open Source Wishlist connects maintainers with services and resources that make all the difference.
           </p>
           <div class="mt-4 flex justify-center space-x-6">
             <a href="https://github.com/oss-wishlist" class="text-gray-400 hover:text-white flex items-center">
@@ -80,3 +108,56 @@ const logoUrl = `${import.meta.env.BASE_URL}/logo.png`;
     font-family: system-ui, sans-serif;
   }
 </style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const dropdownButton = document.getElementById('about-dropdown-button');
+    const menu = document.getElementById('about-menu');
+    const dropdown = document.getElementById('about-dropdown');
+    
+    if (!dropdownButton || !menu || !dropdown) return;
+    
+    function toggleAboutDropdown() {
+      const icon = dropdownButton.querySelector('svg');
+      
+      if (menu.classList.contains('hidden')) {
+        // Show menu
+        menu.classList.remove('hidden');
+        dropdownButton.setAttribute('aria-expanded', 'true');
+        if (icon) icon.style.transform = 'rotate(180deg)';
+      } else {
+        // Hide menu
+        menu.classList.add('hidden');
+        dropdownButton.setAttribute('aria-expanded', 'false');
+        if (icon) icon.style.transform = 'rotate(0deg)';
+      }
+    }
+    
+    function hideDropdown() {
+      const icon = dropdownButton.querySelector('svg');
+      menu.classList.add('hidden');
+      dropdownButton.setAttribute('aria-expanded', 'false');
+      if (icon) icon.style.transform = 'rotate(0deg)';
+    }
+
+    // Add click event to button
+    dropdownButton.addEventListener('click', function(e) {
+      e.preventDefault();
+      toggleAboutDropdown();
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+      if (!dropdown.contains(event.target)) {
+        hideDropdown();
+      }
+    });
+
+    // Close dropdown when pressing Escape
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        hideDropdown();
+      }
+    });
+  });
+</script>

@@ -18,7 +18,7 @@ const { Content } = await guardian.render();
   <div class="max-w-6xl mx-auto px-4 py-12">
     <!-- Back Link -->
     <div class="mb-8">
-      <a href="/oss-wishlist-website/ecosystem-guardians" class="text-orange-600 hover:text-orange-800 text-sm font-medium">
+      <a href="/oss-wishlist-website/ecosystem-guardians" class="text-gray-600 hover:text-orange-800 text-sm font-medium">
         ← Back to Ecosystem Guardians
       </a>
     </div>
@@ -80,7 +80,7 @@ const { Content } = await guardian.render();
           <!-- Contact Links -->
           <div class="flex flex-wrap justify-center lg:justify-start gap-4">
             {guardian.data.website && (
-              <a href={guardian.data.website} target="_blank" rel="noopener noreferrer" class="text-orange-600 hover:text-orange-800 font-medium">
+              <a href={guardian.data.website} target="_blank" rel="noopener noreferrer" class="text-gray-600 hover:text-orange-800 font-medium">
                 🌐 Website
               </a>
             )}
@@ -184,17 +184,17 @@ const { Content } = await guardian.render();
           <h3 class="text-lg font-bold text-gray-900 mb-4">📞 Contact</h3>
           <div class="space-y-3">
             {guardian.data.contact_email && (
-              <a href={`mailto:${guardian.data.contact_email}`} class="flex items-center text-gray-700 hover:text-orange-600">
+              <a href={`mailto:${guardian.data.contact_email}`} class="flex items-center text-gray-700 hover:text-gray-600">
                 📧 {guardian.data.contact_email}
               </a>
             )}
             {guardian.data.website && (
-              <a href={guardian.data.website} target="_blank" rel="noopener noreferrer" class="flex items-center text-gray-700 hover:text-orange-600">
+              <a href={guardian.data.website} target="_blank" rel="noopener noreferrer" class="flex items-center text-gray-700 hover:text-gray-600">
                 🌐 Visit Website
               </a>
             )}
             {guardian.data.github_org && (
-              <a href={`https://github.com/${guardian.data.github_org}`} target="_blank" rel="noopener noreferrer" class="flex items-center text-gray-700 hover:text-orange-600">
+              <a href={`https://github.com/${guardian.data.github_org}`} target="_blank" rel="noopener noreferrer" class="flex items-center text-gray-700 hover:text-gray-600">
                 🐙 GitHub Organization
               </a>
             )}
@@ -207,12 +207,12 @@ const { Content } = await guardian.render();
             <h3 class="text-lg font-bold text-gray-900 mb-4">🔗 Social Media</h3>
             <div class="space-y-3">
               {guardian.data.social_media.twitter && (
-                <a href={`https://twitter.com/${guardian.data.social_media.twitter}`} target="_blank" rel="noopener noreferrer" class="flex items-center text-gray-700 hover:text-blue-600">
+                <a href={`https://twitter.com/${guardian.data.social_media.twitter}`} target="_blank" rel="noopener noreferrer" class="flex items-center text-gray-700 hover:text-gray-600">
                   🐦 Twitter
                 </a>
               )}
               {guardian.data.social_media.linkedin && (
-                <a href={`https://linkedin.com/company/${guardian.data.social_media.linkedin}`} target="_blank" rel="noopener noreferrer" class="flex items-center text-gray-700 hover:text-blue-600">
+                <a href={`https://linkedin.com/company/${guardian.data.social_media.linkedin}`} target="_blank" rel="noopener noreferrer" class="flex items-center text-gray-700 hover:text-gray-600">
                   💼 LinkedIn
                 </a>
               )}
@@ -241,8 +241,8 @@ const { Content } = await guardian.render();
           </a>
         )}
         <a 
-          href="/oss-wishlist-website/submit"
-          class="bg-white text-orange-600 border border-orange-600 px-6 py-2 rounded-lg font-medium hover:bg-orange-50"
+          href="/oss-wishlist-website/maintainers"
+          class="bg-white text-gray-600 border border-orange-600 px-6 py-2 rounded-lg font-medium hover:bg-orange-50"
         >
           Create Wishlist
         </a>

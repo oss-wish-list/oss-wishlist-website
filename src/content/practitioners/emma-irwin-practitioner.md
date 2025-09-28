@@ -9,16 +9,16 @@ languages: ["English"]
 
 # Contact & Social
 email: "emma.irwin@gmail.com"
-website: "https://example.com"
-github: "emma-security"
-twitter: "example"
-linkedin: "example"
+website: "https://sunnydeveloper.com"
+github: "emmairwin"
+twitter: ""
+linkedin: "https://www.linkedin.com/in/emmamirwin/"
 
 # Expertise
 specialties: 
   - "Community"
-service_categories: ["Security"]
-technologies: ["Node.js", "Python", "Go", "Rust", "Docker", "Kubernetes"]
+  - "Governance"
+  - "Funding"
 
 # Availability & Pricing
 availability: "available"

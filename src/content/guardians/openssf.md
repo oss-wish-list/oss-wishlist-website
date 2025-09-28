@@ -1,17 +1,16 @@
 ---
-name: "Open Source Security Foundation"
+name: "Example Company 1"
 type: "foundation"
-description: "A cross-industry collaboration that brings together leaders to improve the security of open source software by building a broader community, targeted initiatives, and best practices."
-logo_url: "https://openssf.org/wp-content/uploads/sites/132/2020/08/openssf-logo.svg"
-website: "https://openssf.org"
+description: "A technology foundation focused on supporting open source security initiatives and helping projects implement best practices for secure software development."
+website: "https://example1.org"
 location: "Global"
 
 # Contact Information
-contact_email: "info@openssf.org"
-github_org: "ossf"
+contact_email: "info@example1.org"
+github_org: "example1"
 social_media:
-  twitter: "openssf"
-  linkedin: "open-source-security-foundation"
+  twitter: "example1"
+  linkedin: "example-company-1"
 
 # Guardian Focus
 focus_areas: 
@@ -44,25 +43,25 @@ verified: true
 tags: ["security", "foundation", "funding", "auditing", "supply-chain"]
 ---
 
-## About OpenSSF
+## About Example Company 1
 
-The Open Source Security Foundation (OpenSSF) is a cross-industry collaboration that brings together the industry's most important open source security initiatives and the individuals and companies that support them. 
+Example Company 1 is a technology foundation dedicated to supporting open source security initiatives and helping projects implement security best practices. We work with maintainers and organizations to strengthen the security posture of critical open source software.
 
-OpenSSF brings together open source security initiatives under one foundation to accelerate work through cross-industry collaboration, and provide a single focal point for the open source security community to come together and identify new initiatives and best practices.
+Our foundation brings together security experts, developers, and organizations to collaborate on improving open source security through targeted initiatives, tooling, and community building.
 
 ## Key Programs
 
-### Alpha-Omega Project
-The Alpha-Omega Project is an initiative to improve the security of open source software by supporting security audits and remediation of the most critical open source projects.
+### Security Assessment Initiative
+Our primary program focuses on conducting comprehensive security audits and assessments for open source projects to identify vulnerabilities and improve security practices.
 
-- **Alpha**: Direct security work on the most critical OSS projects
-- **Omega**: Build comprehensive security assessment tools for all OSS
+- **Critical Project Support**: Direct security engineering for high-impact projects
+- **Assessment Tools**: Automated security evaluation tools for all projects
 
-### Scorecard
-An automated security assessment tool that evaluates open source projects for security best practices and generates security scorecards.
+### Security Scorecard Program
+An automated assessment system that evaluates open source projects against security best practices and provides actionable feedback.
 
 ### Supply Chain Security
-Working groups focused on securing the open source software supply chain through standards, tools, and education.
+Educational programs and tools focused on securing the open source software supply chain through improved practices and standards.
 
 ## How We Help
 
@@ -80,7 +79,7 @@ Working groups focused on securing the open source software supply chain through
 
 ## Support Available
 
-OpenSSF provides both financial support and technical expertise to open source projects working to improve their security posture. We prioritize projects that:
+Example Company 1 provides both financial support and technical expertise to open source projects working to improve their security posture. We prioritize projects that:
 
 - Have significant downstream impact
 - Are committed to implementing security improvements
@@ -89,8 +88,8 @@ OpenSSF provides both financial support and technical expertise to open source p
 
 ## Getting Started
 
-Projects can engage with OpenSSF through:
+Projects can engage with Example Company 1 through:
 - Security assessment requests
 - Funding applications for security improvements
-- Participation in working groups
-- Community discussions and forums
+- Technical consultation services
+- Community discussions and support forums

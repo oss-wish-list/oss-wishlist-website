@@ -30,7 +30,7 @@ const stageColors = {
   <!-- Back Navigation -->
   <div class="bg-gray-50 py-4">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <a href={`${import.meta.env.BASE_URL}/wishlists`} class="text-orange-600 hover:text-orange-700 flex items-center">
+      <a href={`${import.meta.env.BASE_URL}/wishlists`} class="text-gray-600 hover:text-gray-700 flex items-center">
         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
         </svg>
@@ -130,11 +130,11 @@ const stageColors = {
             <div class="space-y-2">
               <div class="flex justify-between text-sm">
                 <span class="text-gray-600">Email</span>
-                <a href={`mailto:${wishlist.data.maintainer.email}`} class="text-orange-600 hover:text-orange-700">{wishlist.data.maintainer.email}</a>
+                <a href={`mailto:${wishlist.data.maintainer.email}`} class="text-gray-600 hover:text-gray-700">{wishlist.data.maintainer.email}</a>
               </div>
               <div class="flex justify-between text-sm">
                 <span class="text-gray-600">GitHub</span>
-                <a href={`https://github.com/${wishlist.data.maintainer.username}`} target="_blank" rel="noopener noreferrer" class="text-orange-600 hover:text-orange-700">@{wishlist.data.maintainer.username}</a>
+                <a href={`https://github.com/${wishlist.data.maintainer.username}`} target="_blank" rel="noopener noreferrer" class="text-gray-600 hover:text-gray-700">@{wishlist.data.maintainer.username}</a>
               </div>
             </div>
           </div>
@@ -166,7 +166,7 @@ const stageColors = {
           <ul class="space-y-3">
             {wishlist.recent_achievements.map(achievement => (
               <li class="flex items-center text-gray-700">
-                <svg class="w-5 h-5 text-blue-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                <svg class="w-5 h-5 text-gray-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                 </svg>
                 {achievement}
@@ -197,7 +197,7 @@ const stageColors = {
       <div class="flex justify-center space-x-4">
         <a 
           href={`mailto:${wishlist.contact_email}?subject=Support for ${wishlist.project_name}`}
-          class="bg-white text-orange-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+          class="bg-white text-gray-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
         >
           Contact Maintainer
         </a>

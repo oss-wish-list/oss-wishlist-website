@@ -22,12 +22,12 @@ organization:
 
 # Wishlist Details  
 services_needed:
-  - "Performance optimization consulting"
-  - "Enterprise features roadmap"
-  - "Community growth strategy"
-  - "Documentation and tutorials"
+  - "Developer Relations Strategy"
+  - "Funding Strategy Development"
+  - "New Maintainer/Leader Onboarding"
+  - "Azure Credits"
 
-preferred_experts: ["alex-chen", "jordan-smith"]
+preferred_practitioners: ["alex-chen", "jordan-smith"]
 urgency: "medium"
 budget_range: "20k-50k"
 tags: ["Python", "Machine Learning", "Research", "Data Science"]
