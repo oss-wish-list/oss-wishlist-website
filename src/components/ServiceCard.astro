@@ -1,14 +1,28 @@
 ---
 export interface Props {
   title: string;
-  description: string;
-  price_tier: 'low' | 'medium' | 'high' | 'enterprise';
+  description: str        <a 
+          href={`${import.meta.env.BASE_URL}/ecosystem-guardians`}
+          class="inline-block bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors"
+        >
+          💰 Fund this resource
+        </a>
+      ) : (
+        <a 
+          href={`${import.meta.env.BASE_URL}/apply-practitioner`}
+          class="inline-block bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors"
+        >
+          🙋‍♀️ Sign up as a practitioner for this service
+        </a>tier: 'low' | 'medium' | 'high' | 'enterprise';
   estimated_hours: string;
   slug: string;
   tags: string[];
+  type: 'service' | 'resource';
+  available?: boolean;
+  unavailable_reason?: string;
 }
 
-const { title, description, price_tier, estimated_hours, slug, tags } = Astro.props;
+const { title, description, price_tier, estimated_hours, slug, tags, type, available = true, unavailable_reason } = Astro.props;
 
 const priceTiers = {
   low: { label: 'Budget', color: 'bg-gray-100 text-gray-800' },
@@ -18,31 +32,47 @@ const priceTiers = {
 };
 ---
 
-<div class="service-card bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow">
+<div class={`service-card bg-white p-6 rounded-lg shadow-sm border transition-shadow ${!available ? 'opacity-60 grayscale' : 'hover:shadow-md'}`}>
   <div class="flex justify-between items-start mb-4">
     <div>
-      <h3 class="text-lg font-semibold text-gray-900 mb-2">{title}</h3>
-      <p class="text-gray-600 text-sm mb-3">{description}</p>
+      <h3 class={`text-lg font-semibold mb-2 ${!available ? 'text-gray-500' : 'text-gray-900'}`}>{title}</h3>
+      {!available && (
+        <div class="mb-2">
+          <span class="inline-flex items-center px-2 py-1 text-xs font-medium bg-gray-100 text-gray-600 rounded-full">
+            Currently Unavailable
+          </span>
+        </div>
+      )}
+      <p class={`text-sm mb-3 ${!available ? 'text-gray-400' : 'text-gray-600'}`}>{description}</p>
+      {!available && unavailable_reason && (
+        <p class="text-xs text-gray-500 italic mb-3">{unavailable_reason}</p>
+      )}
     </div>
   </div>
   
   <div class="mb-4">
     <div class="flex justify-between items-center mb-3">
-      <span class="text-sm text-gray-500">Est. {estimated_hours}</span>
+      <span class={`text-sm ${!available ? 'text-gray-400' : 'text-gray-500'}`}>Est. {estimated_hours}</span>
     </div>
     <div class="flex flex-wrap gap-2">
       {tags.map(tag => (
-        <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">
+        <span class={`px-2 py-1 text-xs rounded ${!available ? 'bg-gray-50 text-gray-400' : 'bg-gray-100 text-gray-600'}`}>
           {tag}
         </span>
       ))}
     </div>
   </div>
   
-  <a 
-    href={`${import.meta.env.BASE_URL}/services/${slug}`} 
-    class="inline-block bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition-colors text-sm font-medium"
-  >
-    Learn More
-  </a>
+  {available ? (
+    <a 
+      href={`${import.meta.env.BASE_URL}/services/${slug}`} 
+      class="inline-block bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition-colors text-sm font-medium"
+    >
+      Learn More
+    </a>
+  ) : (
+    <span class="text-sm text-gray-400 italic">
+      {type === 'resource' ? 'Funding needed' : 'Practitioners needed'}
+    </span>
+  )}
 </div>

@@ -21,6 +21,11 @@ const logoUrl = `${import.meta.env.BASE_URL}/logo.png`;
     <title>{title}</title>
   </head>
   <body class="bg-gray-50 min-h-screen">
+    <div id="auth-provider">
+      <script type="module">
+        import { AuthProvider } from './AuthProvider.tsx';
+        // AuthProvider will be initialized in components that need it
+      </script>
     <header class="bg-white shadow-sm border-b">
       <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
@@ -29,7 +34,34 @@ const logoUrl = `${import.meta.env.BASE_URL}/logo.png`;
             <a href={import.meta.env.BASE_URL} class="text-xl font-bold text-gray-900">Open Source Wishlist</a>
           </div>
           <div class="flex space-x-6 items-center">
-            <a href={`${import.meta.env.BASE_URL}/wishlists`} class="text-gray-700 hover:text-gray-900">Browse Wishlists</a>
+            <!-- Wishlists Dropdown -->
+            <div class="relative" id="wishlists-dropdown">
+              <button 
+                class="text-gray-700 hover:text-gray-900 flex items-center space-x-1"
+                aria-expanded="false"
+                aria-haspopup="true"
+                id="wishlists-dropdown-button"
+              >
+                <span>Wishlists</span>
+                <svg class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </button>
+              
+              <!-- Dropdown Menu -->
+              <div 
+                id="wishlists-menu"
+                class="absolute left-0 mt-2 w-56 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none hidden z-50"
+                role="menu"
+                aria-orientation="vertical"
+              >
+                <div class="py-1" role="none">
+                  <a href={`${import.meta.env.BASE_URL}/maintainers`} class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Create or edit a wishlist</a>
+                  <a href={`${import.meta.env.BASE_URL}/wishlists`} class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">View wishlists</a>
+                </div>
+              </div>
+            </div>
+            
             <a href={`${import.meta.env.BASE_URL}/catalog`} class="text-gray-700 hover:text-gray-900">Service Catalog</a>
             <a href={`${import.meta.env.BASE_URL}/practitioners`} class="text-gray-700 hover:text-gray-900">Our Practitioners</a>
             <a href={`${import.meta.env.BASE_URL}/ecosystem-guardians`} class="text-gray-700 hover:text-gray-900">Ecosystem Guardians</a>
@@ -60,10 +92,6 @@ const logoUrl = `${import.meta.env.BASE_URL}/logo.png`;
                 </div>
               </div>
             </div>
-            
-            <a href={`${import.meta.env.BASE_URL}/maintainers`} class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700">
-              Create Wishlist
-            </a>
           </div>
         </div>
       </nav>
@@ -73,7 +101,7 @@ const logoUrl = `${import.meta.env.BASE_URL}/logo.png`;
       <slot />
     </main>
 
-    <footer class="bg-gray-900 text-white py-12 mt-20">
+    <footer class="bg-gray-900 text-white py-12">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center">
           <p class="text-gray-400">
@@ -111,52 +139,116 @@ const logoUrl = `${import.meta.env.BASE_URL}/logo.png`;
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    const dropdownButton = document.getElementById('about-dropdown-button');
-    const menu = document.getElementById('about-menu');
-    const dropdown = document.getElementById('about-dropdown');
+    // About dropdown functionality
+    const aboutDropdownButton = document.getElementById('about-dropdown-button');
+    const aboutMenu = document.getElementById('about-menu');
+    const aboutDropdown = document.getElementById('about-dropdown');
     
-    if (!dropdownButton || !menu || !dropdown) return;
+    // Wishlists dropdown functionality
+    const wishlistsDropdownButton = document.getElementById('wishlists-dropdown-button');
+    const wishlistsMenu = document.getElementById('wishlists-menu');
+    const wishlistsDropdown = document.getElementById('wishlists-dropdown');
     
-    function toggleAboutDropdown() {
-      const icon = dropdownButton.querySelector('svg');
+    // About dropdown functions
+    if (aboutDropdownButton && aboutMenu && aboutDropdown) {
+      function toggleAboutDropdown() {
+        const icon = aboutDropdownButton.querySelector('svg');
+        
+        if (aboutMenu.classList.contains('hidden')) {
+          // Show menu
+          aboutMenu.classList.remove('hidden');
+          aboutDropdownButton.setAttribute('aria-expanded', 'true');
+          if (icon) icon.style.transform = 'rotate(180deg)';
+        } else {
+          // Hide menu
+          aboutMenu.classList.add('hidden');
+          aboutDropdownButton.setAttribute('aria-expanded', 'false');
+          if (icon) icon.style.transform = 'rotate(0deg)';
+        }
+      }
       
-      if (menu.classList.contains('hidden')) {
-        // Show menu
-        menu.classList.remove('hidden');
-        dropdownButton.setAttribute('aria-expanded', 'true');
-        if (icon) icon.style.transform = 'rotate(180deg)';
-      } else {
-        // Hide menu
-        menu.classList.add('hidden');
-        dropdownButton.setAttribute('aria-expanded', 'false');
+      function hideAboutDropdown() {
+        const icon = aboutDropdownButton.querySelector('svg');
+        aboutMenu.classList.add('hidden');
+        aboutDropdownButton.setAttribute('aria-expanded', 'false');
+        if (icon) icon.style.transform = 'rotate(0deg)';
+      }
+
+      // Add click event to about button
+      aboutDropdownButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        hideWishlistsDropdown(); // Close other dropdown
+        toggleAboutDropdown();
+      });
+    }
+    
+    // Wishlists dropdown functions
+    if (wishlistsDropdownButton && wishlistsMenu && wishlistsDropdown) {
+      function toggleWishlistsDropdown() {
+        const icon = wishlistsDropdownButton.querySelector('svg');
+        
+        if (wishlistsMenu.classList.contains('hidden')) {
+          // Show menu
+          wishlistsMenu.classList.remove('hidden');
+          wishlistsDropdownButton.setAttribute('aria-expanded', 'true');
+          if (icon) icon.style.transform = 'rotate(180deg)';
+        } else {
+          // Hide menu
+          wishlistsMenu.classList.add('hidden');
+          wishlistsDropdownButton.setAttribute('aria-expanded', 'false');
+          if (icon) icon.style.transform = 'rotate(0deg)';
+        }
+      }
+      
+      function hideWishlistsDropdown() {
+        const icon = wishlistsDropdownButton.querySelector('svg');
+        wishlistsMenu.classList.add('hidden');
+        wishlistsDropdownButton.setAttribute('aria-expanded', 'false');
+        if (icon) icon.style.transform = 'rotate(0deg)';
+      }
+
+      // Add click event to wishlists button
+      wishlistsDropdownButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        hideAboutDropdown(); // Close other dropdown
+        toggleWishlistsDropdown();
+      });
+    }
+    
+    // Global functions for closing dropdowns
+    function hideAboutDropdown() {
+      if (aboutDropdownButton && aboutMenu) {
+        const icon = aboutDropdownButton.querySelector('svg');
+        aboutMenu.classList.add('hidden');
+        aboutDropdownButton.setAttribute('aria-expanded', 'false');
         if (icon) icon.style.transform = 'rotate(0deg)';
       }
     }
     
-    function hideDropdown() {
-      const icon = dropdownButton.querySelector('svg');
-      menu.classList.add('hidden');
-      dropdownButton.setAttribute('aria-expanded', 'false');
-      if (icon) icon.style.transform = 'rotate(0deg)';
+    function hideWishlistsDropdown() {
+      if (wishlistsDropdownButton && wishlistsMenu) {
+        const icon = wishlistsDropdownButton.querySelector('svg');
+        wishlistsMenu.classList.add('hidden');
+        wishlistsDropdownButton.setAttribute('aria-expanded', 'false');
+        if (icon) icon.style.transform = 'rotate(0deg)';
+      }
     }
 
-    // Add click event to button
-    dropdownButton.addEventListener('click', function(e) {
-      e.preventDefault();
-      toggleAboutDropdown();
-    });
-
-    // Close dropdown when clicking outside
+    // Close dropdowns when clicking outside
     document.addEventListener('click', function(event) {
-      if (!dropdown.contains(event.target)) {
-        hideDropdown();
+      if (aboutDropdown && !aboutDropdown.contains(event.target)) {
+        hideAboutDropdown();
+      }
+      if (wishlistsDropdown && !wishlistsDropdown.contains(event.target)) {
+        hideWishlistsDropdown();
       }
     });
 
-    // Close dropdown when pressing Escape
+    // Close dropdowns when pressing Escape
     document.addEventListener('keydown', function(event) {
       if (event.key === 'Escape') {
-        hideDropdown();
+        hideAboutDropdown();
+        hideWishlistsDropdown();
       }
     });
   });

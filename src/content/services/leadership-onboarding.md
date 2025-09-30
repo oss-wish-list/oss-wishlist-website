@@ -4,7 +4,7 @@ description: "Comprehensive onboarding program to establish, vet and setup for s
 type: "service"
 service_type: "consulting"
 estimated_hours: "12-16 hours"
-tags: ["leadership", "onboarding", "mentorship", "community"]
+tags: ["community", "leadership"]
 featured: true
 prerequisites: "New or transitioning project leadership role"
 deliverables: 

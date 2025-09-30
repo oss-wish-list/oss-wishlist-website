@@ -4,7 +4,7 @@ description: "GitHub Copilot licenses for open source project maintainers and co
 type: "resource"
 service_type: "budget"
 estimated_value: "$10-100/month"
-tags: ["github", "copilot", "ai", "development"]
+tags: ["development", "ai-tools"]
 featured: true
 prerequisites: "Active open source project with regular development activity"
 deliverables: 

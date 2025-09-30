@@ -25,6 +25,8 @@ const services = defineCollection({
     estimated_value: z.string().optional(),
     tags: z.array(z.string()),
     featured: z.boolean().default(false),
+    available: z.boolean().default(true),
+    unavailable_reason: z.string().optional(),
     prerequisites: z.string().optional(),
     deliverables: z.array(z.string()).optional(),
   }),
@@ -93,7 +95,7 @@ const practitioners = defineCollection({
     email: z.string().email().optional(),
     website: z.string().url().optional(),
     github: z.string().optional(),
-    twitter: z.string().optional(),
+    mastodon: z.string().optional(),
     linkedin: z.string().optional(),
     
     // Expertise
@@ -101,19 +103,16 @@ const practitioners = defineCollection({
     
     // Availability & Pricing
     availability: z.enum(['available', 'limited', 'unavailable']).default('available'),
-    hourly_rate_range: z.enum(['volunteer', 'under-100', '100-200', '200-400', '400-plus', 'enterprise']).optional(),
     accepts_pro_bono: z.boolean().default(false),
+    pro_bono_criteria: z.string().optional(),
     
     // Experience & Credentials
     years_experience: z.number().optional(),
-    notable_projects: z.array(z.string()).optional(),
+    notable_experience: z.array(z.string()).optional(),
     certifications: z.array(z.string()).optional(),
     
     // Metadata
-    featured: z.boolean().default(false),
     verified: z.boolean().default(false),
-    joined_date: z.date(),
-    tags: z.array(z.string()).optional(),
   }),
 });
 

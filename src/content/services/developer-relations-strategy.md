@@ -6,6 +6,8 @@ service_type: "consulting"
 estimated_hours: "40-60 hours"
 tags: ["community", "marketing"]
 featured: true
+available: false
+unavailable_reason: "DevRel specialists currently at capacity"
 prerequisites: "Open source project with developer audience/users and growth goals"
 deliverables: 
   - "Developer relations strategy roadmap"

@@ -4,8 +4,10 @@ description: "Monthly Azure cloud credits for hosting, compute, and development 
 type: "resource"
 service_type: "credit"
 estimated_value: "$100-500/month"
-tags: ["azure", "cloud", "hosting", "credits"]
+tags: ["cloud-credits", "infrastructure"]
 featured: true
+available: false
+unavailable_reason: "Requires Ecosystem Guardian donation to establish program"
 prerequisites: "Active open source project with demonstrated community impact"
 deliverables: 
   - "Monthly Azure credit allocation"

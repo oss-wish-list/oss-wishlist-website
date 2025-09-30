@@ -15,169 +15,15 @@ const featuredGuardians = allGuardians.filter(guardian => guardian.data.featured
           <span class="text-emerald-600">Ecosystem Guardians</span>
         </h1>
         <p class="text-xl text-gray-600 mb-8">
-          Meet the organizations and foundations protecting and nurturing the open source ecosystem. 
+          Meet the organizations, foundations and individuals protecting and nurturing the open source ecosystem. 
           From security audits to funding programs, these guardians help ensure OSS remains healthy and sustainable.
         </p>
-        <div class="flex justify-center space-x-4">
-          <a href="#featured-guardians" class="bg-gray-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
-            Meet the Guardians
-          </a>
-          <a href="/oss-wishlist-website/maintainers" class="bg-slate-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-slate-700 transition-colors">
-            Become a Guardian
-          </a>
-        </div>
       </div>
     </div>
   </section>
 
-  <div class="max-w-7xl mx-auto px-4 py-16">
-    <!-- Featured Guardians -->
-    {featuredGuardians.length > 0 && (
-      <section id="featured-guardians" class="mb-16">
-        <div class="text-center mb-12">
-          <h2 class="text-3xl font-bold text-gray-900 mb-4">✨ Featured Guardians</h2>
-          <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-            Leading organizations making significant impact in open source sustainability and security.
-          </p>
-        </div>
-
-        <div class="grid gap-8 md:grid-cols-2">
-          {featuredGuardians.map((guardian) => (
-            <div key={guardian.slug} class="bg-white rounded-lg shadow-sm border p-8 hover:shadow-md transition-shadow">
-              <div class="flex items-start space-x-6 mb-6">
-                {guardian.data.logo_url && (
-                  <img 
-                    src={guardian.data.logo_url} 
-                    alt={guardian.data.name}
-                    class="w-16 h-16 object-contain"
-                  />
-                )}
-                <div class="flex-1">
-                  <h3 class="text-xl font-bold text-gray-900 mb-2">{guardian.data.name}</h3>
-                  <div class="flex items-center space-x-2 text-sm text-gray-600 mb-2">
-                    <span class="capitalize">{guardian.data.type}</span>
-                    {guardian.data.location && (
-                      <>
-                        <span>•</span>
-                        <span>📍 {guardian.data.location}</span>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-              
-              <p class="text-gray-700 mb-6 leading-relaxed">{guardian.data.description}</p>
-              
-              <div class="mb-6">
-                <h4 class="font-semibold text-gray-900 mb-3">Focus Areas</h4>
-                <div class="flex flex-wrap gap-2">
-                  {guardian.data.focus_areas.slice(0, 4).map((area) => (
-                    <span key={area} class="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm">
-                      {area}
-                    </span>
-                  ))}
-                  {guardian.data.focus_areas.length > 4 && (
-                    <span class="text-sm text-gray-500">+{guardian.data.focus_areas.length - 4} more</span>
-                  )}
-                </div>
-              </div>
-
-              <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-3 text-sm">
-                  {guardian.data.funding_available && (
-                    <span class="flex items-center text-green-600">
-                      💰 Funding Available
-                    </span>
-                  )}
-                  {guardian.data.provides_mentorship && (
-                    <span class="flex items-center text-gray-600">
-                      👥 Mentorship
-                    </span>
-                  )}
-                </div>
-                <a 
-                  href={`/oss-wishlist-website/guardians/${guardian.slug}`}
-                  class="text-gray-600 hover:text-gray-700 font-medium"
-                >
-                  Learn More →
-                </a>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-    )}
-
-    <!-- All Guardians -->
-    <section class="mb-16">
-      <div class="text-center mb-12">
-        <h2 class="text-3xl font-bold text-gray-900 mb-4">🌟 All Guardians</h2>
-        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-          Discover all the organizations supporting the open source ecosystem.
-        </p>
-      </div>
-
-      <!-- Filter by Focus Area -->
-      <div class="flex flex-wrap justify-center gap-2 mb-8">
-        <button class="px-4 py-2 bg-gray-600 text-white rounded-lg text-sm font-medium">
-          All
-        </button>
-        {Array.from(new Set(allGuardians.flatMap(guardian => guardian.data.focus_areas))).map((area) => (
-          <button key={area} class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200">
-            {area}
-          </button>
-        ))}
-      </div>
-
-      <!-- Guardians Grid -->
-      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {allGuardians.map((guardian) => (
-          <div key={guardian.slug} class="bg-white rounded-lg shadow-sm border p-6">
-            <div class="flex items-start space-x-4 mb-4">
-              {guardian.data.logo_url && (
-                <img 
-                  src={guardian.data.logo_url} 
-                  alt={guardian.data.name}
-                  class="w-12 h-12 object-contain"
-                />
-              )}
-              <div class="flex-1">
-                <h3 class="font-semibold text-gray-900 text-lg mb-1">{guardian.data.name}</h3>
-                <p class="text-sm text-gray-600 capitalize">{guardian.data.type}</p>
-              </div>
-            </div>
-            
-            <p class="text-sm text-gray-700 mb-4 line-clamp-2">{guardian.data.description}</p>
-            
-            <div class="flex flex-wrap gap-1 mb-4">
-              {guardian.data.focus_areas.slice(0, 2).map((area) => (
-                <span key={area} class="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded">
-                  {area}
-                </span>
-              ))}
-            </div>
-            
-            <div class="flex items-center justify-between">
-              <div class="flex items-center space-x-2">
-                {guardian.data.verified && (
-                  <span class="text-green-600 text-xs">✅ Verified</span>
-                )}
-                {guardian.data.funding_available && (
-                  <span class="text-green-600 text-xs">💰 Funding</span>
-                )}
-              </div>
-              <a 
-                href={`/oss-wishlist-website/guardians/${guardian.slug}`}
-                class="text-gray-600 hover:text-gray-700 text-sm font-medium"
-              >
-                View →
-              </a>
-            </div>
-          </div>
-        ))}
-      </div>
-    </section>
-
+  <!-- Fund Specific Project Wishes Section -->
+  <section class="py-16 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-12">
         <h2 class="text-3xl font-bold text-gray-900 mb-4">Fund Specific Project Wishes</h2>
@@ -243,34 +89,6 @@ const featuredGuardians = allGuardians.filter(guardian => guardian.data.featured
               <span class="text-gray-700">Teams with specific expertise to share</span>
             </li>
           </ul>
-        </div>        <div class="bg-green-50 p-8 rounded-lg">
-          <h3 class="text-2xl font-bold text-green-900 mb-4">Perfect For</h3>
-          <div class="space-y-3">
-            <div class="flex items-center">
-              <svg class="w-5 h-5 text-green-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-              </svg>
-              <span class="text-green-800">One-time budget allocations</span>
-            </div>
-            <div class="flex items-center">
-              <svg class="w-5 h-5 text-green-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-              </svg>
-              <span class="text-green-800">Supporting dependencies you use</span>
-            </div>
-            <div class="flex items-center">
-              <svg class="w-5 h-5 text-green-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-              </svg>
-              <span class="text-green-800">Testing the waters with open source giving</span>
-            </div>
-            <div class="flex items-center">
-              <svg class="w-5 h-5 text-green-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-              </svg>
-              <span class="text-green-800">Teams with specific expertise to share</span>
-            </div>
-          </div>
         </div>
       </div>
       
@@ -285,136 +103,73 @@ const featuredGuardians = allGuardians.filter(guardian => guardian.data.featured
     </div>
   </section>
 
-  <!-- Ongoing Platform Support -->
-  <section id="ongoing-support" class="py-16 bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto px-4 py-16">
+    <!-- All Guardians -->
+    <section class="mb-16">
       <div class="text-center mb-12">
-        <h2 class="text-3xl font-bold text-gray-900 mb-4">Ongoing Platform Support</h2>
-        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-          Support the infrastructure that makes wish-granting possible. Help us maintain 
-          the platform, connect practitioners with projects, and grow the ecosystem.
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">🌟 All Guardians</h2>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+          Discover all the organizations supporting the open source ecosystem.
         </p>
       </div>
-      
-      <!-- Platform Support Tiers -->
-      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-        <!-- Platform Champion -->
-        <div class="bg-gradient-to-br from-gray-100 to-gray-200 p-6 rounded-lg border-2 border-gray-300">
-          <div class="text-center mb-4">
-            <h3 class="text-lg font-bold text-gray-800">Platform Champion</h3>
-            <p class="text-2xl font-bold text-gray-900 mt-2">$5,000+</p>
-            <p class="text-sm text-gray-600">annually</p>
-          </div>
-          <ul class="text-sm text-gray-700 space-y-2">
-            <li>• Logo on platform</li>
-            <li>• Feature input</li>
-            <li>• Quarterly updates</li>
-            <li>• Custom integrations</li>
-          </ul>
-        </div>
-        
-        <!-- Platform Supporter -->
-        <div class="bg-gradient-to-br from-blue-50 to-gray-200 p-6 rounded-lg border-2 border-blue-300">
-          <div class="text-center mb-4">
-            <h3 class="text-lg font-bold text-blue-800">Platform Supporter</h3>
-            <p class="text-2xl font-bold text-blue-900 mt-2">$1,000+</p>
-            <p class="text-sm text-blue-700">annually</p>
-          </div>
-          <ul class="text-sm text-blue-800 space-y-2">
-            <li>• Name on supporters page</li>
-            <li>• Impact reports</li>
-            <li>• Platform updates</li>
-            <li>• Community recognition</li>
-          </ul>
-        </div>
-        
-        <!-- Community Friend -->
-        <div class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-lg border-2 border-green-300">
-          <div class="text-center mb-4">
-            <h3 class="text-lg font-bold text-green-800">Community Friend</h3>
-            <p class="text-2xl font-bold text-green-900 mt-2">$100+</p>
-            <p class="text-sm text-green-700">annually</p>
-          </div>
-          <ul class="text-sm text-green-800 space-y-2">
-            <li>• Listed as supporter</li>
-            <li>• Impact updates</li>
-            <li>• Supporter badge</li>
-            <li>• Early feature access</li>
-          </ul>
-        </div>
-        
-        <!-- One-time -->
-        <div class="bg-gradient-to-br from-orange-50 to-orange-100 p-6 rounded-lg border-2 border-gray-300">
-          <div class="text-center mb-4">
-            <h3 class="text-lg font-bold text-gray-700">One-time Gift</h3>
-            <p class="text-2xl font-bold text-gray-800 mt-2">Any Amount</p>
-            <p class="text-sm text-gray-700">when you can</p>
-          </div>
-          <ul class="text-sm text-gray-700 space-y-2">
-            <li>• Thank you note</li>
-            <li>• Impact update</li>
-            <li>• Good karma</li>
-            <li>• Platform sustainability</li>
-          </ul>
-        </div>
-      </div>
-      
-      <!-- Current Platform Supporters -->
-      <div class="bg-white p-8 rounded-lg">
-        <h3 class="text-2xl font-bold text-center mb-8 text-gray-800">Current Platform Supporters</h3>
-        <div class="text-center text-gray-500 italic py-8">
-          Be the first to support the platform that makes wish-granting possible
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- Two-Path CTA -->
-  <section class="py-16 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-12">
-        <h2 class="text-3xl font-bold text-gray-900 mb-4">Choose Your Guardian Path</h2>
+      <!-- Filter by Focus Area -->
+      <div class="flex flex-wrap justify-center gap-2 mb-8">
+        <button class="px-4 py-2 bg-gray-600 text-white rounded-lg text-sm font-medium">
+          All
+        </button>
+        {Array.from(new Set(allGuardians.flatMap(guardian => guardian.data.focus_areas))).map((area) => (
+          <button key={area} class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200">
+            {area}
+          </button>
+        ))}
       </div>
-      
-      <div class="grid md:grid-cols-2 gap-8">
-        <!-- Direct Funding Path -->
-        <div class="bg-gray-100 p-8 rounded-lg text-center">
-          <h3 class="text-2xl font-bold text-blue-900 mb-4">Fund Specific Wishes</h3>
-          <p class="text-blue-800 mb-6">
-            Browse actual project needs. Fund what aligns with your mission. 
-            See direct impact from your contribution.
-          </p>
-          <div class="space-y-3 mb-6">
-            <p class="text-sm text-blue-700">✓ Choose exactly what to fund</p>
-            <p class="text-sm text-blue-700">✓ Direct connection to projects</p>
-            <p class="text-sm text-blue-700">✓ Immediate, measurable impact</p>
-            <p class="text-sm text-blue-700">✓ No ongoing commitments</p>
+
+      <!-- Guardians Grid -->
+      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {allGuardians.map((guardian) => (
+          <div key={guardian.slug} class="bg-white rounded-lg shadow-sm border p-6">
+            <div class="flex items-start space-x-4 mb-4">
+              {guardian.data.logo_url && (
+                <img 
+                  src={guardian.data.logo_url} 
+                  alt={guardian.data.name}
+                  class="w-12 h-12 object-contain"
+                />
+              )}
+              <div class="flex-1">
+                <h3 class="font-semibold text-gray-900 text-lg mb-1">{guardian.data.name}</h3>
+                <p class="text-sm text-gray-600 capitalize">{guardian.data.type}</p>
+              </div>
+            </div>
+            
+            <p class="text-sm text-gray-700 mb-4 line-clamp-2">{guardian.data.description}</p>
+            
+            <div class="flex flex-wrap gap-1 mb-4">
+              {guardian.data.focus_areas.slice(0, 2).map((area) => (
+                <span key={area} class="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded">
+                  {area}
+                </span>
+              ))}
+            </div>
+            
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-2">
+                {guardian.data.verified && (
+                  <span class="text-green-600 text-xs">✅ Verified</span>
+                )}
+              </div>
+              <a 
+                href={`/oss-wishlist-website/guardians/${guardian.slug}`}
+                class="text-gray-600 hover:text-gray-700 text-sm font-medium"
+              >
+                View →
+              </a>
+            </div>
           </div>
-          <a href={`${import.meta.env.BASE_URL}/wishlists`} class="bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
-            Browse Project Wishes
-          </a>
-        </div>
-        
-        <!-- Platform Support Path -->
-        <div class="bg-gray-100 p-8 rounded-lg text-center">
-          <h3 class="text-2xl font-bold text-gray-800 mb-4">Support the Platform</h3>
-          <p class="text-gray-700 mb-6">
-            Help maintain the infrastructure that connects projects with practitioners. 
-            Enable the ecosystem to grow and thrive.
-          </p>
-          <div class="space-y-3 mb-6">
-            <p class="text-sm text-gray-700">✓ Sustain the platform itself</p>
-            <p class="text-sm text-gray-700">✓ Help us reach more projects</p>
-            <p class="text-sm text-gray-700">✓ Enable ecosystem growth</p>
-            <p class="text-sm text-gray-700">✓ Recognition and input</p>
-          </div>
-          <a href="mailto:guardians@open-source-wishlist.com" class="bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
-            Become a Platform Supporter
-          </a>
-        </div>
+        ))}
       </div>
-    </div>
-  </section>
+    </section>
 
   <!-- Impact Stats -->
   <section class="py-16 bg-gray-900 text-white">

@@ -1,4 +1,9 @@
+// API endpoint to create GitHub issues for wishlists
+// 
+// Repository configuration is in /src/config/github.ts
+//
 import type { APIRoute } from 'astro';
+import { GITHUB_CONFIG } from '../../config/github.js';
 
 export const prerender = false;
 
@@ -32,7 +37,7 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
     
-    const { title, body: issueBody, labels } = body;
+    const { title, body: issueBody, labels, formData } = body;
 
     // Validate required fields
     if (!title || !issueBody) {
@@ -56,8 +61,46 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
+    // If we have form data, create a clean, readable issue body
+    let finalIssueBody = issueBody;
+    if (formData) {
+      // Map service IDs to proper service names
+      const serviceMap: { [key: string]: string } = {
+        'security-audit': 'Security Audit',
+        'dependency-security-audit': 'Dependency Security Audit',
+        'governance-setup': 'Governance Setup', 
+        'project-governance-setup': 'Project Governance Setup',
+        'legal-consultation': 'Legal Consultation',
+        'stakeholder-mediation': 'Stakeholder Mediation',
+        'funding-strategy': 'Funding Strategy'
+      };
+      
+      const servicesList = formData.services.map((serviceId: string) => {
+        const serviceName = serviceMap[serviceId] || serviceId;
+        return `- ${serviceName}`;
+      }).join('\n');
+      
+      // Create a clean, readable issue body similar to issue #5
+      finalIssueBody = `**Project:** ${formData.projectTitle}
+**Repository:** ${formData.projectUrl}
+**Maintainer:** @${formData.maintainer}
+**Urgency:** ${formData.urgency}
+
+## Services Requested
+${servicesList}
+
+## Project Description
+${formData.description}
+
+${formData.additionalNotes ? `## Additional Notes
+${formData.additionalNotes}` : ''}
+
+---
+*Submitted via [OSS Wishlist Platform](${process.env.PUBLIC_SITE_URL || 'https://oss-wishlist.com'})*`;
+    }
+
     // Create GitHub issue via API
-    const response = await fetch('https://api.github.com/repos/oss-wish-list/wishlists/issues', {
+    const response = await fetch(GITHUB_CONFIG.API_ISSUES_URL, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${githubToken}`,
@@ -67,7 +110,7 @@ export const POST: APIRoute = async ({ request }) => {
       },
       body: JSON.stringify({
         title,
-        body: issueBody,
+        body: finalIssueBody,
         labels: labels || ['wishlist']
       })
     });

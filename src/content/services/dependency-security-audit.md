@@ -6,6 +6,8 @@ service_type: "audit"
 estimated_hours: "40-60 hours"
 tags: ["security"]
 featured: true
+available: false
+unavailable_reason: "Seeking security specialists with open source expertise. Know someone?"
 prerequisites: "Project with over 1k downloads"
 deliverables: 
   - "(private) detailed Asecurity audit report"

@@ -2,70 +2,44 @@
 name: "Emma Irwin"
 title: "Open source strategy"
 company: ""
-bio: "Emma's bio"
+bio: "Emma has over 15 years' experience building with and for open source projects and their communities. Her experience spans multiple ‘open’ ecosystems including open data, education, science, access and innovation with recognized expertise in open source engineering, sustainability, security, governance,  metrics and community building. "
 avatar_url: "https://avatars.githubusercontent.com/u/60618?v=4"
-location: "San Francisco, CA"
+location: "Victoria, Canada"
 languages: ["English"]
 
-# Contact & Social
 email: "emma.irwin@gmail.com"
 website: "https://sunnydeveloper.com"
 github: "emmairwin"
-twitter: ""
+mastodon: ""
 linkedin: "https://www.linkedin.com/in/emmamirwin/"
 
-# Expertise
 specialties: 
-  - "Community"
-  - "Governance"
-  - "Funding"
+  - "Community Strategy"
+  - "Open Source Governance"
+  - "Moderation Strategy"
 
-# Availability & Pricing
 availability: "available"
-hourly_rate_range: "200-400"
 accepts_pro_bono: true
+pro_bono_criteria: "non-profit or solo maintainer; Not an employee of any big tech companies or paid for their role; Updates or adds Code of Conduct as part of engagement"
 
-# Experience & Credentials
-years_experience: 12
-notable_projects: 
-  - "Security audit of Express.js"
-  - "Vulnerability research for npm ecosystem"
-  - "Security consulting for Apache Foundation"
+years_experience: 18
+notable_experience: 
+  - "Open Source Programs Office, Microsoft"
+  - "Open Innovation Team, Mozilla"
+  - "Drupal and Moodle developer, ImageX, Royal Roads Univesity"
 certifications: 
-  - "CISSP"
-  - "CEH" 
-  - "OSCP"
+  - "Hugging Face MCP"
 
-# Metadata
-featured: true
 verified: true
-joined_date: 2024-01-15
-tags: ["security", "auditing", "nodejs", "python", "consulting"]
 ---
 
-## About Emma
+## Pro Bono Criteria
+Emma accepts some Pro Bono requests.
 
-Emma About
-
-### Professional Background
-
-prof background
-
-**Career Highlights:**
-- **title** 
+- Non-profit or solo maintainer
+- Not an employee of any big tech companies or paid for their role
+- Updates or adds Code of Conduct as part of engagement
+- Completes feedback survey
 
 
-### Core Expertise
 
-**Expertise 1**
-
-
-### Notable Contributions
-
-Emma has contributed to the security of numerous high-profile open source projects:
-
-- **United Nations Round Table on Digital Safety Metrics**: Identified and helped remediate critical vulnerabilities
-
-### Certifications & Credentials
-
--

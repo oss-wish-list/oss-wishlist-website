@@ -6,6 +6,8 @@ service_type: "consulting"
 estimated_hours: "12-18 hours"
 tags: ["funding"]
 featured: true
+available: false
+unavailable_reason: "Looking for funding strategy experts. Interested in helping projects?"
 prerequisites: "Open source project with demonstrated value and usage"
 deliverables:
   - "Custom funding strategy roadmap"

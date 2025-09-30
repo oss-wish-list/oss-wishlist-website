@@ -47,10 +47,16 @@ export function verifyState(receivedState: string, expectedState: string): boole
     return receivedState === expectedState;
   } else {
     // Server environment - use timing-safe comparison
-    return timingSafeEqual(
-      Buffer.from(receivedState, 'hex'),
-      Buffer.from(expectedState, 'hex')
-    );
+    // Convert strings to buffers with UTF-8 encoding
+    const receivedBuffer = Buffer.from(receivedState, 'utf8');
+    const expectedBuffer = Buffer.from(expectedState, 'utf8');
+    
+    // Ensure buffers are same length before comparison
+    if (receivedBuffer.length !== expectedBuffer.length) {
+      return false;
+    }
+    
+    return timingSafeEqual(receivedBuffer, expectedBuffer);
   }
 }
 

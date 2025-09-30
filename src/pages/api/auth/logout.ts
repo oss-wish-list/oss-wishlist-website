@@ -6,5 +6,5 @@ export const POST: APIRoute = async ({ cookies, redirect }) => {
     path: '/',
   });
   
-  return redirect('/submit?logout=success');
+  return redirect('/maintainers?logout=success');
 };

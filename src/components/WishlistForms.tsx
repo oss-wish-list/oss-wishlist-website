@@ -56,6 +56,7 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
   
   // Wishlist form state
   const [wishlistData, setWishlistData] = useState({
+    projectTitle: '',
     selectedServices: [] as string[],
     urgency: 'medium' as 'low' | 'medium' | 'high',
     timeline: '',
@@ -84,7 +85,7 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
     const error = urlParams.get('error');
         
     if (authStatus === 'success') {
-      window.location.href = '/oss-wishlist-website/submit';
+      window.location.href = '/oss-wishlist-website/maintainers';
     } else if (error) {
       setError(`Authentication failed: ${error.replace('_', ' ')}`);
     }
@@ -147,6 +148,19 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
   const handleSubmitWishlist = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log('Form submission started');
+    console.log('Current step:', currentStep);
+    console.log('Project title:', wishlistData.projectTitle);
+    console.log('Selected services:', wishlistData.selectedServices);
+    console.log('Manual repo data:', manualRepoData);
+    console.log('Selected repo:', selectedRepo);
+    console.log('User:', user);
+    
+    if (!wishlistData.projectTitle.trim()) {
+      setError('Please enter a project title');
+      return;
+    }
+    
     if (wishlistData.selectedServices.length === 0) {
       setError('Please select at least one service');
       return;
@@ -163,19 +177,22 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
         description: selectedRepo.description || ''
       } : null);
 
+      console.log('Repository info:', repoInfo);
+
       if (!repoInfo) {
-        throw new Error('Repository information is missing');
+        console.error('Repository information is missing');
+        throw new Error('Repository information is missing. Please go back and select or enter a repository.');
       }
 
       const selectedServiceTitles = wishlistData.selectedServices.map(
         serviceId => availableServices.find(s => s.id === serviceId)?.title || serviceId
       );
 
-      const issueTitle = `Wishlist: ${repoInfo.name} - ${selectedServiceTitles.join(', ')}`;
+      const issueTitle = `Wishlist: ${wishlistData.projectTitle} - ${selectedServiceTitles.join(', ')}`;
       const issueBody = `# 🎯 OSS Project Wishlist
 
 ## 📁 Project Information
-- **Project:** [${repoInfo.name}](${repoInfo.url})
+- **Project:** [${wishlistData.projectTitle}](${repoInfo.url})
 - **Maintainer:** @${repoInfo.username}
 - **Description:** ${repoInfo.description}
 
@@ -214,7 +231,16 @@ ${wishlistData.additionalNotes || 'None provided'}
         body: JSON.stringify({
           title: issueTitle,
           body: issueBody,
-          labels: ['wishlist', `${wishlistData.urgency}-priority`]
+          labels: ['wishlist', `${wishlistData.urgency}-priority`],
+          formData: {
+            projectTitle: wishlistData.projectTitle,
+            projectUrl: repoInfo.url,
+            maintainer: repoInfo.username,
+            services: wishlistData.selectedServices,
+            urgency: wishlistData.urgency,
+            description: repoInfo.description || '',
+            additionalNotes: wishlistData.additionalNotes || ''
+          }
         })
       });
 
@@ -232,6 +258,7 @@ ${wishlistData.additionalNotes || 'None provided'}
       });
       
     } catch (err) {
+      console.error('Form submission error:', err);
       setError(err instanceof Error ? err.message : 'Failed to create wishlist');
     } finally {
       setLoading(false);
@@ -442,6 +469,7 @@ ${wishlistData.additionalNotes || 'None provided'}
                     setSuccess(null);
                     setCurrentStep('auth');
                     setWishlistData({
+                      projectTitle: '',
                       selectedServices: [],
                       urgency: 'medium',
                       timeline: '',
@@ -470,6 +498,10 @@ ${wishlistData.additionalNotes || 'None provided'}
             <p className="text-gray-600">
               Select the services you need help with for your project.
             </p>
+            {/* Debug info */}
+            <div className="mt-2 text-xs text-gray-400">
+              Debug: Step={currentStep}, HasRepo={!!(manualRepoData || (selectedRepo && user))}
+            </div>
           </div>
 
           {error && (
@@ -477,6 +509,24 @@ ${wishlistData.additionalNotes || 'None provided'}
               <p className="text-red-800">{error}</p>
             </div>
           )}
+
+          {/* Project Title */}
+          <div className="bg-white p-6 rounded-lg shadow-sm border">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              📝 Project Title <span className="text-red-500">*</span>
+            </h3>
+            <input
+              type="text"
+              value={wishlistData.projectTitle}
+              onChange={(e) => setWishlistData(prev => ({ ...prev, projectTitle: e.target.value }))}
+              placeholder="Enter your project title (e.g., 'My Awesome Library')"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              required
+            />
+            <p className="text-sm text-gray-500 mt-2">
+              This will be the main title for your wishlist and how people will identify your project.
+            </p>
+          </div>
 
           {/* Services Selection */}
           <div className="bg-white p-6 rounded-lg shadow-sm border">
@@ -619,7 +669,7 @@ ${wishlistData.additionalNotes || 'None provided'}
               </button>
               <button
                 type="submit"
-                disabled={loading || wishlistData.selectedServices.length === 0}
+                disabled={loading || wishlistData.selectedServices.length === 0 || !wishlistData.projectTitle.trim()}
                 className="px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400 flex items-center space-x-2"
               >
                 {loading ? (

@@ -1,29 +1,27 @@
 ---
 import Layout from '../components/Layout.astro';
-import { getCollection } from 'astro:content';
+import AuthenticatedWishlists from '../components/AuthenticatedWishlists.tsx';
 
-// Get wishlists from content collections
-const allWishlists = await getCollection('wishlists');
-const wishlists = allWishlists
-  .filter(wishlist => wishlist.data.status === 'active')
-  .sort((a, b) => b.data.created_date.getTime() - a.data.created_date.getTime());
+// We'll fetch wishlists client-side from our API endpoint
+const statusColors = {
+  'Open': 'bg-blue-100 text-blue-800',
+  'In Progress': 'bg-yellow-100 text-yellow-800',
+  'Review': 'bg-purple-100 text-purple-800',
+  'Funded': 'bg-green-100 text-green-800',
+  'Completed': 'bg-gray-100 text-gray-800',
+  'On Hold': 'bg-red-100 text-red-800',
+};
 
 const urgencyColors = {
   low: 'bg-gray-200 text-green-800',
   medium: 'bg-yellow-100 text-yellow-800', 
-  high: 'bg-gray-200 text-gray-700'
-};
-
-const stageColors = {
-  early: 'bg-gray-200 text-blue-800',
-  growing: 'bg-gray-200 text-gray-700',
-  mature: 'bg-gray-100 text-gray-800',
-  scaling: 'bg-gray-200 text-gray-700',
-  'enterprise-ready': 'bg-gray-200 text-green-800'
+  high: 'bg-red-100 text-red-800',
+  critical: 'bg-red-200 text-red-900'
 };
 ---
 
 <Layout title="Browse Project Wishlists - OSS Wishlist" description="Discover open source projects seeking support. Find opportunities to sponsor, contribute, or provide services to maintainers.">
+  <AuthenticatedWishlists client:load>
   <!-- Hero Section -->
   <section class="bg-gradient-to-br from-gray-100 to-gray-200 py-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -32,7 +30,7 @@ const stageColors = {
           Discover Projects <span class="text-emerald-600">Seeking Support</span>
         </h1>
         <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-          Browse wishlists from open source maintainers looking for funding, services, and strategic support. 
+          Browse public wishlists from open source maintainers looking for funding, services, and strategic support. 
           Find projects that align with your interests or business needs.
         </p>
         
@@ -49,7 +47,7 @@ const stageColors = {
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
             </svg>
           </div>
-          <p class="text-sm text-gray-500 mt-2">Search across {wishlists.length} active project wishlists</p>
+          <p class="text-sm text-gray-500 mt-2">Search across GitHub wishlist issues</p>
         </div>
 
         <!-- CSV Upload Feature (Coming Soon) -->
@@ -95,9 +93,9 @@ const stageColors = {
         
         <div class="flex justify-center space-x-4">
           <a href="#filter" class="bg-gray-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
-            Browse Wishlists
+            Browse Public Wishlists
           </a>
-          <a href={`${import.meta.env.BASE_URL}/submit`} class="border border-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+          <a href={`${import.meta.env.BASE_URL}/maintainers`} class="border border-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
             Create Your Wishlist
           </a>
         </div>
@@ -110,7 +108,7 @@ const stageColors = {
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid md:grid-cols-3 gap-8 text-center">
         <div>
-          <div class="text-3xl font-bold text-gray-600">{wishlists.length}</div>
+          <div class="text-3xl font-bold text-gray-600" id="wishlist-count">Loading...</div>
           <p class="text-gray-600">Active Wishlists</p>
         </div>
         <div>
@@ -118,8 +116,8 @@ const stageColors = {
           <p class="text-gray-600">Technologies Represented</p>
         </div>
         <div>
-          <div class="text-3xl font-bold text-gray-600">8.5M+</div>
-          <p class="text-gray-600">Combined Monthly Downloads</p>
+          <div class="text-3xl font-bold text-gray-600">Live</div>
+          <p class="text-gray-600">GitHub Integration</p>
         </div>
       </div>
     </div>
@@ -172,98 +170,13 @@ const stageColors = {
       </div>
 
       <div id="wishlistsGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {wishlists.map((wishlist) => (
-          <div class="wishlist-card bg-white border rounded-lg shadow-sm hover:shadow-md transition-shadow p-6">
-            <!-- Project Header -->
-            <div class="flex items-start justify-between mb-4">
-              <div class="flex items-center space-x-3">
-                <div class="w-12 h-12 rounded bg-gray-600 flex items-center justify-center text-white font-bold">
-                  📦
-                </div>
-                <div>
-                  <h3 class="text-lg font-semibold text-gray-900">{wishlist.data.project_name}</h3>
-                  <p class="text-sm text-gray-600">@{wishlist.data.maintainer.username}</p>
-                </div>
-              </div>
-              <div class="flex space-x-2">
-                <span class={`px-2 py-1 text-xs rounded-full ${urgencyColors[wishlist.data.urgency]}`}>
-                  {wishlist.data.urgency} priority
-                </span>
-                <span class={`px-2 py-1 text-xs rounded-full ${stageColors[wishlist.data.project_stage]}`}>
-                  {wishlist.data.project_stage}
-                </span>
-              </div>
-            </div>
-
-            <!-- Project Stats -->
-            <div class="flex items-center space-x-4 mb-4 text-sm text-gray-600">
-              <span class="flex items-center">
-                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                </svg>
-                {wishlist.data.github_stars?.toLocaleString() || 'N/A'}
-              </span>
-              <span class="flex items-center">
-                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                </svg>
-                {wishlist.data.monthly_downloads || 'N/A'}/mo
-              </span>
-            </div>
-
-            <!-- Description -->
-            <p class="text-gray-700 mb-4">{wishlist.body.slice(0, 150)}...</p>
-
-            <!-- Services Needed -->
-            <div class="mb-4">
-              <h4 class="font-medium text-gray-900 mb-2">Looking for:</h4>
-                            <ul class="text-sm text-gray-600 space-y-1">
-                {wishlist.data.services_needed.slice(0, 3).map((service) => (
-                  <li class="flex items-start">
-                    <span class="text-gray-600 mr-2">•</span>
-                    {service}
-                  </li>
-                ))}
-                {wishlist.data.services_needed.length > 3 && (
-                  <li class="text-gray-600 text-xs">+ {wishlist.data.services_needed.length - 3} more...</li>
-                )}
-              </ul>
-            </div>
-
-            <!-- Tags -->
-            <div class="flex flex-wrap gap-2 mb-4">
-              {wishlist.data.tags.map((tag) => (
-                <span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">{tag}</span>
-              ))}
-            </div>
-
-            <!-- Actions -->
-            <div class="flex items-center justify-between pt-4 border-t">
-              <div class="flex space-x-2">
-                <a 
-                  href={`${import.meta.env.BASE_URL}/wishlist/${wishlist.slug}`}
-                  class="bg-gray-100 text-gray-700 px-4 py-2 rounded text-sm hover:bg-gray-200 transition-colors"
-                >
-                  View Details
-                </a>
-                <a 
-                  href={wishlist.data.repo_url}
-                  target="_blank"
-                  rel="noopener noreferrer" 
-                  class="border border-gray-300 text-gray-700 px-4 py-2 rounded text-sm hover:bg-gray-50 transition-colors"
-                >
-                  GitHub
-                </a>
-              </div>
-              <a 
-                href={`${import.meta.env.BASE_URL}/fulfill/${wishlist.slug}`}
-                class="bg-gray-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-gray-700 transition-colors"
-              >
-                Fulfill This List
-              </a>
-            </div>
-          </div>
-        ))}
+        <!-- Loading state -->
+        <div id="loading" class="col-span-full text-center py-12">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-600 mx-auto mb-4"></div>
+          <p class="text-gray-600">Loading wishlists from GitHub...</p>
+        </div>
+        
+        <!-- Wishlists will be populated by JavaScript -->
       </div>
     </div>
   </section>
@@ -274,7 +187,7 @@ const stageColors = {
       <h2 class="text-3xl font-bold text-white mb-4">Have a Project That Needs Support?</h2>
       <p class="text-xl text-gray-200 mb-8">Create your wishlist and connect with supporters who want to help</p>
       <div class="flex justify-center space-x-4">
-        <a href={`${import.meta.env.BASE_URL}/submit`} class="bg-white text-gray-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+        <a href={`${import.meta.env.BASE_URL}/maintainers`} class="bg-white text-gray-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
           Create Your Wishlist
         </a>
         <a href={`${import.meta.env.BASE_URL}/maintainers`} class="border border-gray-300 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
@@ -285,65 +198,208 @@ const stageColors = {
   </section>
 
 <script>
+  // Wishlist data
+  let allWishlists = [];
+  
+  // Status colors mapping
+  const statusColors = {
+    'Open': 'bg-blue-100 text-blue-800',
+    'In Progress': 'bg-yellow-100 text-yellow-800',
+    'Review': 'bg-purple-100 text-purple-800',
+    'Funded': 'bg-green-100 text-green-800',
+    'Completed': 'bg-gray-100 text-gray-800',
+    'On Hold': 'bg-red-100 text-red-800',
+  };
+
+  const urgencyColors = {
+    low: 'bg-gray-200 text-green-800',
+    medium: 'bg-yellow-100 text-yellow-800', 
+    high: 'bg-red-100 text-red-800',
+    critical: 'bg-red-200 text-red-900'
+  };
+
+  // Fetch wishlists from GitHub
+  async function fetchWishlists() {
+    try {
+      const response = await fetch(`${window.location.origin}${import.meta.env.BASE_URL}/api/wishlists`);
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch wishlists');
+      }
+      
+      allWishlists = data;
+      
+      // Update stats
+      document.getElementById('wishlist-count').textContent = allWishlists.length;
+      
+      // Display wishlists
+      displayWishlists(allWishlists);
+      
+    } catch (error) {
+      console.error('Error fetching wishlists:', error);
+      document.getElementById('loading').innerHTML = `
+        <div class="text-center py-12">
+          <svg class="mx-auto h-12 w-12 text-red-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Error loading wishlists</h3>
+          <p class="text-gray-600">Unable to fetch data from GitHub. Please try again later.</p>
+        </div>
+      `;
+    }
+  }
+
+  // Display wishlists
+  function displayWishlists(wishlists) {
+    const grid = document.getElementById('wishlistsGrid');
+    const loading = document.getElementById('loading');
+    
+    if (loading) {
+      loading.remove();
+    }
+    
+    if (wishlists.length === 0) {
+      grid.innerHTML = `
+        <div class="col-span-full text-center py-12">
+          <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5.291A7.962 7.962 0 0112 20a7.962 7.962 0 01-5-1.709M15 17a2 2 0 11-4 0 2 2 0 014 0z"></path>
+          </svg>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">No wishlists found</h3>
+          <p class="text-gray-600">No open wishlist issues found on GitHub.</p>
+        </div>
+      `;
+      return;
+    }
+    
+    grid.innerHTML = wishlists.map(wishlist => createWishlistCard(wishlist)).join('');
+  }
+
+  // Create wishlist card HTML
+  function createWishlistCard(wishlist) {
+    const statusColorClass = statusColors[wishlist.status] || 'bg-gray-100 text-gray-800';
+    const urgencyColorClass = urgencyColors[wishlist.urgency] || 'bg-gray-100 text-gray-800';
+    
+    return `
+      <div class="wishlist-card bg-white border rounded-lg shadow-sm hover:shadow-md transition-shadow p-6" data-title="${wishlist.title.toLowerCase()}" data-maintainer="${wishlist.maintainerName.toLowerCase()}">
+        <!-- Project Header -->
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center space-x-3">
+            <img src="${wishlist.author.avatar_url}" alt="${wishlist.author.login}" class="w-10 h-10 rounded-full" />
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900">${wishlist.projectTitle}</h3>
+              <p class="text-sm text-gray-600">@${wishlist.maintainerName}</p>
+            </div>
+          </div>
+          <div class="flex flex-col space-y-1">
+            <span class="px-2 py-1 text-xs rounded-full ${statusColorClass}">
+              ${wishlist.status}
+            </span>
+            <span class="px-2 py-1 text-xs rounded-full ${urgencyColorClass}">
+              ${wishlist.urgency} priority
+            </span>
+          </div>
+        </div>
+
+        <!-- Services Needed -->
+        <div class="mb-4">
+          <h4 class="font-medium text-gray-900 mb-2">Looking for:</h4>
+          <ul class="text-sm text-gray-600 space-y-1">
+            ${wishlist.wishes.slice(0, 3).map(wish => `
+              <li class="flex items-start">
+                <span class="text-gray-600 mr-2">•</span>
+                ${wish}
+              </li>
+            `).join('')}
+            ${wishlist.wishes.length > 3 ? `
+              <li class="text-gray-600 text-xs">+ ${wishlist.wishes.length - 3} more...</li>
+            ` : ''}
+          </ul>
+        </div>
+
+        <!-- Labels -->
+        <div class="flex flex-wrap gap-2 mb-4">
+          ${wishlist.labels.map(label => `
+            <span class="px-2 py-1 text-xs rounded" style="background-color: #${label.color}20; color: #${label.color};">
+              ${label.name}
+            </span>
+          `).join('')}
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center justify-between pt-4 border-t">
+          <div class="flex space-x-2">
+            <a 
+              href="${wishlist.url}"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="bg-gray-100 text-gray-700 px-4 py-2 rounded text-sm hover:bg-gray-200 transition-colors"
+            >
+              View on GitHub
+            </a>
+          </div>
+          <span class="text-xs text-gray-500">
+            Issue #${wishlist.id}
+          </span>
+        </div>
+      </div>
+    `;
+  }
+
   // Search functionality
-  document.addEventListener('DOMContentLoaded', function() {
+  function performSearch() {
     const searchInput = document.getElementById('searchInput');
     const searchResults = document.getElementById('searchResults');
     const searchTerm = document.getElementById('searchTerm');
     const resultCount = document.getElementById('resultCount');
     const noResults = document.getElementById('noResults');
-    const wishlistCards = document.querySelectorAll('.wishlist-card');
-    const wishlistsGrid = document.getElementById('wishlistsGrid');
-
-    function performSearch() {
-      const query = searchInput.value.toLowerCase().trim();
-      
-      if (query === '') {
-        // Show all cards
-        wishlistCards.forEach(card => {
-          card.style.display = 'block';
-        });
-        searchResults.classList.add('hidden');
-        noResults.classList.add('hidden');
-        return;
-      }
-
-      let visibleCount = 0;
-      
-      wishlistCards.forEach(card => {
-        const projectName = card.getAttribute('data-project-name');
-        if (projectName.includes(query)) {
-          card.style.display = 'block';
-          visibleCount++;
-        } else {
-          card.style.display = 'none';
-        }
-      });
-
-      // Update search results info
-      searchTerm.textContent = searchInput.value;
-      resultCount.textContent = visibleCount;
-      
-      if (visibleCount > 0) {
-        searchResults.classList.remove('hidden');
-        noResults.classList.add('hidden');
-      } else {
-        searchResults.classList.add('hidden');
-        noResults.classList.remove('hidden');
-      }
-    }
-
-    // Search on input
-    searchInput.addEventListener('input', performSearch);
     
-    // Search on enter
-    searchInput.addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        performSearch();
-      }
+    const query = searchInput.value.toLowerCase().trim();
+    
+    if (query === '') {
+      // Show all wishlists
+      displayWishlists(allWishlists);
+      searchResults.classList.add('hidden');
+      noResults.classList.add('hidden');
+      return;
+    }
+    
+    // Filter wishlists based on search
+    const filteredWishlists = allWishlists.filter(wishlist => 
+      wishlist.title.toLowerCase().includes(query) ||
+      wishlist.projectTitle.toLowerCase().includes(query) ||
+      wishlist.maintainerName.toLowerCase().includes(query) ||
+      wishlist.wishes.some(wish => wish.toLowerCase().includes(query))
+    );
+    
+    // Update search results info
+    searchTerm.textContent = query;
+    resultCount.textContent = filteredWishlists.length;
+    searchResults.classList.remove('hidden');
+    
+    if (filteredWishlists.length === 0) {
+      noResults.classList.remove('hidden');
+      document.getElementById('wishlistsGrid').innerHTML = '';
+    } else {
+      noResults.classList.add('hidden');
+      displayWishlists(filteredWishlists);
+    }
+  }
+
+  // Initialize on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    // Fetch wishlists
+    fetchWishlists();
+    
+    // Set up search
+    const searchInput = document.getElementById('searchInput');
+    let searchTimeout;
+    
+    searchInput.addEventListener('input', function() {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(performSearch, 300);
     });
   });
 </script>
-
+  </AuthenticatedWishlists>
 </Layout>

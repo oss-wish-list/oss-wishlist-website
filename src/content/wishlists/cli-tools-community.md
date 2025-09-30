@@ -13,7 +13,7 @@ maintainer:
   display_name: "Alex Developer"
   email: "alex@example.com"
   github_id: 23456789
-  bio: "Systems programmer with practitionerise in CLI tools and Rust development"
+  bio: "Systems programmer with expertise in CLI tools and Rust development"
 
 # Wishlist Details  
 services_needed:

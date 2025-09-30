@@ -11,6 +11,8 @@ languages: ["English", "Greek", "German"]
 email: "christos@example.com"
 website: "https://example.com"
 github: "octocat"
+mastodon: ""
+linkedin: ""
 
 # Expertise
 specialties: 
@@ -20,12 +22,12 @@ specialties:
 
 # Availability & Pricing
 availability: "available"
-hourly_rate_range: "100-200"
 accepts_pro_bono: true
+pro_bono_criteria: "Open source projects with community focus; Projects that promote inclusion and diversity; Solo maintainers who need community building support"
 
 # Experience & Credentials
 years_experience: 8
-notable_projects: 
+notable_experience: 
   - "Community growth for Vue.js ecosystem"
   - "GitHub Community Program design"
   - "Contributor onboarding for Kubernetes"
@@ -34,10 +36,7 @@ certifications:
   - "GitHub Actions Certified"
 
 # Metadata
-featured: true
 verified: true
-joined_date: 2024-02-01
-tags: ["community", "devrel", "growth", "onboarding", "governance"]
 ---
 
 ## About Christos

@@ -6,7 +6,11 @@ import react from '@astrojs/react';
 export default defineConfig({
   site: 'https://oss-wish-list.github.io',
   base: '/oss-wishlist-website',
-  output: 'hybrid',
+  output: 'server',
+  server: {
+    port: 4324,
+    host: true
+  },
   integrations: [tailwind(), react()],
   markdown: {
     shikiConfig: {
