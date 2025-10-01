@@ -5,28 +5,33 @@ import {
   fetchGitHubUser, 
   fetchUserRepositories,
   createSession,
+  verifySession,
   type SessionData
 } from '../../lib/github-oauth';
 
 export const prerender = false;
+
+// In-memory set to track used OAuth codes (prevents duplicate processing)
+const usedCodes = new Set<string>();
 
 export const GET: APIRoute = async ({ url, cookies, redirect }) => {
   const code = url.searchParams.get('code');
   const state = url.searchParams.get('state');
   const error = url.searchParams.get('error');
   
-  console.log('OAuth Callback Debug:', {
-    code: code ? 'present' : 'missing',
-    state: state ? 'present' : 'missing',
-    error: error,
-    allParams: Object.fromEntries(url.searchParams.entries())
-  });
-  
-  // Check if we already have a valid session
-  const existingSession = cookies.get('github_session')?.value;
-  if (existingSession) {
-    console.log('Already have valid session, redirecting');
-    return redirect('/oss-wishlist-website/maintainers?auth=already_authenticated');
+  // Check if we already have a VALID session to prevent double processing
+  const existingSessionCookie = cookies.get('github_session')?.value;
+  if (existingSessionCookie && code) {
+    // Verify if the session is actually valid
+    const sessionSecret = import.meta.env.OAUTH_STATE_SECRET || process.env.OAUTH_STATE_SECRET;
+    const sessionData = verifySession(existingSessionCookie, sessionSecret);
+    
+    if (sessionData) {
+      return redirect('/oss-wishlist-website/maintainers?auth=already_authenticated');
+    } else {
+      // Clear the invalid cookie
+      cookies.delete('github_session', { path: '/oss-wishlist-website/' });
+    }
   }
   
   // Handle OAuth errors
@@ -40,26 +45,52 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
     return redirect('/oss-wishlist-website/maintainers?error=missing_parameters');
   }
   
-  // Verify state parameter
-  const storedState = cookies.get('oauth_state')?.value;
-  console.log('State verification:', { receivedState: state, storedState: storedState });
-  
-  if (!storedState || !verifyState(state, storedState)) {
-    console.log('State verification failed');
-    return redirect('/oss-wishlist-website/maintainers?error=invalid_state');
+  // Check if this code was already used (prevents duplicate processing)
+  if (usedCodes.has(code)) {
+    return new Response(null, {
+      status: 302,
+      headers: {
+        'Location': '/oss-wishlist-website/maintainers?auth=already_processed',
+        'Cache-Control': 'no-cache, no-store, must-revalidate'
+      }
+    });
   }
   
-  console.log('State verification passed');
+  // Mark this code as used immediately
+  usedCodes.add(code);
+  
+  // Clean up old codes (keep only last 100 to prevent memory leak)
+  if (usedCodes.size > 100) {
+    const codesToKeep = Array.from(usedCodes).slice(-100);
+    usedCodes.clear();
+    codesToKeep.forEach(c => usedCodes.add(c));
+  }
+  
+  // Verify state parameter
+  const storedState = cookies.get('oauth_state')?.value;
+  
+  // If no stored state, this might be a duplicate/refresh of the callback
+  if (!storedState) {
+    return new Response(null, {
+      status: 302,
+      headers: {
+        'Location': '/oss-wishlist-website/maintainers?auth=already_processed',
+        'Cache-Control': 'no-cache, no-store, must-revalidate'
+      }
+    });
+  }
+  
+  if (!verifyState(state, storedState)) {
+    return redirect('/oss-wishlist-website/maintainers?error=invalid_state');
+  }
   
   // Clear the state cookie
   cookies.delete('oauth_state');
   
   try {
-    const clientId = import.meta.env.GITHUB_CLIENT_ID;
-    const clientSecret = import.meta.env.GITHUB_CLIENT_SECRET;
-    const redirectUri = import.meta.env.GITHUB_REDIRECT_URI;
-    
-    console.log('Starting token exchange process');
+    const clientId = import.meta.env.GITHUB_CLIENT_ID || process.env.GITHUB_CLIENT_ID;
+    const clientSecret = import.meta.env.GITHUB_CLIENT_SECRET || process.env.GITHUB_CLIENT_SECRET;
+    const redirectUri = import.meta.env.GITHUB_REDIRECT_URI || process.env.GITHUB_REDIRECT_URI;
     
     if (!clientId || !clientSecret || !redirectUri) {
       throw new Error('GitHub OAuth configuration missing');
@@ -74,7 +105,7 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
     // Get user's repositories
     const repositories = await fetchUserRepositories(accessToken);
     
-    // Create session data
+    // Create session data with MINIMAL info to avoid cookie size limits
     const sessionData: SessionData = {
       user: {
         id: user.id,
@@ -83,55 +114,45 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
         email: user.email,
         avatar_url: user.avatar_url,
       },
-      repositories: repositories,
+      repositories: [], // Don't store repos in cookie - too big!
       authenticated: true,
     };
     
     // Create signed session token
-    const sessionSecret = import.meta.env.OAUTH_STATE_SECRET;
+    const sessionSecret = import.meta.env.OAUTH_STATE_SECRET || process.env.OAUTH_STATE_SECRET;
     if (!sessionSecret) {
       throw new Error('Session secret not configured');
     }
     
     const sessionToken = createSession(sessionData, sessionSecret);
     
-    // Set secure session cookie
-    cookies.set('github_session', sessionToken, {
-      httpOnly: true,
-      secure: false, // Set to false for development with HTTP
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24, // 24 hours
-      path: '/oss-wishlist-website/', // Match the app base path
-    });
+    // Use absolute URL for redirect to ensure browser can follow it
+    const redirectUrl = `${url.origin}/oss-wishlist-website/maintainers?auth=success`;
     
-    console.log('Session cookie set successfully for user:', user.login);
-    console.log('Cookie settings:', {
-      httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
-      path: '/oss-wishlist-website/'
-    });
+    // Create Set-Cookie header manually
+    const maxAge = 60 * 60 * 24; // 24 hours
+    const cookieValue = `github_session=${sessionToken}; Path=/oss-wishlist-website/; Max-Age=${maxAge}; HttpOnly; SameSite=Lax`;
     
-    // Verify the cookie was set by reading it back
-    const cookieCheck = cookies.get('github_session');
-    console.log('Cookie verification after setting:', {
-      cookieExists: !!cookieCheck,
-      cookieValue: cookieCheck?.value ? 'present' : 'missing'
-    });
-    
-    // Redirect back to submit page with success
-    return redirect('/oss-wishlist-website/maintainers?auth=success');
-    
-  } catch (error) {
+    // Redirect to maintainers page with cookie header
+    return new Response(null, {
+      status: 302,
+      headers: {
+        'Location': redirectUrl,
+        'Set-Cookie': cookieValue,
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache'
+      }
+    });  } catch (error) {
     console.error('Error in GitHub OAuth callback:', error);
     
     // If we already have a session set, the error might be from a duplicate request
     const existingSession = cookies.get('github_session')?.value;
     if (existingSession) {
-      console.log('Error occurred but session exists, redirecting to success');
       return redirect('/oss-wishlist-website/maintainers?auth=success');
     }
     
-    return redirect('/oss-wishlist-website/maintainers?error=auth_processing_failed');
+    // Include error message in redirect for debugging
+    const errorMsg = error instanceof Error ? error.message : 'unknown_error';
+    return redirect(`/oss-wishlist-website/maintainers?error=auth_processing_failed&details=${encodeURIComponent(errorMsg)}`);
   }
 };

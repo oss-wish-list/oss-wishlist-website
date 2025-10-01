@@ -26,21 +26,28 @@ const servicesData = services.map(service => ({
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="max-w-4xl mx-auto text-center">
         <h1 class="text-5xl font-bold text-gray-900 mb-6">
-          Services for <span class="text-gray-600">Open Source Maintainers</span>
+          Create Your <span class="text-gray-600">Project Wishlist</span>
         </h1>
         <p class="text-xl text-gray-600 mb-8">
-          From solo projects to large communities, get practitioner help to scale sustainably, 
-          build engaged communities, and create lasting impact.
+          Share what your open source project needs to thrive. From governance help to security audits, 
+          funding strategy to community building - get practitioner support to scale sustainably and create lasting impact.
         </p>
         <div class="flex justify-center space-x-4">
-          <button id="get-started-btn-hero" class="bg-gray-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
-            Get Started
-          </button>
           <a href="#services" class="border border-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
             View Services
           </a>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- Wishlist Form Section -->
+  <section id="wishlist-form-section" class="py-8 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Wishlist Form Component -->
+      <AuthenticatedForm client:load>
+        <WishlistForm client:load services={servicesData} />
+      </AuthenticatedForm>
     </div>
   </section>
 
@@ -86,51 +93,4 @@ const servicesData = services.map(service => ({
     </div>
   </section>
 
-  <!-- Expandable Wishlist Form Section -->
-  <section id="wishlist-form-section" class="py-16 bg-white hidden">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-12">
-        <h2 class="text-4xl font-bold text-gray-900 mb-4">
-          Create Your <span class="text-gray-600">Project Wishlist</span>
-        </h2>
-        <p class="text-xl text-gray-600 max-w-4xl mx-auto mb-8">
-          Share what your open source project needs to thrive. From governance help to security audits, 
-          funding strategy to community building - let supporters know how they can help make your project sustainable.
-        </p>
-      </div>
-
-      <!-- Wishlist Form Component -->
-      <AuthenticatedForm client:load>
-        <WishlistForm client:load services={servicesData} />
-      </AuthenticatedForm>
-    </div>
-  </section>
-
 </Layout>
-
-<script>
-  // Handle Get Started button clicks
-  document.addEventListener('DOMContentLoaded', function() {
-    const formSection = document.getElementById('wishlist-form-section');
-    const getStartedBtns = [
-      document.getElementById('get-started-btn-hero')
-    ].filter(btn => btn !== null);
-
-    function showFormSection() {
-      if (formSection) {
-        formSection.classList.remove('hidden');
-        formSection.scrollIntoView({ 
-          behavior: 'smooth',
-          block: 'start'
-        });
-      }
-    }
-
-    // Add click handlers to all Get Started buttons
-    getStartedBtns.forEach(btn => {
-      if (btn) {
-        btn.addEventListener('click', showFormSection);
-      }
-    });
-  });
-</script>

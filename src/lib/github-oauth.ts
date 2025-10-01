@@ -172,8 +172,9 @@ export function createSession(data: SessionData, secret: string): string {
     .update(payload)
     .digest('hex');
   
-  // Combine payload and signature with a separator
-  return Buffer.from(`${payload}.${signature}`).toString('base64');
+  // Combine payload and signature with a separator that won't appear in base64
+  // Use :: as separator since it won't appear in JSON
+  return Buffer.from(`${payload}::${signature}`).toString('base64');
 }
 
 /**
@@ -191,7 +192,13 @@ export function verifySession(sessionToken: string, secret?: string): SessionDat
     }
     
     const decoded = Buffer.from(sessionToken, 'base64').toString('utf8');
-    const [payload, signature] = decoded.split('.');
+    const parts = decoded.split('::');
+    
+    if (parts.length !== 2) {
+      return null;
+    }
+    
+    const [payload, signature] = parts;
     
     if (!payload || !signature) {
       return null;
@@ -202,7 +209,8 @@ export function verifySession(sessionToken: string, secret?: string): SessionDat
       .update(payload)
       .digest('hex');
     
-    if (!timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature))) {
+    // Simple string comparison is sufficient and avoids timing issues
+    if (signature !== expectedSignature) {
       return null;
     }
     

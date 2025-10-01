@@ -42,7 +42,6 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
     issueUrl: string;
     issueTitle: string;
   } | null>(null);
-  const [useManualEntry, setUseManualEntry] = useState(false);
   const [manualRepoUrl, setManualRepoUrl] = useState('');
   const [manualRepoData, setManualRepoData] = useState<{
     name: string;
@@ -148,14 +147,6 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
   const handleSubmitWishlist = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    console.log('Form submission started');
-    console.log('Current step:', currentStep);
-    console.log('Project title:', wishlistData.projectTitle);
-    console.log('Selected services:', wishlistData.selectedServices);
-    console.log('Manual repo data:', manualRepoData);
-    console.log('Selected repo:', selectedRepo);
-    console.log('User:', user);
-    
     if (!wishlistData.projectTitle.trim()) {
       setError('Please enter a project title');
       return;
@@ -176,8 +167,6 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
         username: user.login,
         description: selectedRepo.description || ''
       } : null);
-
-      console.log('Repository info:', repoInfo);
 
       if (!repoInfo) {
         console.error('Repository information is missing');
@@ -269,11 +258,12 @@ ${wishlistData.additionalNotes || 'None provided'}
   if (currentStep === 'auth') {
     return (
       <div className="max-w-4xl mx-auto">
+        {/* Manual Entry Form */}
         <div className="bg-white p-8 rounded-lg shadow-sm border mb-8">
-          <div className="max-w-md mx-auto text-center">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Create Your Wishlist</h3>
-            <p className="text-gray-600 text-sm mb-6">
-              Choose how you'd like to add your GitHub repository
+          <div className="max-w-md mx-auto">
+            <h3 className="text-xl font-bold text-gray-900 mb-2 text-center">Enter Repository URL</h3>
+            <p className="text-gray-600 text-sm mb-4 text-center">
+              Paste your GitHub repository URL below
             </p>
             
             {error && (
@@ -283,52 +273,10 @@ ${wishlistData.additionalNotes || 'None provided'}
             )}
             
             <div className="space-y-4">
-              {/* GitHub OAuth Option */}
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                <h4 className="font-semibold text-green-800 mb-2">Option 1: Sign in with GitHub</h4>
-                <p className="text-green-700 text-sm mb-3">
-                  🔒 Authenticate securely to access your repositories
-                </p>
-                <button
-                  onClick={initiateGitHubAuth}
-                  disabled={loading}
-                  className="w-full bg-gray-900 text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-800 disabled:bg-gray-400"
-                >
-                  {loading ? 'Connecting...' : 'Sign in with GitHub'}
-                </button>
-              </div>
-              
-              {/* Manual Entry Option */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h4 className="font-semibold text-blue-800 mb-2">Option 2: Enter Repository URL</h4>
-                <p className="text-blue-700 text-sm mb-3">
-                  📝 Manually enter your GitHub repository URL
-                </p>
-                <button
-                  onClick={() => setUseManualEntry(true)}
-                  className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700"
-                >
-                  Enter Repository URL
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Manual Entry Form */}
-        {useManualEntry && (
-          <div className="bg-white p-8 rounded-lg shadow-sm border mb-8">
-            <div className="max-w-md mx-auto">
-              <h3 className="text-xl font-bold text-gray-900 mb-2 text-center">Enter Repository URL</h3>
-              <p className="text-gray-600 text-sm mb-4 text-center">
-                Paste your GitHub repository URL below
-              </p>
-              
-              <div className="space-y-4">
-                <div>
-                  <label htmlFor="repo-url" className="block text-sm font-medium text-gray-700 mb-2">
-                    GitHub Repository URL
-                  </label>
+              <div>
+                <label htmlFor="repo-url" className="block text-sm font-medium text-gray-700 mb-2">
+                  GitHub Repository URL
+                </label>
                   <input
                     id="repo-url"
                     type="url"
@@ -347,21 +295,10 @@ ${wishlistData.additionalNotes || 'None provided'}
                   >
                     Continue
                   </button>
-                  <button
-                    onClick={() => {
-                      setUseManualEntry(false);
-                      setManualRepoUrl('');
-                      setError('');
-                    }}
-                    className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-                  >
-                    Back
-                  </button>
                 </div>
               </div>
             </div>
           </div>
-        )}
       </div>
     );
   }
