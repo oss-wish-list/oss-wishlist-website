@@ -4,7 +4,6 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
-    "dev:clean": "lsof -ti:4324 | xargs kill -9 2>/dev/null || true && astro dev",
     "start": "astro dev",
     "build": "astro build",
     "build:gh-pages": "astro build --base /oss-wishlist-website",
