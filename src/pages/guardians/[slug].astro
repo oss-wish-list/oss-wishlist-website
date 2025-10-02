@@ -1,25 +1,27 @@
 ---
 import Layout from '../../components/Layout.astro';
-import { getCollection } from 'astro:content';
+import { getCollection, getEntry } from 'astro:content';
 
-export async function getStaticPaths() {
-  const guardians = await getCollection('guardians');
-  return guardians.map((guardian) => ({
-    params: { slug: guardian.slug },
-    props: { guardian },
-  }));
+// In SSR mode, we need to fetch the guardian dynamically
+const { slug } = Astro.params;
+
+// Get the guardian entry
+const guardian = await getEntry('guardians', slug);
+
+// If guardian doesn't exist, return 404
+if (!guardian) {
+  return Astro.redirect('/404');
 }
 
-const { guardian } = Astro.props;
 const { Content } = await guardian.render();
 ---
 
-<Layout title={`${guardian.data.name} - Ecosystem Guardian`} description={guardian.data.description}>
+<Layout title={`${guardian.data.name} - Ecosystem Sponsor`} description={guardian.data.description}>
   <div class="max-w-6xl mx-auto px-4 py-12">
     <!-- Back Link -->
     <div class="mb-8">
       <a href="/oss-wishlist-website/ecosystem-guardians" class="text-gray-600 hover:text-orange-800 text-sm font-medium">
-        ← Back to Ecosystem Guardians
+        ← Back to Ecosystem Sponsors
       </a>
     </div>
 
@@ -56,8 +58,8 @@ const { Content } = await guardian.render();
           
           <div class="flex flex-wrap justify-center lg:justify-start gap-2 mb-4">
             {guardian.data.verified && (
-              <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-                ✅ Verified Guardian
+                            <span class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm font-medium">
+                ✅ Verified Sponsor
               </span>
             )}
             {guardian.data.funding_available && (
@@ -230,14 +232,14 @@ const { Content } = await guardian.render();
     <!-- CTA -->
     <div class="bg-orange-50 rounded-lg p-6 mt-8 text-center">
       <h3 class="text-lg font-bold text-gray-900 mb-2">Need Support from {guardian.data.name}?</h3>
-      <p class="text-gray-600 mb-4">Create a wishlist to get matched with appropriate guardians and funding opportunities.</p>
+      <p class="text-gray-600 mb-4">Create a wishlist to get matched with appropriate sponsors and funding opportunities.</p>
       <div class="flex flex-col sm:flex-row gap-3 justify-center">
         {guardian.data.contact_email && (
           <a 
             href={`mailto:${guardian.data.contact_email}?subject=OSS Project Support Request`}
             class="bg-orange-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-orange-700"
           >
-            Contact Guardian
+            Contact Sponsor
           </a>
         )}
         <a 

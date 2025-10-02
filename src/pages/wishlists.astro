@@ -330,6 +330,12 @@ const urgencyColors = {
         <div class="flex items-center justify-between pt-4 border-t">
           <div class="flex space-x-2">
             <a 
+              href="/oss-wishlist-website/fulfill?issue=${wishlist.id}"
+              class="bg-orange-500 text-white px-4 py-2 rounded text-sm hover:bg-orange-600 transition-colors"
+            >
+              Fulfill this wish
+            </a>
+            <a 
               href="${wishlist.url}"
               target="_blank"
               rel="noopener noreferrer"

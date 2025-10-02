@@ -1,6 +1,6 @@
 ---
 title: "How does funding work?"
-description: "Understanding the funding flow from guardians to projects"
+description: "Understanding the funding flow from sponsors to projects"
 category: "Funding"
 order: 1
 ---
@@ -18,7 +18,7 @@ Our funding model ensures transparency and direct impact for open source project
                                ▼
     ┌─────────────────┐   ┌─────────────────────────┐   ┌─────────────────┐
     │ Ecosystem       │──▶│     Funding Pool        │◀──│ Ecosystem       │
-    │ Guardian 1      │   │                         │   │ Guardian 2      │
+    │ Sponsor 1       │   │                         │   │ Sponsor 2       │
     │ (Company)       │   │  GitHub Sponsors or     │   │ (Foundation)    │
     └─────────────────┘   │  Open Collective        │   └─────────────────┘
                           └──────────┬──────────────┘

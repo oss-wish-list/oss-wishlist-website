@@ -12,7 +12,7 @@ social_media:
   twitter: "example2"
   linkedin: "example-company-2"
 
-# Guardian Focus
+# Sponsor Focus
 focus_areas: 
   - "Critical Infrastructure"
   - "Project Governance"

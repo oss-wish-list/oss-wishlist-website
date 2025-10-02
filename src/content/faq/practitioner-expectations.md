@@ -20,7 +20,7 @@ Practitioners are expected to maintain high standards of professionalism and qua
 - Share knowledge and document work for future maintainers
 
 **Reporting Requirements:**
-- Provide regular progress updates to guardians and maintainers
+- Provide regular progress updates to sponsors and maintainers
 - Document all work performed and outcomes achieved
 - Submit completion reports with recommendations for ongoing sustainability
 - Be available for follow-up questions and clarifications

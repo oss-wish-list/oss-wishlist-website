@@ -8,6 +8,7 @@ export default defineConfig({
   base: '/oss-wishlist-website',
   output: 'server',
   server: {
+    port: 4324,
     host: true
   },
   integrations: [tailwind(), react()],

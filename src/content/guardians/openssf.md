@@ -12,7 +12,7 @@ social_media:
   twitter: "example1"
   linkedin: "example-company-1"
 
-# Guardian Focus
+# Sponsor Focus
 focus_areas: 
   - "Security Audits"
   - "Dependency Management"

@@ -85,7 +85,7 @@ The site will work for browsing, but wishlist creation will be disabled without 
 
 - **For Maintainers**: Create wishlists describing what help your project needs
 - **For Practitioners**: Browse projects that need your expertise 
-- **For Ecosystem Guardians**: Support critical open source infrastructure
+- **For Ecosystem Sponsors**: Support critical open source infrastructure
 - **Service Catalog**: Browse available services and expertise areas
 
 ## 🛠️ Tech Stack
@@ -103,10 +103,10 @@ src/
 │   ├── index.astro       # Homepage
 │   ├── practitioners.astro # Browse practitioners
 │   ├── maintainers.astro  # Create wishlists
-│   └── ecosystem-guardians.astro # Guardian info
+│   └── ecosystem-guardians.astro # Sponsor info
 ├── content/              # Content collections (markdown files)
 │   ├── practitioners/    # Practitioner profiles
-│   ├── guardians/        # Guardian organizations
+│   ├── guardians/        # Sponsor organizations
 │   ├── services/         # Available services
 │   ├── wishlists/        # Project wishlists
 │   └── faq/              # FAQ entries
@@ -121,7 +121,7 @@ All content is in markdown files under `src/content/`:
 - **New Practitioner**: Add file to `src/content/practitioners/`
 - **New Service**: Add file to `src/content/services/`
 - **New FAQ**: Add file to `src/content/faq/`
-- **New Guardian**: Add file to `src/content/guardians/`
+- **New Sponsor**: Add file to `src/content/guardians/`
 
 ### Updating Pages
 Main pages are in `src/pages/` as `.astro` files. Edit directly and save - the dev server will auto-reload.
@@ -157,7 +157,7 @@ npm run preview  # Preview production build
 - **Homepage**: `/` - Main landing page
 - **For Maintainers**: `/maintainers` - Create project wishlists
 - **Practitioners**: `/practitioners` - Browse available practitioners
-- **Ecosystem Guardians**: `/ecosystem-guardians` - Guardian organizations
+- **Ecosystem Sponsors**: `/ecosystem-guardians` - Sponsor organizations
 - **FAQ**: `/faq` - Frequently asked questions
 - **Service Catalog**: `/catalog` - Browse all services
 
@@ -178,7 +178,7 @@ This person specializes in...
 ## 📚 Additional Info
 
 ### Project Status
-This is a working demo platform connecting open source maintainers with practitioners and ecosystem guardians.
+This is a working demo platform connecting open source maintainers with practitioners and ecosystem sponsors.
 
 ### Contributing
 The platform uses markdown-based content management. To add new content, create markdown files in the appropriate `src/content/` subdirectory.

@@ -34,7 +34,9 @@ interface GitHubRepository {
 
 const WishlistForm = ({ services = [] }: WishlistFormProps) => {
   const [user, setUser] = useState<GitHubUser | null>(null);
-  const [selectedRepo, setSelectedRepo] = useState<GitHubRepository | null>(null);
+  const [repositories, setRepositories] = useState<GitHubRepository[]>([]);
+  const [loadingRepos, setLoadingRepos] = useState(false);
+  const [selectedRepos, setSelectedRepos] = useState<GitHubRepository[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState<{
@@ -75,8 +77,62 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
   ];
 
   useEffect(() => {
-    checkAuthCallback();
+    // Check for auth callback first
+    const urlParams = new URLSearchParams(window.location.search);
+    const authStatus = urlParams.get('auth');
+    const error = urlParams.get('error');
+    
+    if (authStatus === 'success' || authStatus === 'already_authenticated') {
+      // Clear the URL params
+      window.history.replaceState({}, '', '/oss-wishlist-website/maintainers');
+      // Check if user is authenticated
+      checkUserSession();
+    } else if (error) {
+      setError(`Authentication failed: ${error.replace('_', ' ')}`);
+    } else {
+      // No auth callback, just check if user is logged in
+      checkUserSession();
+    }
   }, []);
+
+  const checkUserSession = async () => {
+    try {
+      setLoadingRepos(true);
+      const response = await fetch('/oss-wishlist-website/api/auth/session');
+      
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data.user);
+        // After confirming user is authenticated, fetch their repositories
+        await fetchUserRepositories();
+      } else {
+        setUser(null);
+        setRepositories([]);
+      }
+    } catch (err) {
+      setUser(null);
+      setRepositories([]);
+    } finally {
+      setLoadingRepos(false);
+    }
+  };
+
+  const fetchUserRepositories = async () => {
+    try {
+      const response = await fetch('/oss-wishlist-website/api/repositories');
+      
+      if (response.ok) {
+        const data = await response.json();
+        setRepositories(data.repositories || []);
+      } else {
+        // If fetching fails, just keep repositories empty
+        setRepositories([]);
+      }
+    } catch (err) {
+      console.error('Error fetching repositories:', err);
+      setRepositories([]);
+    }
+  };
 
   const checkAuthCallback = () => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -91,7 +147,7 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
   };
 
   const initiateGitHubAuth = () => {
-    setLoading(true);
+    setLoading(false);
     setError('');
     window.location.href = '/oss-wishlist-website/api/auth/github';
   };
@@ -130,7 +186,7 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
   };
 
   const proceedToWishlist = () => {
-    if ((user && selectedRepo) || manualRepoData) {
+    if ((user && selectedRepos.length > 0) || manualRepoData) {
       setCurrentStep('wishlist');
     }
   };
@@ -161,14 +217,19 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
     setError('');
 
     try {
-      const repoInfo = manualRepoData || (selectedRepo && user ? {
-        name: selectedRepo.name,
-        url: selectedRepo.html_url,
-        username: user.login,
-        description: selectedRepo.description || ''
-      } : null);
+      // Create array of repository info
+      const repositories = selectedRepos.length > 0 
+        ? selectedRepos.map(repo => ({
+            name: repo.name,
+            url: repo.html_url,
+            username: user?.login || '',
+            description: repo.description || ''
+          }))
+        : manualRepoData 
+          ? [manualRepoData]
+          : [];
 
-      if (!repoInfo) {
+      if (repositories.length === 0) {
         console.error('Repository information is missing');
         throw new Error('Repository information is missing. Please go back and select or enter a repository.');
       }
@@ -177,13 +238,21 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
         serviceId => availableServices.find(s => s.id === serviceId)?.title || serviceId
       );
 
-      const issueTitle = `Wishlist: ${wishlistData.projectTitle} - ${selectedServiceTitles.join(', ')}`;
+      const issueTitle = `Wishlist: ${wishlistData.projectTitle}`;
+      
+      // Format repositories section
+      const repositoriesSection = repositories.length === 1
+        ? `- **Project:** [${wishlistData.projectTitle}](${repositories[0].url})
+- **Maintainer:** @${repositories[0].username}
+- **Description:** ${repositories[0].description}`
+        : `- **Projects:**
+${repositories.map(repo => `  - [${repo.name}](${repo.url}) - ${repo.description || 'No description'}`).join('\n')}
+- **Maintainer:** @${repositories[0].username}`;
+
       const issueBody = `# 🎯 OSS Project Wishlist
 
 ## 📁 Project Information
-- **Project:** [${wishlistData.projectTitle}](${repoInfo.url})
-- **Maintainer:** @${repoInfo.username}
-- **Description:** ${repoInfo.description}
+${repositoriesSection}
 
 ## 🛠️ Services Requested
 ${wishlistData.selectedServices.map(serviceId => {
@@ -223,12 +292,13 @@ ${wishlistData.additionalNotes || 'None provided'}
           labels: ['wishlist', `${wishlistData.urgency}-priority`],
           formData: {
             projectTitle: wishlistData.projectTitle,
-            projectUrl: repoInfo.url,
-            maintainer: repoInfo.username,
+            projectUrl: repositories[0].url, // Use first repo as primary
+            maintainer: repositories[0].username,
             services: wishlistData.selectedServices,
             urgency: wishlistData.urgency,
-            description: repoInfo.description || '',
-            additionalNotes: wishlistData.additionalNotes || ''
+            description: repositories[0].description || '',
+            additionalNotes: wishlistData.additionalNotes || '',
+            repositories: repositories // Include all repositories
           }
         })
       });
@@ -254,14 +324,164 @@ ${wishlistData.additionalNotes || 'None provided'}
     }
   };
 
-  // Step 1: Authentication
+  // Step 1: Authentication / Repository Selection
   if (currentStep === 'auth') {
+    // If not authenticated, show sign-in prompt
+    if (!user && !loadingRepos) {
+      return (
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white p-8 rounded-lg shadow-sm border text-center">
+            <div className="mb-6">
+              <svg className="mx-auto h-16 w-16 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">Authentication Required</h3>
+            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+              Please sign in with GitHub to create a wishlist. This helps us verify project ownership and prevent spam.
+            </p>
+            <button
+              onClick={initiateGitHubAuth}
+              className="inline-flex items-center bg-gray-900 text-white px-8 py-4 rounded-lg font-semibold hover:bg-gray-800 transition-colors text-lg"
+            >
+              <svg className="w-6 h-6 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clipRule="evenodd" />
+              </svg>
+              Sign in with GitHub
+            </button>
+            <div className="mt-8 text-sm text-gray-500">
+              <h4 className="font-medium text-gray-700 mb-2">Why we require authentication:</h4>
+              <ul className="text-left inline-block">
+                <li className="flex items-center mb-1">
+                  <svg className="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  Verify project ownership
+                </li>
+                <li className="flex items-center mb-1">
+                  <svg className="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  Prevent spam and abuse
+                </li>
+                <li className="flex items-center">
+                  <svg className="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  Connect with your GitHub profile
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Loading repositories
+    if (loadingRepos) {
+      return (
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white p-8 rounded-lg shadow-sm border text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading your repositories...</p>
+          </div>
+        </div>
+      );
+    }
+
+    // Authenticated user - show repositories and manual entry
     return (
       <div className="max-w-4xl mx-auto">
+        {/* Show user's repositories if authenticated */}
+        {repositories.length > 0 && (
+          <div className="bg-white p-8 rounded-lg shadow-sm border mb-8">
+            <div className="max-w-2xl mx-auto">
+              <h3 className="text-xl font-bold text-gray-900 mb-2 text-center">Select Your Repositories</h3>
+              <p className="text-gray-600 text-sm mb-2 text-center">
+                Choose up to 3 repositories from your GitHub account
+              </p>
+              <p className="text-blue-600 text-xs mb-6 text-center">
+                {selectedRepos.length}/3 selected
+              </p>
+              
+              {error && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
+                  <p className="text-red-800 text-sm">{error}</p>
+                </div>
+              )}
+              
+              <div className="space-y-2 max-h-96 overflow-y-auto mb-6">
+                {repositories.map((repo) => {
+                  const isSelected = selectedRepos.some(r => r.id === repo.id);
+                  const canSelect = selectedRepos.length < 3 || isSelected;
+                  
+                  return (
+                    <button
+                      key={repo.id}
+                      onClick={() => {
+                        if (isSelected) {
+                          setSelectedRepos(selectedRepos.filter(r => r.id !== repo.id));
+                        } else if (canSelect) {
+                          setSelectedRepos([...selectedRepos, repo]);
+                        }
+                      }}
+                      disabled={!canSelect}
+                      className={`w-full text-left p-4 border rounded-lg transition-colors ${
+                        isSelected 
+                          ? 'border-blue-500 bg-blue-50' 
+                          : canSelect
+                            ? 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'
+                            : 'border-gray-200 bg-gray-50 opacity-50 cursor-not-allowed'
+                      }`}
+                    >
+                      <div className="flex items-start gap-3">
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          readOnly
+                          className="mt-1"
+                          disabled={!canSelect}
+                        />
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-gray-900">{repo.name}</h4>
+                          {repo.description && (
+                            <p className="text-sm text-gray-600 mt-1">{repo.description}</p>
+                          )}
+                          <div className="flex items-center gap-3 mt-2">
+                            {repo.language && (
+                              <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
+                                {repo.language}
+                              </span>
+                            )}
+                            <span className="text-xs text-gray-500">
+                              ⭐ {repo.stargazers_count}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+              
+              {selectedRepos.length > 0 && (
+                <button
+                  onClick={() => setCurrentStep('repo')}
+                  className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+                >
+                  Continue with {selectedRepos.length} {selectedRepos.length === 1 ? 'Repository' : 'Repositories'}
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Manual Entry Form */}
         <div className="bg-white p-8 rounded-lg shadow-sm border mb-8">
           <div className="max-w-md mx-auto">
-            <h3 className="text-xl font-bold text-gray-900 mb-2 text-center">Enter Repository URL</h3>
+            <h3 className="text-xl font-bold text-gray-900 mb-2 text-center">
+              {repositories.length > 0 ? 'Or Enter Repository URL Manually' : 'Enter Repository URL'}
+            </h3>
             <p className="text-gray-600 text-sm mb-4 text-center">
               Paste your GitHub repository URL below
             </p>
@@ -305,21 +525,41 @@ ${wishlistData.additionalNotes || 'None provided'}
 
   // Step 2: Repository Selection/Confirmation
   if (currentStep === 'repo') {
-    if (manualRepoData) {
+    // Show manual repo confirmation OR selected repos from OAuth
+    if (manualRepoData || selectedRepos.length > 0) {
       return (
         <div className="max-w-4xl mx-auto">
           <div className="bg-white p-6 rounded-lg shadow-sm border mb-8">
-            <div className="max-w-md mx-auto">
+            <div className="max-w-2xl mx-auto">
               <h3 className="text-lg font-semibold text-gray-900 mb-4 text-center">
                 Confirm Repository Details
               </h3>
               
-              <div className="bg-gray-50 border rounded-lg p-4 mb-6">
-                <h4 className="font-semibold text-gray-900">{manualRepoData.name}</h4>
-                <p className="text-sm text-gray-600 mt-1">{manualRepoData.description}</p>
-                <p className="text-sm text-blue-600 mt-2">{manualRepoData.url}</p>
-                <p className="text-sm text-gray-500 mt-2">Maintainer: @{manualRepoData.username}</p>
-              </div>
+              {manualRepoData && (
+                <div className="bg-gray-50 border rounded-lg p-4 mb-6">
+                  <h4 className="font-semibold text-gray-900">{manualRepoData.name}</h4>
+                  <p className="text-sm text-gray-600 mt-1">{manualRepoData.description}</p>
+                  <p className="text-sm text-blue-600 mt-2">{manualRepoData.url}</p>
+                  <p className="text-sm text-gray-500 mt-2">Maintainer: @{manualRepoData.username}</p>
+                </div>
+              )}
+              
+              {selectedRepos.length > 0 && (
+                <div className="space-y-3 mb-6">
+                  <p className="text-sm text-gray-600 text-center mb-3">
+                    {selectedRepos.length} {selectedRepos.length === 1 ? 'repository' : 'repositories'} selected
+                  </p>
+                  {selectedRepos.map((repo) => (
+                    <div key={repo.id} className="bg-gray-50 border rounded-lg p-4">
+                      <h4 className="font-semibold text-gray-900">{repo.name}</h4>
+                      {repo.description && (
+                        <p className="text-sm text-gray-600 mt-1">{repo.description}</p>
+                      )}
+                      <p className="text-sm text-blue-600 mt-2">{repo.html_url}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
               
               <div className="flex space-x-3">
                 <button
@@ -332,6 +572,7 @@ ${wishlistData.additionalNotes || 'None provided'}
                   onClick={() => {
                     setManualRepoData(null);
                     setManualRepoUrl('');
+                    setSelectedRepos([]);
                     setCurrentStep('auth');
                   }}
                   className="px-4 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
@@ -437,7 +678,7 @@ ${wishlistData.additionalNotes || 'None provided'}
             </p>
             {/* Debug info */}
             <div className="mt-2 text-xs text-gray-400">
-              Debug: Step={currentStep}, HasRepo={!!(manualRepoData || (selectedRepo && user))}
+              Debug: Step={currentStep}, HasRepo={!!(manualRepoData || (selectedRepos.length > 0 && user))}
             </div>
           </div>
 
@@ -461,7 +702,7 @@ ${wishlistData.additionalNotes || 'None provided'}
               required
             />
             <p className="text-sm text-gray-500 mt-2">
-              This will be the main title for your wishlist and how people will identify your project.
+              This will be the main title for your wishlist and how people will identify and triage your project or projects
             </p>
           </div>
 

@@ -1,16 +1,18 @@
 ---
 import Layout from '../../components/Layout.astro';
-import { getCollection } from 'astro:content';
+import { getCollection, getEntry } from 'astro:content';
 
-export async function getStaticPaths() {
-  const practitioners = await getCollection('practitioners');
-  return practitioners.map((practitioner) => ({
-    params: { slug: practitioner.slug },
-    props: { practitioner },
-  }));
+// In SSR mode, we need to fetch the practitioner dynamically
+const { slug } = Astro.params;
+
+// Get the practitioner entry
+const practitioner = await getEntry('practitioners', slug);
+
+// If practitioner doesn't exist, return 404
+if (!practitioner) {
+  return Astro.redirect('/404');
 }
 
-const { practitioner } = Astro.props;
 const { Content } = await practitioner.render();
 ---
 
@@ -177,7 +179,19 @@ const { Content } = await practitioner.render();
                 💰 View pricing tiers by service
               </a>
               {practitioner.data.accepts_pro_bono && (
-                <p class="text-gray-600 mt-3">💝 Pro bono work available</p>
+                <div class="mt-3">
+                  <p class="text-gray-900 font-medium">💝 Pro bono work available</p>
+                  {practitioner.data.pro_bono_capacity_per_month && (
+                    <p class="text-gray-600 text-sm mt-1">
+                      Capacity: {practitioner.data.pro_bono_capacity_per_month} {practitioner.data.pro_bono_capacity_per_month === 1 ? 'contract' : 'contracts'} per month
+                    </p>
+                  )}
+                  {practitioner.data.pro_bono_criteria && (
+                    <p class="text-gray-600 text-sm mt-2">
+                      <span class="font-medium">Criteria:</span> {practitioner.data.pro_bono_criteria}
+                    </p>
+                  )}
+                </div>
               )}
             </div>
           </div>

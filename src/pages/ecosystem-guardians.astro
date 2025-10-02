@@ -6,17 +6,17 @@ const allGuardians = await getCollection('guardians');
 const featuredGuardians = allGuardians.filter(guardian => guardian.data.featured);
 ---
 
-<Layout title="Ecosystem Guardians - Open Source Wishlist" description="Organizations and individuals protecting and supporting the open source ecosystem">
+<Layout title="Ecosystem Sponsors - Open Source Wishlist" description="Organizations and individuals protecting and supporting the open source ecosystem">
   <!-- Hero Section -->
   <section class="bg-gradient-to-br from-gray-100 to-gray-200 py-20">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="max-w-4xl mx-auto text-center">
         <h1 class="text-5xl font-bold text-gray-900 mb-6">
-          <span class="text-emerald-600">Ecosystem Guardians</span>
+          <span class="text-emerald-600">Ecosystem Sponsors</span>
         </h1>
         <p class="text-xl text-gray-600 mb-8">
           Meet the organizations, foundations and individuals protecting and nurturing the open source ecosystem. 
-          From security audits to funding programs, these guardians help ensure OSS remains healthy and sustainable.
+          From security audits to funding programs, these sponsors help ensure OSS remains healthy and sustainable.
         </p>
       </div>
     </div>
@@ -104,10 +104,10 @@ const featuredGuardians = allGuardians.filter(guardian => guardian.data.featured
   </section>
 
   <div class="max-w-7xl mx-auto px-4 py-16">
-    <!-- All Guardians -->
+    <!-- All Sponsors -->
     <section class="mb-16">
       <div class="text-center mb-12">
-        <h2 class="text-3xl font-bold text-gray-900 mb-4">🌟 All Guardians</h2>
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">🌟 All Sponsors</h2>
         <p class="text-lg text-gray-600 max-w-2xl mx-auto">
           Discover all the organizations supporting the open source ecosystem.
         </p>
@@ -125,7 +125,7 @@ const featuredGuardians = allGuardians.filter(guardian => guardian.data.featured
         ))}
       </div>
 
-      <!-- Guardians Grid -->
+      <!-- Sponsors Grid -->
       <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {allGuardians.map((guardian) => (
           <div key={guardian.slug} class="bg-white rounded-lg shadow-sm border p-6">
@@ -175,7 +175,7 @@ const featuredGuardians = allGuardians.filter(guardian => guardian.data.featured
   <section class="py-16 bg-gray-900 text-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-12">
-        <h2 class="text-3xl font-bold mb-4">Guardian Impact</h2>
+        <h2 class="text-3xl font-bold mb-4">Sponsor Impact</h2>
         <p class="text-xl text-gray-300">Every contribution makes open source more sustainable</p>
       </div>
       
@@ -197,7 +197,7 @@ const featuredGuardians = allGuardians.filter(guardian => guardian.data.featured
         
         <div class="text-center">
           <div class="text-4xl font-bold text-orange-400 mb-2">0</div>
-          <p class="text-gray-300">Active guardians</p>
+          <p class="text-gray-300">Active sponsors</p>
         </div>
       </div>
     </div>

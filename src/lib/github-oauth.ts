@@ -67,7 +67,7 @@ export function getGitHubAuthUrl(clientId: string, redirectUri: string, state: s
   const params = new URLSearchParams({
     client_id: clientId,
     redirect_uri: redirectUri,
-    scope: 'read:user user:email', // Minimal scope - removed repo
+    scope: 'read:user user:email', // Only user profile info - no repo access needed
     state: state,
     response_type: 'code'
   });
@@ -130,13 +130,14 @@ export async function fetchGitHubUser(accessToken: string): Promise<GitHubUser> 
 }
 
 /**
- * Fetch user's repositories with admin access
+ * Fetch user's public repositories using their username
+ * This uses the public API and doesn't require repo OAuth scopes
  */
-export async function fetchUserRepositories(accessToken: string): Promise<GitHubRepository[]> {
-  const response = await fetch('https://api.github.com/user/repos?per_page=100&sort=updated&affiliation=owner', {
+export async function fetchUserRepositories(username: string): Promise<GitHubRepository[]> {
+  const response = await fetch(`https://api.github.com/users/${username}/repos?per_page=100&sort=updated&type=owner`, {
     headers: {
-      'Authorization': `Bearer ${accessToken}`,
-      'Accept': 'application/vnd.github.v3+json'
+      'Accept': 'application/vnd.github.v3+json',
+      'User-Agent': 'OSS-Wishlist-App'
     }
   });
 
@@ -146,8 +147,8 @@ export async function fetchUserRepositories(accessToken: string): Promise<GitHub
 
   const repos = await response.json();
   
-  // Filter for repositories where user has admin access
-  return repos.filter((repo: any) => repo.permissions?.admin === true);
+  // Return all repositories (they're already filtered to ones the user owns)
+  return repos;
 }
 
 /**
@@ -157,6 +158,7 @@ export interface SessionData {
   user: GitHubUser;
   repositories: GitHubRepository[];
   authenticated: boolean;
+  accessToken?: string; // OAuth access token for API calls
 }
 
 /**

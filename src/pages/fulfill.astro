@@ -1,14 +1,14 @@
 ---
 import Layout from '../components/Layout.astro';
 import { getCollection } from 'astro:content';
+import { GITHUB_CONFIG } from '../config/github.js';
+
+const GITHUB_TOKEN = import.meta.env.GITHUB_TOKEN;
 
 // Get practitioners for the dropdown
 const practitioners = await getCollection('practitioners');
 
-// Get wishlist data and services for detailed display
-let wishlistData = null;
-let debugInfo = '';
-const wishlists = await getCollection('wishlists');
+// Get services for detailed display
 const services = await getCollection('services');
 
 // Create a lookup map for services by title
@@ -17,57 +17,75 @@ const servicesByTitle = services.reduce((acc, service) => {
   return acc;
 }, {});
 
-// Try multiple ways to get URL parameters
+// Try to get URL parameters
 const url = Astro.url;
-const request = Astro.request;
+let wishlistData = null;
+let issueNumber = null;
+let githubIssue = null;
 
-// Debug what we're getting
-console.log('=== FULFILL PAGE DEBUG ===');
-console.log('Astro.url.href:', url.href);
-console.log('Astro.url.search:', url.search);
-console.log('Astro.request.url:', request.url);
+// Check for issue parameter (GitHub issue number)
+issueNumber = url.searchParams.get('issue');
 
-// Extract parameters from the URL
-let wishlistParam = null;
-let projectParam = null;
-
-// Method 1: Try Astro.url.searchParams
-wishlistParam = url.searchParams.get('wishlist');
-projectParam = url.searchParams.get('project');
-
-// Method 2: If that doesn't work, parse from request.url
-if (!wishlistParam && request.url.includes('?')) {
+if (issueNumber && GITHUB_TOKEN) {
   try {
-    const requestUrl = new URL(request.url);
-    wishlistParam = requestUrl.searchParams.get('wishlist');
-    projectParam = requestUrl.searchParams.get('project');
-  } catch (e) {
-    console.error('Error parsing request URL:', e);
-  }
-}
+    // Fetch the GitHub issue data
+    const response = await fetch(
+      `${GITHUB_CONFIG.API_ISSUES_URL}/${issueNumber}`,
+      {
+        headers: {
+          'Authorization': `token ${GITHUB_TOKEN}`,
+          'Accept': 'application/vnd.github.v3+json',
+        },
+      }
+    );
 
-// Method 3: Manual parsing as last resort
-if (!wishlistParam && url.href.includes('?')) {
-  const queryString = url.href.split('?')[1];
-  if (queryString) {
-    const params = new URLSearchParams(queryString);
-    wishlistParam = params.get('wishlist');
-    projectParam = params.get('project');
-  }
-}
-
-console.log('Final extracted params:', { wishlist: wishlistParam, project: projectParam });
-
-if (wishlistParam) {
-  try {
-    wishlistData = wishlists.find(w => w.slug === wishlistParam);
-    debugInfo = `Found wishlist: ${wishlistData ? wishlistData.data.project_name : 'Not found'} | Available: ${wishlists.map(w => w.slug).join(', ')}`;
+    if (response.ok) {
+      githubIssue = await response.json();
+      
+      // Parse the issue body to extract wishes/services
+      const body = githubIssue.body || '';
+      const wishes: string[] = [];
+      const lines = body.split('\n');
+      
+      let inServicesSection = false;
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        
+        if (line === '## Services Requested' || line.includes('Services Requested')) {
+          inServicesSection = true;
+          continue;
+        }
+        
+        // Stop if we hit another section
+        if (inServicesSection && (line.startsWith('##') || line.startsWith('---'))) {
+          break;
+        }
+        
+        // Parse service items
+        if (inServicesSection && line.startsWith('- ')) {
+          const service = line
+            .replace(/^-\s*(\[\s*[x\s]?\s*\])?\s*/, '')
+            .trim();
+          if (service) {
+            wishes.push(service);
+          }
+        }
+      }
+      
+      // Extract project name from title or body
+      let projectName = githubIssue.title.replace(/^Wishlist:\s*/i, '').trim();
+      
+      wishlistData = {
+        issueNumber: githubIssue.number,
+        projectName: projectName,
+        wishes: wishes,
+        url: githubIssue.html_url,
+        maintainer: githubIssue.user.login
+      };
+    }
   } catch (error) {
-    console.error('Error loading wishlist data:', error);
-    debugInfo = `Error: ${error.message}`;
+    console.error('Error fetching GitHub issue:', error);
   }
-} else {
-  debugInfo = `No wishlist param provided. URL: ${url.href} | Available: ${wishlists.map(w => w.slug).join(', ')}`;
 }
 ---
 
@@ -82,24 +100,6 @@ if (wishlistParam) {
         <p class="text-gray-600 mb-8">
           Thank you for your interest in supporting open source projects. Please fill out this form to begin the fulfillment process for a wishlist.
         </p>
-        
-        <!-- Debug info (remove in production) -->
-        <div class="bg-yellow-50 border border-yellow-200 rounded-md p-4 mb-6">
-          <p class="text-sm text-yellow-800">
-            <strong>Debug:</strong> {debugInfo}
-          </p>
-          <p class="text-sm text-yellow-700 mt-1">
-            <strong>URL:</strong> {url.href}
-          </p>
-          <p class="text-sm text-yellow-700">
-            <strong>Params:</strong> wishlist={wishlistParam}, project={projectParam}
-          </p>
-          {wishlistData && (
-            <p class="text-sm text-green-800 mt-2">
-              <strong>Services needed:</strong> {wishlistData.data.services_needed?.join(', ') || 'None'}
-            </p>
-          )}
-        </div>
 
         <form class="space-y-6" method="POST" action="/api/fulfill-wishlist">
           <!-- Wishlist Selection -->
@@ -108,15 +108,20 @@ if (wishlistParam) {
               Wishlist to Fulfill:
             </label>
             {wishlistData ? (
-              <input 
-                type="text" 
-                id="wishlist" 
-                name="wishlist" 
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 bg-gray-50"
-                value={`${wishlistData.data.project_name} (${wishlistData.slug})`}
-                readonly
-                required
-              />
+              <>
+                <input 
+                  type="text" 
+                  id="wishlist" 
+                  name="wishlist-display" 
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 bg-gray-50"
+                  value={`${wishlistData.projectName} (Issue #${wishlistData.issueNumber})`}
+                  readonly
+                />
+                <input type="hidden" name="issue-number" value={wishlistData.issueNumber} />
+                <input type="hidden" name="project-name" value={wishlistData.projectName} />
+                <input type="hidden" name="github-url" value={wishlistData.url} />
+                <input type="hidden" name="maintainer" value={wishlistData.maintainer} />
+              </>
             ) : (
               <div class="bg-red-50 border border-red-200 rounded-md p-4">
                 <div class="flex">
@@ -130,9 +135,9 @@ if (wishlistParam) {
                       Invalid Access
                     </h3>
                     <div class="mt-2 text-sm text-red-700">
-                      <p>This page can only be accessed by clicking "Fulfill This List" from a specific wishlist.</p>
+                      <p>This page can only be accessed by clicking "Fulfill This Wish" from a specific wishlist.</p>
                       <p class="mt-2">
-                        <a href="/wishlists" class="font-medium underline hover:text-red-600">
+                        <a href="/oss-wishlist-website/wishlists" class="font-medium underline hover:text-red-600">
                           Go to Wishlists page to select a wishlist to fulfill
                         </a>
                       </p>
@@ -144,16 +149,16 @@ if (wishlistParam) {
           </div>
 
           <!-- Items to Fund (Wishes) -->
-          {wishlistData && (
+          {wishlistData && wishlistData.wishes && wishlistData.wishes.length > 0 && (
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-3">
                 Which specific wishes do you want to fulfill?
               </label>
               <div class="space-y-3 mb-4">
                 <p class="text-sm text-green-700 mb-4">
-                  <strong>Wishes available for fulfillment</strong> from <strong>{wishlistData.data.project_name}</strong>:
+                  <strong>Wishes available for fulfillment</strong> from <strong>{wishlistData.projectName}</strong>:
                 </p>
-                {wishlistData.data.services_needed?.map((serviceName: string) => {
+                {wishlistData.wishes.map((serviceName: string) => {
                   const serviceDetails = servicesByTitle[serviceName];
                   return (
                     <div class="border border-gray-200 rounded-lg p-4 hover:border-gray-300 transition-colors">
@@ -389,7 +394,9 @@ if (wishlistParam) {
         bio: practitioner.data.bio,
         specialties: practitioner.data.specialties || [],
         location: practitioner.data.location || 'Not specified',
-        languages: practitioner.data.languages || []
+        languages: practitioner.data.languages || [],
+        githubSponsors: practitioner.data.github_sponsors || null,
+        sponsorTiers: practitioner.data.sponsor_tiers || {}
       };
       return acc;
     }, {})
@@ -430,19 +437,104 @@ if (wishlistParam) {
               <h4 class="font-medium text-gray-900">${practitioner.name}</h4>
               <p class="text-sm text-gray-600 mb-2">${practitioner.title}</p>
               <p class="text-sm text-gray-700 mb-2">${practitioner.bio}</p>
-              <div class="flex flex-wrap gap-4 text-xs text-gray-500">
+              <div class="flex flex-wrap gap-4 text-xs text-gray-500 mb-2">
                 <span><strong>Specialties:</strong> ${practitioner.specialties.join(', ')}</span>
                 <span><strong>Location:</strong> ${practitioner.location}</span>
                 <span><strong>Languages:</strong> ${practitioner.languages.join(', ')}</span>
               </div>
+              ${practitioner.githubSponsors ? `
+                <div class="mt-3 pt-3 border-t border-gray-200">
+                  <p class="text-xs text-gray-600 mb-2">
+                    💰 <strong>GitHub Sponsors:</strong> 
+                    <a href="https://github.com/sponsors/${practitioner.githubSponsors}" target="_blank" class="text-blue-600 hover:underline">
+                      @${practitioner.githubSponsors}
+                    </a>
+                  </p>
+                  <div id="pricing-info" class="text-xs bg-blue-50 p-2 rounded"></div>
+                </div>
+              ` : `
+                <div class="mt-3 pt-3 border-t border-gray-200">
+                  <p class="text-xs text-gray-500 italic">Pricing not yet configured. Contact practitioner for rates.</p>
+                </div>
+              `}
             </div>
           </div>
         `;
         practitionerInfo.style.display = 'block';
+        updatePricing();
       } else {
         practitionerInfo.style.display = 'none';
       }
     }
+
+    // Calculate and display pricing based on selected services
+    function updatePricing() {
+      const selectedPractitioner = practitionerSelect.value;
+      const pricingInfo = document.getElementById('pricing-info');
+      
+      if (!selectedPractitioner || !practitionerData[selectedPractitioner] || !pricingInfo) {
+        return;
+      }
+
+      const practitioner = practitionerData[selectedPractitioner];
+      
+      // If practitioner has no GitHub Sponsors or no tiers configured
+      if (!practitioner.githubSponsors || !practitioner.sponsorTiers || Object.keys(practitioner.sponsorTiers).length === 0) {
+        pricingInfo.innerHTML = '<p class="text-gray-500">Pricing not yet configured. Contact practitioner for custom rates.</p>';
+        return;
+      }
+
+      const checkedServices = Array.from(document.querySelectorAll('input[name="funded-services"]:checked'))
+        .map(cb => cb.value);
+
+      if (checkedServices.length === 0) {
+        pricingInfo.innerHTML = '<p class="text-gray-500">Select services to see pricing</p>';
+        return;
+      }
+
+      let totalCost = 0;
+      let pricingDetails = [];
+      let hasUnpriced = false;
+
+      checkedServices.forEach(service => {
+        if (practitioner.sponsorTiers && practitioner.sponsorTiers[service]) {
+          const price = practitioner.sponsorTiers[service];
+          totalCost += price;
+          pricingDetails.push(`<div class="flex justify-between">
+            <span>${service}:</span>
+            <span class="font-medium">$${price.toLocaleString()}</span>
+          </div>`);
+        } else {
+          hasUnpriced = true;
+          pricingDetails.push(`<div class="flex justify-between">
+            <span>${service}:</span>
+            <span class="text-gray-500 italic">Custom pricing</span>
+          </div>`);
+        }
+      });
+
+      let html = '<div class="space-y-1">' + pricingDetails.join('') + '</div>';
+      
+      if (totalCost > 0) {
+        html += `<div class="mt-2 pt-2 border-t border-blue-200 flex justify-between font-bold text-blue-900">
+          <span>Total (one-time):</span>
+          <span>$${totalCost.toLocaleString()}</span>
+        </div>`;
+      }
+
+      if (hasUnpriced) {
+        html += '<p class="mt-2 text-xs text-gray-600 italic">Some services require custom pricing - contact practitioner for details</p>';
+      }
+
+      pricingInfo.innerHTML = html;
+    }
+
+    // Update pricing when services are selected/deselected
+    document.addEventListener('change', (e) => {
+      if (e.target.name === 'funded-services') {
+        updatePricing();
+      }
+    });
 
     selectPractitionerRadio.addEventListener('change', togglePractitionerFields);
     providePractitionerRadio.addEventListener('change', togglePractitionerFields);

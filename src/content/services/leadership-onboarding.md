@@ -1,5 +1,5 @@
 ---
-title: "New Maintainer/Leader Onboarding"
+title: "Succession Planning and Onboarding"
 description: "Comprehensive onboarding program to establish, vet and setup for success -  new trusted project leaders."
 type: "service"
 service_type: "consulting"

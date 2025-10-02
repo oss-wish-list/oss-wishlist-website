@@ -1,16 +1,17 @@
 ---
 import Layout from '../../components/Layout.astro';
-import { getCollection } from 'astro:content';
+import { getCollection, getEntry } from 'astro:content';
 
-export async function getStaticPaths() {
-  const wishlists = await getCollection('wishlists');
-  return wishlists.map((wishlist) => ({
-    params: { id: wishlist.slug },
-    props: { wishlist },
-  }));
+// In SSR mode, we need to fetch the wishlist dynamically
+const { id } = Astro.params;
+
+// Get the wishlist entry
+const wishlist = await getEntry('wishlists', id);
+
+// If wishlist doesn't exist, return 404
+if (!wishlist) {
+  return Astro.redirect('/404');
 }
-
-const { wishlist } = Astro.props;
 
 const urgencyColors = {
   low: 'bg-green-100 text-green-800',

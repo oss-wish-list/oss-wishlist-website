@@ -7,7 +7,7 @@ estimated_value: "$100-1000/month"
 tags: ["cloud-credits", "infrastructure"]
 featured: true
 available: false
-unavailable_reason: "Requires Ecosystem Guardian donation to establish program"
+unavailable_reason: "Requires Ecosystem Sponsor donation to establish program"
 prerequisites: "Active open source project with demonstrated community impact and infrastructure needs"
 deliverables: 
   - "Monthly AWS promotional credit allocation"

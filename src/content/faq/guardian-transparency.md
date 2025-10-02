@@ -1,5 +1,11 @@
 ---
-title: "How will Guardians know how their money is spent?"
+title: "How will Sponsors know how their money is spent?"
+description: "Transparency and accountability measures for Sponsor investments"
+category: "For Ecosystem Sponsors"
+order: 11
+---
+
+We provide comprehensive transparency and accountability measures for Sponsor investments:e: "How will Guardians know how their money is spent?"
 description: "Transparency and accountability measures for Guardian investments"
 category: "For Ecosystem Guardians"
 order: 2
@@ -20,7 +26,7 @@ We provide comprehensive transparency and accountability measures for Guardian i
 - **Long-term Impact**: Follow-up reports on sustained benefits
 
 **Access and Oversight:**
-- **Guardian Dashboard**: Direct access to project progress and spending
+- **Sponsor Dashboard**: Direct access to project progress and spending
 - **Direct Communication**: Regular check-ins with practitioners and maintainers
 - **Audit Trail**: Complete record of all activities and expenditures
 - **Feedback Loops**: Opportunities to provide input and course-correct if needed

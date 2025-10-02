@@ -95,6 +95,7 @@ const practitioners = defineCollection({
     email: z.string().email().optional(),
     website: z.string().url().optional(),
     github: z.string().optional(),
+    github_sponsors: z.string().optional(), // GitHub Sponsors username
     mastodon: z.string().optional(),
     linkedin: z.string().optional(),
     
@@ -105,6 +106,11 @@ const practitioners = defineCollection({
     availability: z.enum(['available', 'limited', 'unavailable']).default('available'),
     accepts_pro_bono: z.boolean().default(false),
     pro_bono_criteria: z.string().optional(),
+    pro_bono_capacity_per_month: z.number().optional(), // How many pro bono contracts per month
+    
+    // GitHub Sponsors Tiers (service name -> one-time price in USD)
+    // e.g., { "Community Building Strategy": 5000, "Security Audit": 8000 }
+    sponsor_tiers: z.record(z.string(), z.number()).optional(),
     
     // Experience & Credentials
     years_experience: z.number().optional(),

@@ -26,7 +26,10 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
     const sessionSecret = import.meta.env.OAUTH_STATE_SECRET || process.env.OAUTH_STATE_SECRET;
     const sessionData = verifySession(existingSessionCookie, sessionSecret);
     
-    if (sessionData) {
+    // If session exists but doesn't have accessToken, clear it (old format)
+    if (sessionData && !sessionData.accessToken) {
+      cookies.delete('github_session', { path: '/oss-wishlist-website/' });
+    } else if (sessionData) {
       return redirect('/oss-wishlist-website/maintainers?auth=already_authenticated');
     } else {
       // Clear the invalid cookie
@@ -102,9 +105,6 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
     // Get user information
     const user = await fetchGitHubUser(accessToken);
     
-    // Get user's repositories
-    const repositories = await fetchUserRepositories(accessToken);
-    
     // Create session data with MINIMAL info to avoid cookie size limits
     const sessionData: SessionData = {
       user: {
@@ -114,8 +114,9 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
         email: user.email,
         avatar_url: user.avatar_url,
       },
-      repositories: [], // Don't store repos in cookie - too big!
+      repositories: [], // Don't store repos in cookie - fetch via API instead!
       authenticated: true,
+      accessToken: accessToken, // Store token for API calls (small string, ~40 chars)
     };
     
     // Create signed session token

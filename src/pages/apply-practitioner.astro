@@ -1,6 +1,11 @@
 ---
 import Layout from '../components/Layout.astro';
 import AuthenticatedForm from '../components/AuthenticatedForm.tsx';
+import { getCollection } from 'astro:content';
+
+// Get all services from the catalog
+const services = await getCollection('services');
+const serviceCategories = [...new Set(services.map(s => s.data.service_category || 'Other'))].sort();
 ---
 
 <Layout title="Apply to be an Practitioner - OSS Wishlist" description="Join our community of verified open source practitioners. Help projects succeed while building your professional network.">
@@ -132,43 +137,19 @@ import AuthenticatedForm from '../components/AuthenticatedForm.tsx';
         </div>        <!-- Expertise Areas -->
         <div>
           <label for="specialties" class="block text-sm font-medium text-gray-700 mb-2">Areas of Expertise *</label>
-          <div class="grid md:grid-cols-3 gap-3 mb-3">
-            <label class="flex items-center">
-              <input type="checkbox" name="specialties" value="Community Strategy" class="mr-2 rounded">
-              <span class="text-sm">Community Strategy</span>
-            </label>
-            <label class="flex items-center">
-              <input type="checkbox" name="specialties" value="Security Audits" class="mr-2 rounded">
-              <span class="text-sm">Security Audits</span>
-            </label>
-            <label class="flex items-center">
-              <input type="checkbox" name="specialties" value="Performance Optimization" class="mr-2 rounded">
-              <span class="text-sm">Performance Optimization</span>
-            </label>
-            <label class="flex items-center">
-              <input type="checkbox" name="specialties" value="Developer Relations" class="mr-2 rounded">
-              <span class="text-sm">Developer Relations</span>
-            </label>
-            <label class="flex items-center">
-              <input type="checkbox" name="specialties" value="Documentation" class="mr-2 rounded">
-              <span class="text-sm">Documentation</span>
-            </label>
-            <label class="flex items-center">
-              <input type="checkbox" name="specialties" value="Open Source Governance" class="mr-2 rounded">
-              <span class="text-sm">Open Source Governance</span>
-            </label>
-            <label class="flex items-center">
-              <input type="checkbox" name="specialties" value="Project Management" class="mr-2 rounded">
-              <span class="text-sm">Project Management</span>
-            </label>
-            <label class="flex items-center">
-              <input type="checkbox" name="specialties" value="CI/CD & DevOps" class="mr-2 rounded">
-              <span class="text-sm">CI/CD & DevOps</span>
-            </label>
-            <label class="flex items-center">
-              <input type="checkbox" name="specialties" value="Funding Strategy" class="mr-2 rounded">
-              <span class="text-sm">Funding Strategy</span>
-            </label>
+          <p class="text-xs text-gray-500 mb-3">Select the services from our catalog that match your expertise</p>
+          <div class="grid md:grid-cols-2 gap-3 mb-3">
+            {services.map((service) => (
+              <label class="flex items-start" key={service.slug}>
+                <input type="checkbox" name="specialties" value={service.data.title} class="mr-2 rounded mt-1" />
+                <span class="text-sm">
+                  {service.data.title}
+                  {service.data.service_category && (
+                    <span class="text-xs text-gray-500 block">({service.data.service_category})</span>
+                  )}
+                </span>
+              </label>
+            ))}
           </div>
           <textarea 
             id="otherSpecialties" 
@@ -273,15 +254,33 @@ import AuthenticatedForm from '../components/AuthenticatedForm.tsx';
           </div>
           
           <!-- Pro Bono Criteria - conditionally shown -->
-          <div id="proBonoCriteria" class="mt-4 hidden">
-            <label for="proBonoCriteriaText" class="block text-sm font-medium text-gray-700 mb-2">Pro Bono Criteria</label>
-            <textarea 
-              id="proBonoCriteriaText" 
-              name="proBonoCriteriaText" 
-              rows="3" 
-              class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Please describe the criteria for cases where you would accept pro bono work (e.g., non-profit organizations, solo maintainers, specific project types, etc.)"
-            ></textarea>
+          <div id="proBonoCriteria" class="mt-4 hidden space-y-4">
+            <div>
+              <label for="proBonoCapacity" class="block text-sm font-medium text-gray-700 mb-2">
+                Pro Bono Capacity Per Month *
+              </label>
+              <input 
+                type="number" 
+                id="proBonoCapacity" 
+                name="proBonoCapacity" 
+                min="1" 
+                max="10"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                placeholder="e.g., 2"
+              />
+              <p class="text-xs text-gray-500 mt-1">How many pro bono contracts are you willing to take per month?</p>
+            </div>
+            
+            <div>
+              <label for="proBonoCriteriaText" class="block text-sm font-medium text-gray-700 mb-2">Pro Bono Criteria</label>
+              <textarea 
+                id="proBonoCriteriaText" 
+                name="proBonoCriteriaText" 
+                rows="3" 
+                class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Please describe the criteria for cases where you would accept pro bono work (e.g., non-profit organizations, solo maintainers, specific project types, etc.)"
+              ></textarea>
+            </div>
           </div>
         </div>
 
@@ -342,13 +341,19 @@ import AuthenticatedForm from '../components/AuthenticatedForm.tsx';
     document.addEventListener('DOMContentLoaded', function() {
       const proBonoCheckbox = document.getElementById('proBono');
       const proBonoCriteriaDiv = document.getElementById('proBonoCriteria');
+      const proBonoCapacityInput = document.getElementById('proBonoCapacity');
       
       proBonoCheckbox.addEventListener('change', function() {
         if (this.checked) {
           proBonoCriteriaDiv.classList.remove('hidden');
+          // Make pro bono capacity required when checked
+          proBonoCapacityInput.setAttribute('required', 'required');
         } else {
           proBonoCriteriaDiv.classList.add('hidden');
           document.getElementById('proBonoCriteriaText').value = '';
+          proBonoCapacityInput.value = '';
+          // Remove required attribute when unchecked
+          proBonoCapacityInput.removeAttribute('required');
         }
       });
     });
@@ -390,6 +395,7 @@ ${data.otherSpecialties ? `**Other Specialties:** ${data.otherSpecialties}` : ''
 **Notable Projects:** ${data.projects}
 **Availability:** ${data.availability}
 **Pro Bono:** ${data.proBono ? 'Yes' : 'No'}
+${data.proBono && data.proBonoCapacity ? `**Pro Bono Capacity:** ${data.proBonoCapacity} contracts per month` : ''}
 ${data.proBono && data.proBonoCriteriaText ? `**Pro Bono Criteria:** ${data.proBonoCriteriaText}` : ''}
 
 **Additional Info:** ${data.additionalInfo}
