@@ -11,50 +11,56 @@ class EcosystemsClient {
   }
 
   async getPackageData(purl) {
-    if (this.cache.has(purl)) {
-      return this.cache.get(purl);
-    }
+  if (this.cache.has(purl)) {
+    return this.cache.get(purl);
+  }
 
-    try {
-      // Parse the PURL to extract package name and version
-      // Format: pkg:npm/react@18.3.1 or pkg:npm/@scope/package@1.0.0
-      const purlMatch = purl.match(/^pkg:npm\/(@?[^@]+)(?:@(.+))?$/);
-      if (!purlMatch) {
-        core.warning(`Invalid PURL format: ${purl}`);
-        return null;
-      }
-
-      const packageName = purlMatch[1];
-      const version = purlMatch[2];
-
-      // Build the correct ecosyste.ms API URL
-      let url;
-      if (version) {
-        url = `${this.baseUrl}/registries/npmjs.org/packages/${encodeURIComponent(packageName)}/versions/${version}`;
-      } else {
-        url = `${this.baseUrl}/registries/npmjs.org/packages/${encodeURIComponent(packageName)}`;
-      }
-
-      core.info(`Fetching: ${url}`);
-      const response = await fetch(url);
-      
-      if (!response.ok) {
-        core.warning(`Failed to fetch data for ${packageName}: ${response.status}`);
-        return null;
-      }
-
-      const data = await response.json();
-      this.cache.set(purl, data);
-      
-      // Rate limiting: wait 100ms between requests
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      return data;
-    } catch (error) {
-      core.warning(`Error fetching package data for ${purl}: ${error.message}`);
+  try {
+    // Parse the PURL to extract package name and version
+    // Format: pkg:npm/react@18.3.1 or pkg:npm/@scope/package@1.0.0
+    const purlMatch = purl.match(/^pkg:npm\/(@?[^@]+)(?:@(.+))?$/);
+    if (!purlMatch) {
+      core.warning(`Invalid PURL format: ${purl}`);
       return null;
     }
+
+    let packageName = purlMatch[1];
+    const version = purlMatch[2];
+
+    // Handle scoped packages: @scope/package becomes @scope%2Fpackage
+    // The @ stays as-is, only encode the /
+    if (packageName.startsWith('@')) {
+      packageName = packageName.replace('/', '%2F');
+    }
+
+    // Build the correct ecosyste.ms API URL
+    let url;
+    if (version) {
+      url = `${this.baseUrl}/registries/npmjs.org/packages/${packageName}/versions/${version}`;
+    } else {
+      url = `${this.baseUrl}/registries/npmjs.org/packages/${packageName}`;
+    }
+
+    core.info(`Fetching: ${url}`);
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      core.warning(`Failed to fetch data for ${packageName}: ${response.status}`);
+      return null;
+    }
+
+    const data = await response.json();
+    this.cache.set(purl, data);
+    
+    // Rate limiting: wait 100ms between requests
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    return data;
+  } catch (error) {
+    core.warning(`Error fetching package data for ${purl}: ${error.message}`);
+    return null;
   }
+}
 
   async getCriticalityScore(purl) {
     const data = await this.getPackageData(purl);
