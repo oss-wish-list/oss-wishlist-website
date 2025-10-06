@@ -1,0 +1,45 @@
+name: 'OSS Sustainability Analyzer'
+description: 'Analyze your project dependencies using SBOM and ecosyste.ms data to identify sustainability risks'
+branding:
+  icon: 'shield'
+  color: 'blue'
+
+inputs:
+  sbom-path:
+    description: 'Path to SBOM file (SPDX JSON or CycloneDX JSON format)'
+    required: false
+    default: 'sbom.json'
+  
+  token:
+    description: 'GitHub token for API access and commenting'
+    required: true
+    default: ${{ github.token }}
+  
+  criticality-threshold:
+    description: 'Minimum criticality score to flag (0.0-1.0)'
+    required: false
+    default: '0.5'
+  
+  create-issue:
+    description: 'Create GitHub issue for high-risk dependencies'
+    required: false
+    default: 'false'
+  
+  comment-pr:
+    description: 'Comment on PR with analysis results'
+    required: false
+    default: 'true'
+
+outputs:
+  risk-score:
+    description: 'Overall dependency risk score (0-100)'
+  
+  critical-count:
+    description: 'Number of critical dependencies identified'
+  
+  report-path:
+    description: 'Path to detailed analysis report'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
