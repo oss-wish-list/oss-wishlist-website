@@ -33,7 +33,7 @@ class EcosystemsClient {
       packageName = packageName.replace('/', '%2F');
     }
 
-    // Build the correct ecosyste.ms API URL
+    // Build the correct ecosyste.ms API URL update
     let url;
     if (version) {
       url = `${this.baseUrl}/registries/npmjs.org/packages/${packageName}/versions/${version}`;
