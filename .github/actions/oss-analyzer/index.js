@@ -16,11 +16,30 @@ class EcosystemsClient {
     }
 
     try {
-      const encodedPurl = encodeURIComponent(purl);
-      const response = await fetch(`${this.baseUrl}/packages/lookup?purl=${encodedPurl}`);
+      // Parse the PURL to extract package name and version
+      // Format: pkg:npm/react@18.3.1 or pkg:npm/@scope/package@1.0.0
+      const purlMatch = purl.match(/^pkg:npm\/(@?[^@]+)(?:@(.+))?$/);
+      if (!purlMatch) {
+        core.warning(`Invalid PURL format: ${purl}`);
+        return null;
+      }
+
+      const packageName = purlMatch[1];
+      const version = purlMatch[2];
+
+      // Build the correct ecosyste.ms API URL
+      let url;
+      if (version) {
+        url = `${this.baseUrl}/registries/npmjs.org/packages/${encodeURIComponent(packageName)}/versions/${version}`;
+      } else {
+        url = `${this.baseUrl}/registries/npmjs.org/packages/${encodeURIComponent(packageName)}`;
+      }
+
+      core.info(`Fetching: ${url}`);
+      const response = await fetch(url);
       
       if (!response.ok) {
-        core.warning(`Failed to fetch data for ${purl}: ${response.status}`);
+        core.warning(`Failed to fetch data for ${packageName}: ${response.status}`);
         return null;
       }
 
@@ -41,24 +60,26 @@ class EcosystemsClient {
     const data = await this.getPackageData(purl);
     if (!data) return null;
 
+    // ecosyste.ms returns repository data nested
+    const repo = data.repository || data.repo || {};
+    
     // Collect metrics from ecosyste.ms
     const metrics = {
-      created_since: data.created_at ? this.monthsSince(data.created_at) : 0,
-      updated_since: data.updated_at ? this.monthsSince(data.updated_at) : 0,
-      contributor_count: data.contributors_count || 0,
-      org_count: data.owner ? 1 : 0, // Limited data available
-      commit_frequency: data.commits_count || 0,
+      created_since: repo.created_at ? this.monthsSince(repo.created_at) : 0,
+      updated_since: repo.updated_at ? this.monthsSince(repo.updated_at) : 0,
+      contributor_count: repo.contributors_count || 0,
+      org_count: repo.owner ? 1 : 0,
+      commit_frequency: repo.commits_count || 0,
       recent_releases_count: data.releases_count || 0,
-      closed_issues_count: data.closed_issues_count || 0,
-      updated_issues_count: data.updated_issues_count || 0,
-      comment_frequency: this.calculateCommentFrequency(data),
+      closed_issues_count: repo.closed_issues_count || 0,
+      updated_issues_count: repo.open_issues_count || 0,
+      comment_frequency: this.calculateCommentFrequency(repo),
       dependents_count: data.dependents_count || 0,
-      watchers_count: data.stars || 0
+      watchers_count: repo.stargazers_count || repo.stars || 0
     };
 
     // OpenSSF Criticality Score algorithm by Rob Pike
     // Score = Σ(ai * (Si / Ti)) / Σ(ai)
-    // ai = weight, Si = signal value, Ti = threshold (max value)
     
     const signals = [
       { weight: 1, value: metrics.created_since, threshold: 120 },
@@ -80,7 +101,6 @@ class EcosystemsClient {
     for (const signal of signals) {
       let normalizedValue;
       if (signal.inverse) {
-        // For updated_since, lower is better (more recent)
         normalizedValue = Math.max(0, 1 - (signal.value / signal.threshold));
       } else {
         normalizedValue = Math.min(1, signal.value / signal.threshold);
@@ -95,7 +115,7 @@ class EcosystemsClient {
     return {
       score: Math.min(Math.max(score, 0), 1.0),
       metrics,
-      repository_url: data.repository_url,
+      repository_url: repo.html_url || repo.url,
       homepage: data.homepage,
       last_synced: data.last_synced_at
     };
@@ -109,13 +129,9 @@ class EcosystemsClient {
     return Math.max(0, months);
   }
 
-  calculateCommentFrequency(data) {
-    // Estimate comment frequency based on available data
-    // This is a rough approximation
-    const issues = (data.open_issues_count || 0) + (data.closed_issues_count || 0);
+  calculateCommentFrequency(repo) {
+    const issues = (repo.open_issues_count || 0) + (repo.closed_issues_count || 0);
     if (issues === 0) return 0;
-    
-    // Assume some ratio of comments to issues
     return Math.min(15, issues / 100);
   }
 
@@ -133,7 +149,6 @@ class SBOMParser {
       const content = await fs.readFile(filePath, 'utf8');
       const sbom = JSON.parse(content);
 
-      // Detect SBOM format
       if (sbom.spdxVersion) {
         return this.parseSPDX(sbom);
       } else if (sbom.bomFormat === 'CycloneDX') {
@@ -226,10 +241,11 @@ class RiskAnalyzer {
           metrics: criticality.metrics,
           repository_url: criticality.repository_url
         });
+      } else {
+        core.warning(`No data available for ${component.name}, skipping`);
       }
     }
 
-    // Calculate overall risk score (inverse of average criticality)
     const avgCriticality = analyzedCount > 0 ? totalScore / analyzedCount : 0;
     const overallRiskScore = Math.round((1 - avgCriticality) * 100);
 
@@ -324,7 +340,6 @@ class ReportGenerator {
 // Main action logic
 async function run() {
   try {
-    // Get inputs
     const sbomPath = core.getInput('sbom-path');
     const token = core.getInput('token');
     const criticalityThreshold = core.getInput('criticality-threshold');
@@ -335,25 +350,20 @@ async function run() {
     core.info(`SBOM Path: ${sbomPath}`);
     core.info(`Criticality Threshold: ${criticalityThreshold}`);
 
-    // Parse SBOM
     const components = await SBOMParser.parse(sbomPath);
     core.info(`Found ${components.length} components in SBOM`);
 
-    // Analyze components
     const analyzer = new RiskAnalyzer(criticalityThreshold);
     const analysis = await analyzer.analyzeComponents(components);
 
-    // Generate report
     const report = await ReportGenerator.generateMarkdown(analysis);
     const reportPath = path.join(process.cwd(), 'oss-sustainability-report.md');
     await ReportGenerator.saveReport(report, reportPath);
 
-    // Set outputs
     core.setOutput('risk-score', analysis.overallRiskScore);
     core.setOutput('critical-count', analysis.components.filter(c => c.riskLevel === 'high').length);
     core.setOutput('report-path', reportPath);
 
-    // Comment on PR if requested
     if (commentPR && github.context.payload.pull_request) {
       const octokit = github.getOctokit(token);
       await octokit.rest.issues.createComment({
@@ -364,7 +374,6 @@ async function run() {
       core.info('Posted analysis as PR comment');
     }
 
-    // Create issue if requested and high risk found
     const highRiskCount = analysis.components.filter(c => c.riskLevel === 'high').length;
     if (createIssue && highRiskCount > 0) {
       const octokit = github.getOctokit(token);
