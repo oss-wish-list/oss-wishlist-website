@@ -7,8 +7,21 @@ const path = require('path');
 class EcosystemsClient {
   constructor() {
     this.packagesBaseUrl = 'https://packages.ecosyste.ms/api/v1';
-    this.reposBaseUrl = 'https://repos.ecosyste.ms/api/v1';
     this.cache = new Map();
+    this.bigTechDomains = [
+      'amazon.com', 'amazon.co.uk',
+      'microsoft.com',
+      'google.com', 'alphabet.com',
+      'meta.com', 'fb.com', 'facebook.com',
+      'openai.com',
+      'netflix.com',
+      'apple.com',
+      'oracle.com',
+      'ibm.com',
+      'salesforce.com',
+      'intel.com',
+      'amd.com'
+    ];
   }
 
   async getPackageData(purl) {
@@ -42,125 +55,71 @@ class EcosystemsClient {
       const packageResponse = await fetch(packageUrl);
       
       if (!packageResponse.ok) {
-        core.warning(`Failed to fetch ${packageName}: ${packageResponse.status}`);
+        core.warning(`Package API failed for ${packageName}: ${packageResponse.status}`);
         return null;
       }
 
       const packageData = await packageResponse.json();
       
-      // Get repository data if available
-      let repoData = null;
-      if (packageData.repository_url) {
-        // Extract owner/repo from GitHub URL
-        const repoMatch = packageData.repository_url.match(/github\.com\/([^/]+\/[^/]+)/);
-        if (repoMatch) {
-          const ownerRepo = repoMatch[1].replace(/\.git$/, '');
-          const repoUrl = `${this.reposBaseUrl}/hosts/github.com/repositories/${ownerRepo}`;
-          
-          core.info(`Fetching repo: ${repoUrl}`);
-          await new Promise(resolve => setTimeout(resolve, 100));
-          
-          const repoResponse = await fetch(repoUrl);
-          if (repoResponse.ok) {
-            repoData = await repoResponse.json();
-          }
-        }
-      }
-
-      const combinedData = {
-        package: packageData,
-        repository: repoData
-      };
-
-      this.cache.set(purl, combinedData);
       await new Promise(resolve => setTimeout(resolve, 100));
+      this.cache.set(purl, packageData);
       
-      return combinedData;
+      return packageData;
     } catch (error) {
       core.warning(`Error fetching ${purl}: ${error.message}`);
       return null;
     }
   }
-  async getCriticalityScore(purl) {
+
+  hasBigTechBacking(maintainers, repoOwner) {
+    // Check maintainer emails
+    if (maintainers && Array.isArray(maintainers)) {
+      const hasEmailBacking = maintainers.some(m => {
+        if (!m.email) return false;
+        const domain = m.email.split('@')[1]?.toLowerCase();
+        return this.bigTechDomains.includes(domain);
+      });
+      if (hasEmailBacking) return true;
+    }
+    
+    // Check repo owner
+    if (repoOwner) {
+      const ownerLower = repoOwner.toLowerCase();
+      const bigTechOrgs = ['facebook', 'meta', 'google', 'microsoft', 'amazon', 'netflix', 'apple', 'openai', 'oracle', 'ibm', 'salesforce', 'intel', 'amd'];
+      return bigTechOrgs.some(org => ownerLower.includes(org));
+    }
+    
+    return false;
+  }
+
+  async getPackageInfo(purl) {
     const data = await this.getPackageData(purl);
     if (!data) return null;
 
-    const pkg = data.package;
-    const repo = data.repository;
-
-    const metrics = {
-      created_since: repo?.created_at ? this.monthsSince(repo.created_at) : 0,
-      updated_since: repo?.updated_at ? this.monthsSince(repo.updated_at) : 0,
-      contributor_count: repo?.total_committers || 0,
-      org_count: this.calculateOrgCount(pkg.maintainers),
-      commit_frequency: repo?.mean_commits || 0,
-      recent_releases_count: pkg.releases_count || 0,
-      closed_issues_count: 0, // Not available in repos API
-      updated_issues_count: 0, // Not available in repos API
-      comment_frequency: 0,
-      dependents_count: pkg.dependent_packages_count || 0,
-      watchers_count: repo?.stargazers_count || 0
+    const repoMeta = data.repo_metadata || {};
+    
+    const info = {
+      name: data.name,
+      dependents_count: data.dependent_packages_count || 0,
+      stars: repoMeta.stargazers_count || 0,
+      age_months: data.created_at ? this.monthsSince(data.created_at) : 0,
+      last_update_months: data.updated_at ? this.monthsSince(data.updated_at) : 0,
+      repository_url: data.repository_url,
+      big_tech_backing: this.hasBigTechBacking(data.maintainers, repoMeta.owner)
     };
 
-    const signals = [
-      { weight: 1, value: metrics.created_since, threshold: 120 },
-      { weight: 1, value: metrics.updated_since, threshold: 120, inverse: true },
-      { weight: 2, value: metrics.contributor_count, threshold: 5000 },
-      { weight: 1, value: metrics.org_count, threshold: 10 },
-      { weight: 1, value: metrics.commit_frequency, threshold: 1000 },
-      { weight: 0.5, value: metrics.recent_releases_count, threshold: 26 },
-      { weight: 0.5, value: metrics.closed_issues_count, threshold: 5000 },
-      { weight: 0.5, value: metrics.updated_issues_count, threshold: 5000 },
-      { weight: 1, value: metrics.comment_frequency, threshold: 15 },
-      { weight: 2, value: metrics.dependents_count, threshold: 500000 },
-      { weight: 1, value: metrics.watchers_count, threshold: 10000 }
-    ];
-
-    let weightedSum = 0;
-    let totalWeight = 0;
-
-    for (const signal of signals) {
-      let normalizedValue;
-      if (signal.inverse) {
-        normalizedValue = Math.max(0, 1 - (signal.value / signal.threshold));
-      } else {
-        normalizedValue = Math.min(1, signal.value / signal.threshold);
-      }
-      
-      weightedSum += signal.weight * normalizedValue;
-      totalWeight += signal.weight;
-    }
-
-    const score = weightedSum / totalWeight;
-
-    return {
-      score: Math.min(Math.max(score, 0), 1.0),
-      metrics,
-      repository_url: pkg.repository_url,
-      homepage: pkg.homepage,
-      maintainers: pkg.maintainers
-    };
+    return info;
   }
 
-calculateOrgCount(maintainers) {
-  if (!maintainers || !Array.isArray(maintainers)) return 1;
-  
-  // Extract unique email domains from maintainers
-  const domains = new Set();
-  maintainers.forEach(m => {
-    if (m.email) {
-      const domain = m.email.split('@')[1];
-      // Skip common personal email domains
-      if (!['gmail.com', 'hotmail.com', 'yahoo.com', 'outlook.com'].includes(domain)) {
-        domains.add(domain);
-      }
-    }
-  });
-  
-  return Math.max(1, domains.size);
+  monthsSince(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const months = (now.getFullYear() - date.getFullYear()) * 12 + 
+                   (now.getMonth() - date.getMonth());
+    return Math.max(0, months);
+  }
 }
-  
-}
+
 // SBOM Parser
 class SBOMParser {
   static async parse(filePath) {
@@ -223,17 +182,15 @@ class SBOMParser {
   }
 }
 
-// Risk Analyzer
-class RiskAnalyzer {
-  constructor(criticalityThreshold) {
-    this.criticalityThreshold = parseFloat(criticalityThreshold);
+// Dependency Analyzer
+class DependencyAnalyzer {
+  constructor(dependencyThreshold) {
+    this.dependencyThreshold = parseInt(dependencyThreshold) || 1000;
     this.ecosystems = new EcosystemsClient();
   }
 
   async analyzeComponents(components) {
     const results = [];
-    let totalScore = 0;
-    let analyzedCount = 0;
 
     core.info(`Analyzing ${components.length} components...`);
 
@@ -245,104 +202,88 @@ class RiskAnalyzer {
 
       core.info(`Analyzing ${component.name}...`);
       
-      const criticality = await this.ecosystems.getCriticalityScore(component.purl);
+      const info = await this.ecosystems.getPackageInfo(component.purl);
       
-      if (criticality) {
-        totalScore += criticality.score;
-        analyzedCount++;
-
-        const riskLevel = this.calculateRiskLevel(criticality.score);
-        
-        results.push({
-          ...component,
-          criticality: criticality.score,
-          riskLevel,
-          metrics: criticality.metrics,
-          repository_url: criticality.repository_url
-        });
+      if (info) {
+        // Only include packages with high dependency counts
+        if (info.dependents_count >= this.dependencyThreshold) {
+          results.push({
+            ...component,
+            ...info
+          });
+        }
       } else {
         core.warning(`No data available for ${component.name}, skipping`);
       }
     }
 
-    const avgCriticality = analyzedCount > 0 ? totalScore / analyzedCount : 0;
-    const overallRiskScore = Math.round((1 - avgCriticality) * 100);
+    // Sort by dependents count (highest first)
+    results.sort((a, b) => b.dependents_count - a.dependents_count);
 
     return {
-      components: results.sort((a, b) => b.criticality - a.criticality),
-      overallRiskScore,
-      analyzedCount,
-      totalCount: components.length
+      packages: results,
+      total_analyzed: components.length,
+      high_dependency_count: results.length
     };
-  }
-
-  calculateRiskLevel(score) {
-    if (score >= this.criticalityThreshold) return 'low';
-    if (score >= this.criticalityThreshold * 0.5) return 'medium';
-    return 'high';
   }
 }
 
 // Report Generator
 class ReportGenerator {
-  static async generateMarkdown(analysis) {
-    let report = '# OSS Sustainability Analysis Report\n\n';
+  static async generateMarkdown(analysis, threshold) {
+    let report = '# OSS Dependency Analysis Report\n\n';
     
     report += `## Summary\n\n`;
-    report += `- **Overall Risk Score**: ${analysis.overallRiskScore}/100\n`;
-    report += `- **Components Analyzed**: ${analysis.analyzedCount}/${analysis.totalCount}\n`;
+    report += `- **Total Dependencies**: ${analysis.total_analyzed}\n`;
+    report += `- **High-Usage Dependencies** (${threshold.toLocaleString()}+ dependents): ${analysis.high_dependency_count}\n`;
     
-    const highRisk = analysis.components.filter(c => c.riskLevel === 'high').length;
-    const mediumRisk = analysis.components.filter(c => c.riskLevel === 'medium').length;
-    const lowRisk = analysis.components.filter(c => c.riskLevel === 'low').length;
+    const withBigTech = analysis.packages.filter(p => p.big_tech_backing).length;
+    const withoutBigTech = analysis.packages.length - withBigTech;
     
-    report += `- **High Risk**: ${highRisk} components\n`;
-    report += `- **Medium Risk**: ${mediumRisk} components\n`;
-    report += `- **Low Risk**: ${lowRisk} components\n\n`;
+    report += `- **With Big Tech Backing**: ${withBigTech}\n`;
+    report += `- **Without Big Tech Backing**: ${withoutBigTech}\n\n`;
 
-    if (highRisk > 0) {
-      report += `## ⚠️ High Risk Dependencies\n\n`;
-      report += `These dependencies have low criticality scores and may need attention:\n\n`;
+    if (analysis.packages.length === 0) {
+      report += `No dependencies found with ${threshold.toLocaleString()}+ dependents.\n\n`;
+      return report;
+    }
+
+    // Group by Big Tech backing
+    const withBacking = analysis.packages.filter(p => p.big_tech_backing);
+    const withoutBacking = analysis.packages.filter(p => !p.big_tech_backing);
+
+    if (withoutBacking.length > 0) {
+      report += `## ⚠️ High-Usage Dependencies WITHOUT Big Tech Backing\n\n`;
+      report += `These packages are widely used but may lack organizational support:\n\n`;
       
-      for (const component of analysis.components.filter(c => c.riskLevel === 'high')) {
-        report += `### ${component.name} (v${component.version})\n\n`;
-        report += `- **Criticality Score**: ${component.criticality.toFixed(3)} (OpenSSF algorithm)\n`;
-        report += `- **Dependents**: ${component.metrics.dependents_count.toLocaleString()} 📦\n`;
-        report += `- **Contributors**: ${component.metrics.contributor_count}\n`;
-        report += `- **Watchers/Stars**: ${component.metrics.watchers_count.toLocaleString()}\n`;
-        report += `- **Age**: ${component.metrics.created_since} months\n`;
-        report += `- **Last Update**: ${component.metrics.updated_since} months ago\n`;
-        if (component.repository_url) {
-          report += `- **Repository**: ${component.repository_url}\n`;
+      for (const pkg of withoutBacking) {
+        report += `### ${pkg.name} (v${pkg.version})\n\n`;
+        report += `- **Dependents**: ${pkg.dependents_count.toLocaleString()} 📦\n`;
+        report += `- **Stars**: ${pkg.stars.toLocaleString()} ⭐\n`;
+        report += `- **Age**: ${pkg.age_months} months\n`;
+        report += `- **Last Update**: ${pkg.last_update_months} months ago\n`;
+        if (pkg.repository_url) {
+          report += `- **Repository**: ${pkg.repository_url}\n`;
         }
-        report += `\n**Why this is high risk**: `;
-        if (component.metrics.dependents_count < 100) {
-          report += `Low dependent count (${component.metrics.dependents_count}). `;
-        }
-        if (component.metrics.contributor_count < 5) {
-          report += `Very few contributors (${component.metrics.contributor_count}) creates high bus factor risk. `;
-        }
-        if (component.metrics.updated_since > 12) {
-          report += `Not updated in over a year (${component.metrics.updated_since} months). `;
-        }
-        if (component.metrics.commit_frequency < 10) {
-          report += `Low commit activity. `;
-        }
-        report += `\n\n`;
+        report += `\n`;
       }
     }
 
-    if (mediumRisk > 0) {
-      report += `## ⚡ Medium Risk Dependencies\n\n`;
+    if (withBacking.length > 0) {
+      report += `## ✅ High-Usage Dependencies WITH Big Tech Backing\n\n`;
       
-      for (const component of analysis.components.filter(c => c.riskLevel === 'medium')) {
-        report += `- **${component.name}** (v${component.version}) - Criticality: ${component.criticality.toFixed(2)}\n`;
+      for (const pkg of withBacking) {
+        report += `### ${pkg.name} (v${pkg.version})\n\n`;
+        report += `- **Dependents**: ${pkg.dependents_count.toLocaleString()} 📦\n`;
+        report += `- **Stars**: ${pkg.stars.toLocaleString()} ⭐\n`;
+        report += `- **Age**: ${pkg.age_months} months\n`;
+        report += `- **Last Update**: ${pkg.last_update_months} months ago\n`;
+        if (pkg.repository_url) {
+          report += `- **Repository**: ${pkg.repository_url}\n`;
+        }
+        report += `\n`;
       }
-      report += `\n`;
     }
-
-    report += `## ✅ Low Risk Dependencies\n\n`;
-    report += `${lowRisk} dependencies have high criticality scores and appear well-maintained.\n\n`;
 
     report += `---\n\n`;
     report += `*Generated by OSS Sustainability Analyzer*\n`;
@@ -361,26 +302,26 @@ async function run() {
   try {
     const sbomPath = core.getInput('sbom-path');
     const token = core.getInput('token');
-    const criticalityThreshold = core.getInput('criticality-threshold');
+    const dependencyThreshold = core.getInput('dependency-threshold') || '1000';
     const createIssue = core.getInput('create-issue') === 'true';
     const commentPR = core.getInput('comment-pr') === 'true';
 
-    core.info(`Starting OSS Sustainability Analysis...`);
+    core.info(`Starting OSS Dependency Analysis...`);
     core.info(`SBOM Path: ${sbomPath}`);
-    core.info(`Criticality Threshold: ${criticalityThreshold}`);
+    core.info(`Dependency Threshold: ${dependencyThreshold}`);
 
     const components = await SBOMParser.parse(sbomPath);
     core.info(`Found ${components.length} components in SBOM`);
 
-    const analyzer = new RiskAnalyzer(criticalityThreshold);
+    const analyzer = new DependencyAnalyzer(dependencyThreshold);
     const analysis = await analyzer.analyzeComponents(components);
 
-    const report = await ReportGenerator.generateMarkdown(analysis);
-    const reportPath = path.join(process.cwd(), 'oss-sustainability-report.md');
+    const report = await ReportGenerator.generateMarkdown(analysis, parseInt(dependencyThreshold));
+    const reportPath = path.join(process.cwd(), 'oss-dependency-report.md');
     await ReportGenerator.saveReport(report, reportPath);
 
-    core.setOutput('risk-score', analysis.overallRiskScore);
-    core.setOutput('critical-count', analysis.components.filter(c => c.riskLevel === 'high').length);
+    core.setOutput('high-dependency-count', analysis.high_dependency_count);
+    core.setOutput('without-backing-count', analysis.packages.filter(p => !p.big_tech_backing).length);
     core.setOutput('report-path', reportPath);
 
     if (commentPR && github.context.payload.pull_request) {
@@ -393,16 +334,16 @@ async function run() {
       core.info('Posted analysis as PR comment');
     }
 
-    const highRiskCount = analysis.components.filter(c => c.riskLevel === 'high').length;
-    if (createIssue && highRiskCount > 0) {
+    const withoutBacking = analysis.packages.filter(p => !p.big_tech_backing).length;
+    if (createIssue && withoutBacking > 0) {
       const octokit = github.getOctokit(token);
       await octokit.rest.issues.create({
         ...github.context.repo,
-        title: `⚠️ ${highRiskCount} High Risk Dependencies Detected`,
+        title: `⚠️ ${withoutBacking} High-Usage Dependencies Without Big Tech Backing`,
         body: report,
-        labels: ['dependencies', 'security', 'sustainability']
+        labels: ['dependencies', 'sustainability']
       });
-      core.info('Created issue for high-risk dependencies');
+      core.info('Created issue for dependencies without backing');
     }
 
     core.info('✅ Analysis complete!');
