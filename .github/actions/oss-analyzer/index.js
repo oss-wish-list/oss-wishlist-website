@@ -6,87 +6,103 @@ const path = require('path');
 // Ecosyste.ms API client
 class EcosystemsClient {
   constructor() {
-    this.baseUrl = 'https://packages.ecosyste.ms/api/v1';
+    this.packagesBaseUrl = 'https://packages.ecosyste.ms/api/v1';
+    this.reposBaseUrl = 'https://repos.ecosyste.ms/api/v1';
     this.cache = new Map();
   }
 
   async getPackageData(purl) {
-  if (this.cache.has(purl)) {
-    return this.cache.get(purl);
-  }
+    if (this.cache.has(purl)) {
+      return this.cache.get(purl);
+    }
 
-  try {
-    // Parse the PURL to extract package name and version
-    // Format: pkg:npm/react@18.3.1 or pkg:npm/@scope/package@1.0.0
-    const purlMatch = purl.match(/^pkg:npm\/(@?[^@]+)(?:@(.+))?$/);
-    if (!purlMatch) {
-      core.warning(`Invalid PURL format: ${purl}`);
+    try {
+      if (!purl.startsWith('pkg:npm/')) {
+        core.info(`Skipping non-npm package: ${purl}`);
+        return null;
+      }
+
+      const npmPart = purl.substring('pkg:npm/'.length);
+      let packageName;
+      
+      if (npmPart.startsWith('@')) {
+        const match = npmPart.match(/^(@[^/]+\/[^@]+)(?:@(.+))?$/);
+        if (!match) return null;
+        packageName = match[1];
+      } else {
+        const match = npmPart.match(/^([^@]+)(?:@(.+))?$/);
+        if (!match) return null;
+        packageName = match[1];
+      }
+
+      const encodedName = packageName.replace('@', '%40').replace('/', '%2F');
+      const packageUrl = `${this.packagesBaseUrl}/registries/npmjs.org/packages/${encodedName}`;
+      
+      core.info(`Fetching package: ${packageUrl}`);
+      const packageResponse = await fetch(packageUrl);
+      
+      if (!packageResponse.ok) {
+        core.warning(`Failed to fetch ${packageName}: ${packageResponse.status}`);
+        return null;
+      }
+
+      const packageData = await packageResponse.json();
+      
+      // Get repository data if available
+      let repoData = null;
+      if (packageData.repository_url) {
+        // Extract owner/repo from GitHub URL
+        const repoMatch = packageData.repository_url.match(/github\.com\/([^/]+\/[^/]+)/);
+        if (repoMatch) {
+          const ownerRepo = repoMatch[1].replace(/\.git$/, '');
+          const repoUrl = `${this.reposBaseUrl}/hosts/github.com/repositories/${ownerRepo}`;
+          
+          core.info(`Fetching repo: ${repoUrl}`);
+          await new Promise(resolve => setTimeout(resolve, 100));
+          
+          const repoResponse = await fetch(repoUrl);
+          if (repoResponse.ok) {
+            repoData = await repoResponse.json();
+          }
+        }
+      }
+
+      const combinedData = {
+        package: packageData,
+        repository: repoData
+      };
+
+      this.cache.set(purl, combinedData);
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      return combinedData;
+    } catch (error) {
+      core.warning(`Error fetching ${purl}: ${error.message}`);
       return null;
     }
-
-    let packageName = purlMatch[1];
-    const version = purlMatch[2];
-
-    // Handle scoped packages: @scope/package becomes @scope%2Fpackage
-    // The @ stays as-is, only encode the /
-    if (packageName.startsWith('@')) {
-      packageName = packageName.replace('/', '%2F');
-    }
-
-    // Build the correct ecosyste.ms API URL update
-    let url;
-    if (version) {
-      url = `${this.baseUrl}/registries/npmjs.org/packages/${packageName}/versions/${version}`;
-    } else {
-      url = `${this.baseUrl}/registries/npmjs.org/packages/${packageName}`;
-    }
-
-    core.info(`Fetching: ${url}`);
-    const response = await fetch(url);
-    
-    if (!response.ok) {
-      core.warning(`Failed to fetch data for ${packageName}: ${response.status}`);
-      return null;
-    }
-
-    const data = await response.json();
-    this.cache.set(purl, data);
-    
-    // Rate limiting: wait 100ms between requests
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
-    return data;
-  } catch (error) {
-    core.warning(`Error fetching package data for ${purl}: ${error.message}`);
-    return null;
   }
-}
 
   async getCriticalityScore(purl) {
     const data = await this.getPackageData(purl);
     if (!data) return null;
 
-    // ecosyste.ms returns repository data nested
-    const repo = data.repository || data.repo || {};
-    
-    // Collect metrics from ecosyste.ms
+    const pkg = data.package;
+    const repo = data.repository;
+
     const metrics = {
-      created_since: repo.created_at ? this.monthsSince(repo.created_at) : 0,
-      updated_since: repo.updated_at ? this.monthsSince(repo.updated_at) : 0,
-      contributor_count: repo.contributors_count || 0,
-      org_count: repo.owner ? 1 : 0,
-      commit_frequency: repo.commits_count || 0,
-      recent_releases_count: data.releases_count || 0,
-      closed_issues_count: repo.closed_issues_count || 0,
-      updated_issues_count: repo.open_issues_count || 0,
-      comment_frequency: this.calculateCommentFrequency(repo),
-      dependents_count: data.dependents_count || 0,
-      watchers_count: repo.stargazers_count || repo.stars || 0
+      created_since: repo?.created_at ? this.monthsSince(repo.created_at) : 0,
+      updated_since: repo?.pushed_at ? this.monthsSince(repo.pushed_at) : 0,
+      contributor_count: repo?.contributors_count || 0,
+      org_count: 1,
+      commit_frequency: repo?.commits_count || 0,
+      recent_releases_count: pkg.releases_count || 0,
+      closed_issues_count: repo?.closed_issues_count || 0,
+      updated_issues_count: repo?.open_issues_count || 0,
+      comment_frequency: 0,
+      dependents_count: pkg.dependent_packages_count || 0,
+      watchers_count: repo?.stargazers_count || 0
     };
 
-    // OpenSSF Criticality Score algorithm by Rob Pike
-    // Score = Σ(ai * (Si / Ti)) / Σ(ai)
-    
     const signals = [
       { weight: 1, value: metrics.created_since, threshold: 120 },
       { weight: 1, value: metrics.updated_since, threshold: 120, inverse: true },
@@ -121,9 +137,8 @@ class EcosystemsClient {
     return {
       score: Math.min(Math.max(score, 0), 1.0),
       metrics,
-      repository_url: repo.html_url || repo.url,
-      homepage: data.homepage,
-      last_synced: data.last_synced_at
+      repository_url: pkg.repository_url,
+      homepage: pkg.homepage
     };
   }
 
@@ -134,20 +149,7 @@ class EcosystemsClient {
                    (now.getMonth() - date.getMonth());
     return Math.max(0, months);
   }
-
-  calculateCommentFrequency(repo) {
-    const issues = (repo.open_issues_count || 0) + (repo.closed_issues_count || 0);
-    if (issues === 0) return 0;
-    return Math.min(15, issues / 100);
-  }
-
-  isRecentlyActive(lastSynced) {
-    const sixMonthsAgo = new Date();
-    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-    return new Date(lastSynced) > sixMonthsAgo;
-  }
 }
-
 // SBOM Parser
 class SBOMParser {
   static async parse(filePath) {
