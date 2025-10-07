@@ -31917,7 +31917,6 @@ class EcosystemsClient {
       return null;
     }
   }
-
   async getCriticalityScore(purl) {
     const data = await this.getPackageData(purl);
     if (!data) return null;
@@ -31927,13 +31926,13 @@ class EcosystemsClient {
 
     const metrics = {
       created_since: repo?.created_at ? this.monthsSince(repo.created_at) : 0,
-      updated_since: repo?.pushed_at ? this.monthsSince(repo.pushed_at) : 0,
-      contributor_count: repo?.contributors_count || 0,
-      org_count: 1,
-      commit_frequency: repo?.commits_count || 0,
+      updated_since: repo?.updated_at ? this.monthsSince(repo.updated_at) : 0,
+      contributor_count: repo?.total_committers || 0,
+      org_count: this.calculateOrgCount(pkg.maintainers),
+      commit_frequency: repo?.mean_commits || 0,
       recent_releases_count: pkg.releases_count || 0,
-      closed_issues_count: repo?.closed_issues_count || 0,
-      updated_issues_count: repo?.open_issues_count || 0,
+      closed_issues_count: 0, // Not available in repos API
+      updated_issues_count: 0, // Not available in repos API
       comment_frequency: 0,
       dependents_count: pkg.dependent_packages_count || 0,
       watchers_count: repo?.stargazers_count || 0
@@ -31974,17 +31973,29 @@ class EcosystemsClient {
       score: Math.min(Math.max(score, 0), 1.0),
       metrics,
       repository_url: pkg.repository_url,
-      homepage: pkg.homepage
+      homepage: pkg.homepage,
+      maintainers: pkg.maintainers
     };
   }
 
-  monthsSince(dateString) {
-    const date = new Date(dateString);
-    const now = new Date();
-    const months = (now.getFullYear() - date.getFullYear()) * 12 + 
-                   (now.getMonth() - date.getMonth());
-    return Math.max(0, months);
-  }
+calculateOrgCount(maintainers) {
+  if (!maintainers || !Array.isArray(maintainers)) return 1;
+  
+  // Extract unique email domains from maintainers
+  const domains = new Set();
+  maintainers.forEach(m => {
+    if (m.email) {
+      const domain = m.email.split('@')[1];
+      // Skip common personal email domains
+      if (!['gmail.com', 'hotmail.com', 'yahoo.com', 'outlook.com'].includes(domain)) {
+        domains.add(domain);
+      }
+    }
+  });
+  
+  return Math.max(1, domains.size);
+}
+  
 }
 // SBOM Parser
 class SBOMParser {
