@@ -1,0 +1,50 @@
+name: OSS Dependency Analysis
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch: # Manual trigger for testing
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  analyze-dependencies:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Generate SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          path: ./
+          format: spdx-json
+          output-file: sbom.json
+      
+      - name: Run OSS Wishlist Analyzer
+        uses: oss-wish-list/oss-wislist-analyzer@testing
+        with:
+          sbom-path: 'sbom.json'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          dependency-threshold: '1000'
+          comment-pr: 'true'
+          create-issue: 'false'
+      
+      - name: Upload analysis report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: oss-analysis-report
+          path: oss-wishlist-report.md
+          retention-days: 30
