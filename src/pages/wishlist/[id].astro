@@ -168,32 +168,12 @@ const stageColors = {
       </div>
     </div>
   </section>
-                {metric}
-              </li>
-            ))}
-          </ul>
-          
-          <h3 class="text-xl font-semibold text-gray-900 mb-4">Recent Achievements</h3>
-          <ul class="space-y-3">
-            {wishlist.recent_achievements.map(achievement => (
-              <li class="flex items-center text-gray-700">
-                <svg class="w-5 h-5 text-gray-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                </svg>
-                {achievement}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
 
   <!-- Tags -->
   <section class="py-8 bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex flex-wrap gap-2">
-        {wishlist.tags.map(tag => (
+        {wishlist.data.tags.map(tag => (
           <span class="px-3 py-1 bg-white text-gray-700 text-sm rounded border">{tag}</span>
         ))}
       </div>
@@ -203,11 +183,11 @@ const stageColors = {
   <!-- CTA Section -->
   <section class="py-12 bg-blue-600">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h2 class="text-3xl font-bold text-white mb-4">Ready to Support {wishlist.project_name}?</h2>
+      <h2 class="text-3xl font-bold text-white mb-4">Ready to Support {wishlist.data.project_name}?</h2>
       <p class="text-xl text-blue-100 mb-8">Get in touch to discuss how you can help make this project thrive</p>
       <div class="flex justify-center space-x-4">
         <a 
-          href={`mailto:${wishlist.contact_email}?subject=Support for ${wishlist.project_name}`}
+          href={`mailto:${wishlist.data.maintainer.email}?subject=Support for ${wishlist.data.project_name}`}
           class="bg-white text-gray-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
         >
           Contact Maintainer
