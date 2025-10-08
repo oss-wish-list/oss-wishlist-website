@@ -1,5 +1,7 @@
 import type { APIRoute } from 'astro';
 
+export const prerender = false;
+
 // Simple email sending function (you can replace this with your preferred email service)
 async function sendEmail(to: string, subject: string, body: string) {
   // For development, we'll just log the email content

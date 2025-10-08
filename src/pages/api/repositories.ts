@@ -2,6 +2,8 @@ import type { APIRoute } from 'astro';
 import { verifySession } from '../../lib/github-oauth';
 import { fetchUserRepositories } from '../../lib/github-oauth';
 
+export const prerender = false;
+
 export const GET: APIRoute = async ({ cookies }) => {
   try {
     // Get and verify session from cookie
