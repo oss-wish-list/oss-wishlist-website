@@ -2,8 +2,8 @@
 import Layout from '../components/Layout.astro';
 import { getCollection } from 'astro:content';
 
-// Get experts for the dropdown
-const experts = await getCollection('experts');
+// Get practitioners for the dropdown
+const practitioners = await getCollection('practitioners');
 
 // Get URL parameters using multiple methods
 const url = Astro.url;
@@ -238,22 +238,22 @@ if (finalWishlistParam) {
                   required
                 />
                 <label for="select-expert" class="text-sm text-gray-700">
-                  Select from our recommended experts
+                  Select from our recommended practitioners
                 </label>
               </div>
               <div class="ml-6" id="expert-dropdown" style="display: none;">
                 <label for="expert-select" class="block text-sm font-medium text-gray-600 mb-2">
-                  Choose an expert:
+                  Choose a practitioner:
                 </label>
                 <select 
                   id="expert-select"
                   name="selected-expert" 
                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
                 >
-                  <option value="">Select an expert...</option>
-                  {experts.map(expert => (
-                    <option value={expert.slug}>
-                      {expert.data.name} - {expert.data.title} ({expert.data.specialties?.join(', ') || 'Multiple specialties'})
+                  <option value="">Select a practitioner...</option>
+                  {practitioners.map(practitioner => (
+                    <option value={practitioner.slug}>
+                      {practitioner.data.name} - {practitioner.data.title} ({practitioner.data.specialties?.join(', ') || 'Multiple specialties'})
                     </option>
                   ))}
                 </select>
@@ -389,14 +389,14 @@ if (finalWishlistParam) {
   </main>
 
   <script define:vars={{ 
-    expertData: experts.reduce((acc, expert) => {
-      acc[expert.slug] = {
-        name: expert.data.name,
-        title: expert.data.title,
-        bio: expert.data.bio,
-        specialties: expert.data.specialties || [],
-        location: expert.data.location || 'Not specified',
-        languages: expert.data.languages || []
+    expertData: practitioners.reduce((acc, practitioner) => {
+      acc[practitioner.slug] = {
+        name: practitioner.data.name,
+        title: practitioner.data.title,
+        bio: practitioner.data.bio,
+        specialties: practitioner.data.specialties || [],
+        location: practitioner.data.location || 'Not specified',
+        languages: practitioner.data.languages || []
       };
       return acc;
     }, {}),
