@@ -2,11 +2,21 @@
 import Layout from '../../components/Layout.astro';
 import { getCollection, getEntry } from 'astro:content';
 
-// In SSR mode, we need to fetch the service dynamically
+// Generate static paths for all services
+export async function getStaticPaths() {
+  const services = await getCollection('services');
+  return services.map(service => ({
+    params: { slug: service.slug },
+    props: { service }
+  }));
+}
+
+// Get the service from props (static) or params (SSR fallback)
+const { service: propsService } = Astro.props;
 const { slug } = Astro.params;
 
-// Get the service entry
-const service = await getEntry('services', slug);
+// Use props service if available, otherwise fetch dynamically
+const service = propsService || await getEntry('services', slug);
 
 // If service doesn't exist, return 404
 if (!service) {

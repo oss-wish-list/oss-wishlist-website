@@ -2,11 +2,21 @@
 import Layout from '../../components/Layout.astro';
 import { getCollection, getEntry } from 'astro:content';
 
-// In SSR mode, we need to fetch the wishlist dynamically
+// Generate static paths for all wishlists
+export async function getStaticPaths() {
+  const wishlists = await getCollection('wishlists');
+  return wishlists.map(wishlist => ({
+    params: { id: wishlist.slug },
+    props: { wishlist }
+  }));
+}
+
+// Get the wishlist from props (static) or params (SSR fallback)
+const { wishlist: propsWishlist } = Astro.props;
 const { id } = Astro.params;
 
-// Get the wishlist entry
-const wishlist = await getEntry('wishlists', id);
+// Use props wishlist if available, otherwise fetch dynamically
+const wishlist = propsWishlist || await getEntry('wishlists', id);
 
 // If wishlist doesn't exist, return 404
 if (!wishlist) {

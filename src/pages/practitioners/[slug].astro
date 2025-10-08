@@ -2,11 +2,21 @@
 import Layout from '../../components/Layout.astro';
 import { getCollection, getEntry } from 'astro:content';
 
-// In SSR mode, we need to fetch the practitioner dynamically
+// Generate static paths for all practitioners
+export async function getStaticPaths() {
+  const practitioners = await getCollection('practitioners');
+  return practitioners.map(practitioner => ({
+    params: { slug: practitioner.slug },
+    props: { practitioner }
+  }));
+}
+
+// Get the practitioner from props (static) or params (SSR fallback)
+const { practitioner: propsPractitioner } = Astro.props;
 const { slug } = Astro.params;
 
-// Get the practitioner entry
-const practitioner = await getEntry('practitioners', slug);
+// Use props practitioner if available, otherwise fetch dynamically
+const practitioner = propsPractitioner || await getEntry('practitioners', slug);
 
 // If practitioner doesn't exist, return 404
 if (!practitioner) {

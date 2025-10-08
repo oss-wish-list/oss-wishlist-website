@@ -2,11 +2,21 @@
 import Layout from '../../components/Layout.astro';
 import { getCollection, getEntry } from 'astro:content';
 
-// In SSR mode, we need to fetch the guardian dynamically
+// Generate static paths for all guardians
+export async function getStaticPaths() {
+  const guardians = await getCollection('guardians');
+  return guardians.map(guardian => ({
+    params: { slug: guardian.slug },
+    props: { guardian }
+  }));
+}
+
+// Get the guardian from props (static) or params (SSR fallback)
+const { guardian: propsGuardian } = Astro.props;
 const { slug } = Astro.params;
 
-// Get the guardian entry
-const guardian = await getEntry('guardians', slug);
+// Use props guardian if available, otherwise fetch dynamically
+const guardian = propsGuardian || await getEntry('guardians', slug);
 
 // If guardian doesn't exist, return 404
 if (!guardian) {
