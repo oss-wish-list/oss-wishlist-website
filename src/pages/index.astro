@@ -1,6 +1,11 @@
 ---
 import Layout from '../components/Layout.astro';
+import PlaceholderPage from '../components/PlaceholderPage.astro';
 import { getCollection } from 'astro:content';
+
+// Check if site is in placeholder mode
+const siteMode = import.meta.env.PUBLIC_SITE_MODE || 'full';
+const isPlaceholder = siteMode === 'placeholder';
 
 const services = await getCollection('services');
 const featuredServices = services.filter(service => service.data.featured);
@@ -12,6 +17,7 @@ const companyServices = services.filter(service =>
 );
 ---
 
+{isPlaceholder ? <PlaceholderPage /> : (
 <Layout title="OSS Wishlist - Get the help your project needs">
   <!-- Hero Section -->
   <section class="bg-gradient-to-br from-gray-100 to-gray-200 py-20">
@@ -106,3 +112,4 @@ const companyServices = services.filter(service =>
     </div>
   </section>
 </Layout>
+)}

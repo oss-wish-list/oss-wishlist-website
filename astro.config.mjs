@@ -1,12 +1,16 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import react from '@astrojs/react';
+import node from '@astrojs/node';
 
 // https://astro.build/config
 export default defineConfig({
   site: 'https://oss-wish-list.github.io',
-  base: '/oss-wishlist-website',
-  output: 'server',
+  // base: '/oss-wishlist-website', // Uncomment for GitHub Pages, comment out for Digital Ocean
+  output: 'hybrid',
+  adapter: node({
+    mode: 'standalone'
+  }),
   server: {
     port: 4324,
     host: true
