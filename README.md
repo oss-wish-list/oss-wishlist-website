@@ -31,7 +31,12 @@ A platform connecting open source maintainers with supporters and practitioners 
    Edit the `.env` file and add your configuration:
    
    ```env
-   # Required: GitHub Personal Access Token
+   # Site Mode - Controls which homepage to display
+   # Set to 'placeholder' for "Coming Soon" page
+   # Set to 'full' for complete website
+   PUBLIC_SITE_MODE=full
+   
+   # Required: GitHub Personal Access Token (only needed for full mode)
    # Create one at: https://github.com/settings/tokens/new
    # Needs 'repo' scope for creating issues
    GITHUB_TOKEN=your_github_token_here
@@ -51,6 +56,11 @@ A platform connecting open source maintainers with supporters and practitioners 
    BASE_URL=http://localhost:4323/oss-wishlist-website
    ```
 
+   **🎭 Switching Between Placeholder and Full Site:**
+   - **Placeholder mode**: Set `PUBLIC_SITE_MODE=placeholder` in `.env`
+   - **Full site mode**: Set `PUBLIC_SITE_MODE=full` in `.env`
+   - After changing, restart the dev server (`Ctrl+C` then `npm run dev`)
+
    **🔑 Creating a GitHub Token:**
    1. Go to [GitHub Settings > Personal access tokens](https://github.com/settings/tokens/new)
    2. Click "Generate new token (classic)"
@@ -63,11 +73,13 @@ A platform connecting open source maintainers with supporters and practitioners 
    npm run dev
    ```
    
-   The server will automatically find an available port (usually 4323+) and display the URLs:
+   The server will run on port 4324 by default and display the URLs:
    ```
-   Local:    http://localhost:4335/oss-wishlist-website
-   Network:  http://172.27.233.228:4335/oss-wishlist-website
+   Local:    http://localhost:4324/
+   Network:  http://192.168.1.x:4324/
    ```
+   
+   **Note:** Port 4324 is configured in `astro.config.mjs` for local development only. Production deployments use environment variables.
 
 5. **You're ready!** Open the Local URL in your browser.
 
@@ -80,6 +92,24 @@ npm install
 npm run dev
 ```
 The site will work for browsing, but wishlist creation will be disabled without a GitHub token.
+
+### Placeholder Mode
+The site includes a "Coming Soon" placeholder page for pre-launch use:
+
+1. **Enable placeholder mode:**
+   - Create or edit `.env` file
+   - Set `PUBLIC_SITE_MODE=placeholder`
+   - Restart dev server
+
+2. **Return to full site:**
+   - Change to `PUBLIC_SITE_MODE=full` in `.env`
+   - Restart dev server
+
+The placeholder page displays:
+- Project logo
+- "Coming November 2025" message
+- Brief description for maintainers, practitioners, and sponsors
+- GitHub link in footer
 
 ## 🎯 What This Platform Does
 
