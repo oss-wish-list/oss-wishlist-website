@@ -15,6 +15,11 @@ export default defineConfig({
     port: 4324,
     host: true
   },
+  vite: {
+    ssr: {
+      noExternal: ['@astrojs/react']
+    }
+  },
   integrations: [tailwind(), react()],
   markdown: {
     shikiConfig: {
