@@ -149,7 +149,7 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
   const initiateGitHubAuth = () => {
     setLoading(false);
     setError('');
-    window.location.href = '/oss-wishlist-website/api/auth/github';
+    window.location.href = '/api/auth/github';
   };
 
   const parseGitHubUrl = (url: string) => {

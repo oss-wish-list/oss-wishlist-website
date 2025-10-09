@@ -55,7 +55,7 @@ export default function AuthenticatedWishlists({ children }: AuthenticatedWishli
   };
 
   const login = () => {
-    window.location.href = '/oss-wishlist-website/api/auth/github';
+    window.location.href = '/api/auth/github';
   };
 
   if (loading) {

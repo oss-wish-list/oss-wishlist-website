@@ -56,7 +56,7 @@ export default function AuthenticatedForm({ children, formType = "form" }: Authe
   };
 
   const login = () => {
-    window.location.href = '/oss-wishlist-website/api/auth/github';
+    window.location.href = '/api/auth/github';
   };
 
   if (loading) {

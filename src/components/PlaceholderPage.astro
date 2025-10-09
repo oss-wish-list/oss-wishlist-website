@@ -18,7 +18,12 @@
       </p>
       <div class="coming-soon">
         <h2>Coming November 2025</h2>
-        <p>Moderation Strategy, Succession Planning/Leadership Onboarding, Governance and Security</p>
+        <div class="taxonomy-blocks">
+          <span class="taxonomy-tag">Moderation Strategy</span>
+          <span class="taxonomy-tag">Leadership/Succession Planning</span>
+          <span class="taxonomy-tag">Governance Design</span>
+          <span class="taxonomy-tag">Security Audit</span>
+        </div>
       </div>
       <div class="cards">
         <div class="card">
@@ -112,7 +117,30 @@
     font-size: 2.25rem;
     font-weight: 600;
     color: #1f2937;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .taxonomy-blocks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .taxonomy-tag {
+    display: inline-block;
+    background: transparent;
+    color: #111827;
+    padding: 0.25rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  
+  .taxonomy-tag:hover {
+    color: #4b5563;
   }
   
   .coming-soon p {
@@ -189,6 +217,11 @@
     
     .coming-soon h2 {
       font-size: 1.875rem;
+    }
+    
+    .taxonomy-tag {
+      font-size: 0.875rem;
+      padding: 0.5rem 1rem;
     }
     
     .cards {

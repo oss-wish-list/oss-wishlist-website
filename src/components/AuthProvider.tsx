@@ -69,12 +69,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const login = () => {
-    window.location.href = '/oss-wishlist-website/api/auth/github';
+    window.location.href = '/api/auth/github';
   };
 
   const logout = async () => {
     try {
-      await fetch('/oss-wishlist-website/api/auth/logout', { method: 'POST' });
+      await fetch('/api/auth/logout', { method: 'POST' });
       setUser(null);
       sessionStorage.removeItem('github_session'); // Clear session storage on logout
       window.location.reload();

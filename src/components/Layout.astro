@@ -7,7 +7,7 @@ export interface Props {
 }
 
 const { title, description = "Get the help your open source project needs" } = Astro.props;
-const logoUrl = `${import.meta.env.BASE_URL}/logo.png`;
+const logoUrl = "/logo.png";
 ---
 
 <!DOCTYPE html>
@@ -31,7 +31,7 @@ const logoUrl = `${import.meta.env.BASE_URL}/logo.png`;
         <div class="flex justify-between items-center h-16">
           <div class="flex items-center space-x-4">
             <img src={logoUrl} alt="Open Source Wishlist logo" class="h-8 w-8" />
-            <a href={import.meta.env.BASE_URL} class="text-xl font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded">Open Source Wishlist</a>
+            <a href="/" class="text-xl font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded">Open Source Wishlist</a>
           </div>
           
           <!-- Desktop Navigation -->
@@ -60,15 +60,15 @@ const logoUrl = `${import.meta.env.BASE_URL}/logo.png`;
                 aria-labelledby="wishlists-dropdown-button"
               >
                 <div class="py-1" role="none">
-                  <a href={`${import.meta.env.BASE_URL}/maintainers`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Create or edit a wishlist</a>
-                  <a href={`${import.meta.env.BASE_URL}/wishlists`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">View wishlists</a>
+                  <a href="/maintainers" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Create or edit a wishlist</a>
+                  <a href="/wishlists" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">View wishlists</a>
                 </div>
               </div>
             </div>
             
-            <a href={`${import.meta.env.BASE_URL}/catalog`} class="text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded px-2 py-1 min-h-[44px] flex items-center">Service Catalog</a>
-            <a href={`${import.meta.env.BASE_URL}/practitioners`} class="text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded px-2 py-1 min-h-[44px] flex items-center">Our Practitioners</a>
-            <a href={`${import.meta.env.BASE_URL}/ecosystem-guardians`} class="text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded px-2 py-1 min-h-[44px] flex items-center">Ecosystem Sponsors</a>
+            <a href="/catalog" class="text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded px-2 py-1 min-h-[44px] flex items-center">Service Catalog</a>
+            <a href="/practitioners" class="text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded px-2 py-1 min-h-[44px] flex items-center">Our Practitioners</a>
+            <a href="/ecosystem-guardians" class="text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded px-2 py-1 min-h-[44px] flex items-center">Ecosystem Sponsors</a>
             
             <!-- About Dropdown -->
             <div class="relative" id="about-dropdown">
@@ -94,7 +94,7 @@ const logoUrl = `${import.meta.env.BASE_URL}/logo.png`;
                 aria-labelledby="about-dropdown-button"
               >
                 <div class="py-1" role="none">
-                  <a href={`${import.meta.env.BASE_URL}/faq`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">FAQ</a>
+                  <a href="/faq" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">FAQ</a>
                 </div>
               </div>
             </div>
@@ -117,12 +117,12 @@ const logoUrl = `${import.meta.env.BASE_URL}/logo.png`;
         <!-- Mobile Navigation Menu -->
         <div id="mobile-menu" class="hidden md:hidden pb-4" role="navigation" aria-label="Mobile navigation">
           <div class="space-y-1">
-            <a href={`${import.meta.env.BASE_URL}/maintainers`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Create or edit a wishlist</a>
-            <a href={`${import.meta.env.BASE_URL}/wishlists`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">View wishlists</a>
-            <a href={`${import.meta.env.BASE_URL}/catalog`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Service Catalog</a>
-            <a href={`${import.meta.env.BASE_URL}/practitioners`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Our Practitioners</a>
-            <a href={`${import.meta.env.BASE_URL}/ecosystem-guardians`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Ecosystem Sponsors</a>
-            <a href={`${import.meta.env.BASE_URL}/faq`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">FAQ</a>
+            <a href="/maintainers" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Create or edit a wishlist</a>
+            <a href="/wishlists" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">View wishlists</a>
+            <a href="/catalog" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Service Catalog</a>
+            <a href="/practitioners" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Our Practitioners</a>
+            <a href="/ecosystem-guardians" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Ecosystem Sponsors</a>
+            <a href="/faq" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">FAQ</a>
           </div>
         </div>
       </nav>
