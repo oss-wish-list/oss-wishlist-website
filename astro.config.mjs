@@ -7,7 +7,7 @@ import node from '@astrojs/node';
 export default defineConfig({
   site: 'https://oss-wish-list.github.io',
   // base: '/oss-wishlist-website', // Uncomment for GitHub Pages, comment out for Digital Ocean
-  output: 'hybrid',
+  output: 'server',
   adapter: node({
     mode: 'standalone'
   }),
