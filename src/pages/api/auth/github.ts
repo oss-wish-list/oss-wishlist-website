@@ -4,8 +4,8 @@ import { generateState, getGitHubAuthUrl } from '../../../lib/github-oauth';
 export const prerender = false;
 
 export const GET: APIRoute = async ({ cookies, redirect }) => {
-  const clientId = import.meta.env.GITHUB_CLIENT_ID || process.env.GITHUB_CLIENT_ID;
-  const redirectUri = import.meta.env.GITHUB_REDIRECT_URI || process.env.GITHUB_REDIRECT_URI;
+  const clientId = process.env.GITHUB_CLIENT_ID;
+  const redirectUri = process.env.GITHUB_REDIRECT_URI;
   
   if (!clientId || !redirectUri) {
     return new Response(
@@ -23,7 +23,7 @@ export const GET: APIRoute = async ({ cookies, redirect }) => {
   // Store state in a secure, httpOnly cookie
   cookies.set('oauth_state', state, {
     httpOnly: true,
-    secure: import.meta.env.PROD,
+    secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     maxAge: 60 * 10, // 10 minutes
     path: '/'

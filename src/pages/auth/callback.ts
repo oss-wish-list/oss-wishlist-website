@@ -23,29 +23,29 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
   const existingSessionCookie = cookies.get('github_session')?.value;
   if (existingSessionCookie && code) {
     // Verify if the session is actually valid
-    const sessionSecret = import.meta.env.OAUTH_STATE_SECRET || process.env.OAUTH_STATE_SECRET;
+    const sessionSecret = process.env.OAUTH_STATE_SECRET;
     const sessionData = verifySession(existingSessionCookie, sessionSecret);
     
     // If session exists but doesn't have accessToken, clear it (old format)
     if (sessionData && !sessionData.accessToken) {
-      cookies.delete('github_session', { path: '/oss-wishlist-website/' });
+      cookies.delete('github_session', { path: '/' });
     } else if (sessionData) {
-      return redirect('/oss-wishlist-website/maintainers?auth=already_authenticated');
+      return redirect('/maintainers?auth=already_authenticated');
     } else {
       // Clear the invalid cookie
-      cookies.delete('github_session', { path: '/oss-wishlist-website/' });
+      cookies.delete('github_session', { path: '/' });
     }
   }
   
   // Handle OAuth errors
   if (error) {
     console.error('GitHub OAuth error:', error);
-    return redirect('/oss-wishlist-website/maintainers?error=auth_failed');
+    return redirect('/maintainers?error=auth_failed');
   }
   
   if (!code || !state) {
     console.error('Missing OAuth parameters:', { code: !!code, state: !!state });
-    return redirect('/oss-wishlist-website/maintainers?error=missing_parameters');
+    return redirect('/maintainers?error=missing_parameters');
   }
   
   // Check if this code was already used (prevents duplicate processing)
@@ -53,7 +53,7 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
     return new Response(null, {
       status: 302,
       headers: {
-        'Location': '/oss-wishlist-website/maintainers?auth=already_processed',
+        'Location': '/maintainers?auth=already_processed',
         'Cache-Control': 'no-cache, no-store, must-revalidate'
       }
     });
@@ -77,23 +77,23 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
     return new Response(null, {
       status: 302,
       headers: {
-        'Location': '/oss-wishlist-website/maintainers?auth=already_processed',
+        'Location': '/maintainers?auth=already_processed',
         'Cache-Control': 'no-cache, no-store, must-revalidate'
       }
     });
   }
   
   if (!verifyState(state, storedState)) {
-    return redirect('/oss-wishlist-website/maintainers?error=invalid_state');
+    return redirect('/maintainers?error=invalid_state');
   }
   
   // Clear the state cookie
   cookies.delete('oauth_state');
   
   try {
-    const clientId = import.meta.env.GITHUB_CLIENT_ID || process.env.GITHUB_CLIENT_ID;
-    const clientSecret = import.meta.env.GITHUB_CLIENT_SECRET || process.env.GITHUB_CLIENT_SECRET;
-    const redirectUri = import.meta.env.GITHUB_REDIRECT_URI || process.env.GITHUB_REDIRECT_URI;
+    const clientId = process.env.GITHUB_CLIENT_ID;
+    const clientSecret = process.env.GITHUB_CLIENT_SECRET;
+    const redirectUri = process.env.GITHUB_REDIRECT_URI;
     
     if (!clientId || !clientSecret || !redirectUri) {
       throw new Error('GitHub OAuth configuration missing');
@@ -120,7 +120,7 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
     };
     
     // Create signed session token
-    const sessionSecret = import.meta.env.OAUTH_STATE_SECRET || process.env.OAUTH_STATE_SECRET;
+    const sessionSecret = process.env.OAUTH_STATE_SECRET;
     if (!sessionSecret) {
       throw new Error('Session secret not configured');
     }
@@ -128,11 +128,11 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
     const sessionToken = createSession(sessionData, sessionSecret);
     
     // Use absolute URL for redirect to ensure browser can follow it
-    const redirectUrl = `${url.origin}/oss-wishlist-website/maintainers?auth=success`;
+    const redirectUrl = `${url.origin}/maintainers?auth=success`;
     
     // Create Set-Cookie header manually
     const maxAge = 60 * 60 * 24; // 24 hours
-    const cookieValue = `github_session=${sessionToken}; Path=/oss-wishlist-website/; Max-Age=${maxAge}; HttpOnly; SameSite=Lax`;
+    const cookieValue = `github_session=${sessionToken}; Path=/; Max-Age=${maxAge}; HttpOnly; SameSite=Lax`;
     
     // Redirect to maintainers page with cookie header
     return new Response(null, {
@@ -149,11 +149,11 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
     // If we already have a session set, the error might be from a duplicate request
     const existingSession = cookies.get('github_session')?.value;
     if (existingSession) {
-      return redirect('/oss-wishlist-website/maintainers?auth=success');
+      return redirect('/maintainers?auth=success');
     }
     
     // Include error message in redirect for debugging
     const errorMsg = error instanceof Error ? error.message : 'unknown_error';
-    return redirect(`/oss-wishlist-website/maintainers?error=auth_processing_failed&details=${encodeURIComponent(errorMsg)}`);
+    return redirect(`/maintainers?error=auth_processing_failed&details=${encodeURIComponent(errorMsg)}`);
   }
 };

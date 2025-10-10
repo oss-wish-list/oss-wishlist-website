@@ -16,7 +16,7 @@ export const GET: APIRoute = async ({ cookies }) => {
     }
 
     // Verify the session signature
-    const sessionSecret = process.env.OAUTH_STATE_SECRET || import.meta.env.OAUTH_STATE_SECRET;
+    const sessionSecret = process.env.OAUTH_STATE_SECRET;
     const session = verifySession(sessionCookie.value, sessionSecret);
     
     if (!session || !session.authenticated) {

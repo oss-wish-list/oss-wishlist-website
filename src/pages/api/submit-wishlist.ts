@@ -50,7 +50,7 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     // Get GitHub token from environment
-    const githubToken = import.meta.env.GITHUB_TOKEN || process.env.GITHUB_TOKEN;
+    const githubToken = process.env.GITHUB_TOKEN;
     if (!githubToken) {
       console.error('GitHub token not found in environment variables');
       return new Response(JSON.stringify({ 

@@ -4,8 +4,8 @@ export const prerender = false;
 
 export const GET: APIRoute = async ({ redirect }) => {
   // Simple manual OAuth URL for testing
-  const clientId = import.meta.env.GITHUB_CLIENT_ID || process.env.GITHUB_CLIENT_ID;
-  const redirectUri = import.meta.env.GITHUB_REDIRECT_URI || process.env.GITHUB_REDIRECT_URI;
+  const clientId = process.env.GITHUB_CLIENT_ID;
+  const redirectUri = process.env.GITHUB_REDIRECT_URI;
   const scope = 'read:user user:email';
   const state = 'test-state-123';
   

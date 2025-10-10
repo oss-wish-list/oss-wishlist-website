@@ -16,7 +16,7 @@ export const GET: APIRoute = async ({ cookies }) => {
       });
     }
 
-    const sessionSecret = process.env.OAUTH_STATE_SECRET || import.meta.env.OAUTH_STATE_SECRET;
+    const sessionSecret = process.env.OAUTH_STATE_SECRET;
     
     const session = verifySession(sessionCookie.value, sessionSecret);
     
