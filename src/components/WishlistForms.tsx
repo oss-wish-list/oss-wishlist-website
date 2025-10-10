@@ -257,7 +257,7 @@ ${repositoriesSection}
 ## 🛠️ Services Requested
 ${wishlistData.selectedServices.map(serviceId => {
   const service = availableServices.find(s => s.id === serviceId);
-  const serviceLink = service?.slug ? `${window.location.origin}${import.meta.env.BASE_URL}/services/${service.slug}` : '';
+  const serviceLink = service?.slug ? `${window.location.origin}/services/${service.slug}` : '';
   return `- **${service?.title || serviceId}** (${service?.category || 'General'})
   ${service?.description || 'No description available'}${serviceLink ? `
   📖 [Learn more about this service](${serviceLink})` : ''}`;
@@ -281,7 +281,7 @@ ${wishlistData.additionalNotes || 'None provided'}
 `;
 
       // Submit directly to our API instead of opening GitHub
-      const response = await fetch(`${import.meta.env.BASE_URL}/api/submit-wishlist`, {
+      const response = await fetch('/api/submit-wishlist', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -732,7 +732,7 @@ ${wishlistData.additionalNotes || 'None provided'}
                         </span>
                         {service.slug && (
                           <a
-                            href={`${import.meta.env.BASE_URL}/services/${service.slug}`}
+                            href={`/services/${service.slug}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-xs text-blue-600 hover:text-blue-800 underline"
