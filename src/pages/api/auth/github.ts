@@ -3,13 +3,30 @@ import { generateState, getGitHubAuthUrl } from '../../../lib/github-oauth';
 
 export const prerender = false;
 
-export const GET: APIRoute = async ({ cookies, redirect }) => {
-  const clientId = process.env.GITHUB_CLIENT_ID;
-  const redirectUri = process.env.GITHUB_REDIRECT_URI;
+export const GET: APIRoute = async ({ cookies, redirect, locals }) => {
+  // In Astro 5 with adapter, we need to check both import.meta.env and process.env
+  const clientId = import.meta.env.GITHUB_CLIENT_ID ?? process.env.GITHUB_CLIENT_ID;
+  const redirectUri = import.meta.env.GITHUB_REDIRECT_URI ?? process.env.GITHUB_REDIRECT_URI;
+  
+  // Debug logging
+  console.log('OAuth Debug:', {
+    hasClientId: !!clientId,
+    hasRedirectUri: !!redirectUri,
+    clientIdPreview: clientId?.substring(0, 10),
+    redirectUri: redirectUri,
+    envKeys: Object.keys(process.env).filter(k => k.includes('GITHUB'))
+  });
   
   if (!clientId || !redirectUri) {
     return new Response(
-      JSON.stringify({ error: 'GitHub OAuth not configured' }), 
+      JSON.stringify({ 
+        error: 'GitHub OAuth not configured',
+        debug: {
+          hasClientId: !!clientId,
+          hasRedirectUri: !!redirectUri,
+          availableEnvVars: Object.keys(process.env).filter(k => k.includes('GITHUB'))
+        }
+      }), 
       { 
         status: 500,
         headers: { 'Content-Type': 'application/json' }
