@@ -1,6 +1,6 @@
 ---
-// For public assets, manually add base URL
-const logoUrl = import.meta.env.BASE_URL + 'logo.png';
+// For public assets, use base URL + path (ensure proper slash)
+const logoUrl = import.meta.env.BASE_URL.replace(/\/$/, '') + '/logo.png';
 ---
 
 <html lang="en">
@@ -14,24 +14,24 @@ const logoUrl = import.meta.env.BASE_URL + 'logo.png';
   <body>
     <div class="container">
       <img src={logoUrl} alt="OSS Wishlist Logo" class="logo" />
-      <h1>Open Source Wishlist</h1>
-      <p class="tagline">
-        Creating a <span class="sustainable">sustainable</span> and <span class="thriving">thriving</span> open source ecosystem, one wish at a time
+      <h1>The Missing Bridge to Open Source <span class="sustainable">Sustainability</span></h1>
+      <p class="subtitle">
+        Stop giving maintainers more work - let someone else help
       </p>
       <div class="coming-soon">
         <h2>Launching November 2025</h2>
       </div>
       <div class="cards">
         <div class="card">
-          <h3>For Maintainers</h3>
+          <h3>Open Source Maintainers</h3>
           <p>Strengthen your project's long-term sustainability with expert human support in security, governance, funding and community leadership strategy.</p>
         </div>
         <div class="card">
-          <h3>For Ecosystem Sponsors</h3>
+          <h3>Wishlist Sponsors</h3>
           <p>Invest in the health and sustainability of open source projects that power your organization and our shared ecosystem, with measurable, verifiable impact.</p>
         </div>
         <div class="card">
-          <h3>For Open Source Practitioners</h3>
+          <h3>Open Source Practitioners</h3>
           <p>Join a community dedicated to strengthening open source sustainability through meaningful, paid work that recognizes and values your expertise.</p>
         </div>
       </div>
@@ -100,6 +100,12 @@ const logoUrl = import.meta.env.BASE_URL + 'logo.png';
   .tagline {
     font-size: 1.25rem;
     color: #4b5563;
+    margin-bottom: 2rem;
+  }
+  
+  .subtitle {
+    font-size: 1.125rem;
+    color: #6b7280;
     margin-bottom: 2rem;
   }
   
@@ -216,6 +222,10 @@ const logoUrl = import.meta.env.BASE_URL + 'logo.png';
     
     .tagline {
       font-size: 1.25rem;
+    }
+    
+    .subtitle {
+      font-size: 1rem;
     }
     
     .coming-soon h2 {

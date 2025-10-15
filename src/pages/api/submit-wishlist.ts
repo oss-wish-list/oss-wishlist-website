@@ -68,6 +68,8 @@ export const POST: APIRoute = async ({ request }) => {
       }).join('\n');
       
       // Create a clean, readable issue body similar to issue #5
+      const timestamp = new Date().toISOString();
+      
       finalIssueBody = `**Project:** ${formData.projectTitle}
 **Repository:** ${formData.projectUrl}
 **Maintainer:** @${formData.maintainer}
@@ -84,16 +86,25 @@ ${formData.additionalNotes ? `## Additional Notes
 ${formData.additionalNotes}` : ''}
 
 ---
+**Created:** ${timestamp}  
+**Last Updated:** ${timestamp}
+
+---
 *Submitted via [OSS Wishlist Platform](${process.env.PUBLIC_SITE_URL || 'https://oss-wishlist.com'})*`;
     }
 
     // If this is an update, add a comment instead of creating a new issue
     if (isUpdate && issueNumber) {
+      const updateTimestamp = new Date().toISOString();
+      
       const commentBody = `## 📝 Wishlist Updated
 
 The wishlist has been updated with the following information:
 
 ${finalIssueBody}
+
+---
+**Last Updated:** ${updateTimestamp}
 
 ---
 *Updated via [OSS Wishlist Platform](${process.env.PUBLIC_SITE_URL || 'https://oss-wishlist.com'})*`;
