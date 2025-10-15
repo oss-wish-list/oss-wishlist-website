@@ -583,6 +583,84 @@ ${wishlistData.additionalNotes || 'None provided'}
     }
   };
 
+  const handleCloseWishlist = async () => {
+    if (!existingIssueNumber) {
+      setError('No wishlist to close');
+      return;
+    }
+
+    const confirmClose = window.confirm(
+      `Are you sure you want to close this wishlist (Issue #${existingIssueNumber})? This will mark it as no longer needing help.`
+    );
+
+    if (!confirmClose) {
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch(getApiPath('/api/close-wishlist'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          issueNumber: existingIssueNumber
+        })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Failed to close wishlist');
+      }
+
+      // Remove the closed wishlist from existingWishlists state
+      setExistingWishlists(prev => {
+        const updated = { ...prev };
+        // Find and remove the wishlist by issue number
+        Object.keys(updated).forEach(repoUrl => {
+          if (updated[repoUrl].issueNumber === existingIssueNumber) {
+            delete updated[repoUrl];
+          }
+        });
+        return updated;
+      });
+
+      // Show success message
+      setSuccess({
+        issueNumber: result.issue.number,
+        issueUrl: result.issue.url,
+        issueTitle: '✅ Wishlist Closed Successfully!',
+        isUpdate: false
+      });
+
+      // If in edit mode, reset to auth step after showing success
+      if (currentStep === 'wishlist') {
+        setTimeout(() => {
+          setCurrentStep('auth');
+          setIsEditingExisting(false);
+          setExistingIssueNumber(null);
+          setSelectedRepo(null);
+          setSuccess(null);
+        }, 3000);
+      } else {
+        // If on repo list, just clear success after 3 seconds
+        setTimeout(() => {
+          setSuccess(null);
+          setExistingIssueNumber(null);
+        }, 3000);
+      }
+
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to close wishlist');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Step 1: Authentication / Repository Selection
   if (currentStep === 'auth') {
     // If not authenticated, show sign-in prompt
@@ -651,6 +729,23 @@ ${wishlistData.additionalNotes || 'None provided'}
     // Authenticated user - show repositories and manual entry
     return (
       <div className="max-w-4xl mx-auto">
+        {/* Success Message */}
+        {success && (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+            <div className="flex items-center gap-2">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-green-900">{success.issueTitle}</h3>
+                <p className="text-sm text-green-700">The wishlist has been closed and removed from your list.</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Show user's repositories if authenticated */}
         {repositories.length > 0 && (
           <div className="bg-white p-8 rounded-lg shadow-sm border mb-8">
@@ -701,17 +796,33 @@ ${wishlistData.additionalNotes || 'None provided'}
                         <div className="flex-1">
                           <div className="flex items-start justify-between gap-2">
                             <h4 className="font-semibold text-gray-900">{repo.name}</h4>
-                            {hasExistingWishlist && (
-                              <a
-                                href={hasExistingWishlist.issueUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                onClick={(e) => e.stopPropagation()}
-                                className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded border border-amber-300 hover:bg-amber-200 transition-colors flex items-center gap-1 shrink-0"
-                              >
-                                <span>✓ Existing Wishlist</span>
-                              </a>
-                            )}
+                            <div className="flex items-center gap-2">
+                              {hasExistingWishlist && (
+                                <>
+                                  <a
+                                    href={hasExistingWishlist.issueUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded border border-amber-300 hover:bg-amber-200 transition-colors flex items-center gap-1 shrink-0"
+                                  >
+                                    <span>✓ Existing Wishlist</span>
+                                  </a>
+                                  <button
+                                    type="button"
+                                    onClick={async (e) => {
+                                      e.stopPropagation();
+                                      setExistingIssueNumber(hasExistingWishlist.issueNumber);
+                                      await handleCloseWishlist();
+                                    }}
+                                    className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded border border-red-300 hover:bg-red-200 transition-colors flex items-center gap-1 shrink-0"
+                                    title="Close this wishlist"
+                                  >
+                                    🗑️ Close
+                                  </button>
+                                </>
+                              )}
+                            </div>
                           </div>
                           {repo.description && (
                             <p className="text-sm text-gray-600 mt-1">{repo.description}</p>
@@ -1005,14 +1116,25 @@ ${wishlistData.additionalNotes || 'None provided'}
           {/* Edit Mode Header */}
           {isEditingExisting && (
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <div className="flex items-center gap-2">
-                <span className="text-2xl">✏️</span>
-                <div>
-                  <h2 className="text-lg font-semibold text-blue-900">Editing Existing Wishlist</h2>
-                  <p className="text-sm text-blue-700">
-                    You're updating wishlist #{existingIssueNumber}. All fields below are pre-filled with current values.
-                  </p>
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl">✏️</span>
+                  <div>
+                    <h2 className="text-lg font-semibold text-blue-900">Editing Existing Wishlist</h2>
+                    <p className="text-sm text-blue-700">
+                      You're updating wishlist #{existingIssueNumber}. All fields below are pre-filled with current values.
+                    </p>
+                  </div>
                 </div>
+                <button
+                  type="button"
+                  onClick={handleCloseWishlist}
+                  disabled={loading}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-sm font-medium whitespace-nowrap"
+                  title="Close this wishlist"
+                >
+                  🗑️ Close Wishlist
+                </button>
               </div>
             </div>
           )}
