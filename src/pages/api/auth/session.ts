@@ -16,13 +16,13 @@ export const GET: APIRoute = async ({ cookies }) => {
       });
     }
 
-    const sessionSecret = process.env.OAUTH_STATE_SECRET;
+    const sessionSecret = import.meta.env.OAUTH_STATE_SECRET || process.env.OAUTH_STATE_SECRET;
     
     const session = verifySession(sessionCookie.value, sessionSecret);
     
     if (!session) {
       // Clear invalid cookie
-      cookies.delete('github_session', { path: '/oss-wishlist-website/' });
+      cookies.delete('github_session', { path: '/' });
       return new Response(JSON.stringify({ authenticated: false }), {
         status: 401,
         headers: {
@@ -34,7 +34,7 @@ export const GET: APIRoute = async ({ cookies }) => {
     // Check if this is an old session without accessToken
     if (!session.accessToken) {
       // Clear old format cookie
-      cookies.delete('github_session', { path: '/oss-wishlist-website/' });
+      cookies.delete('github_session', { path: '/' });
       return new Response(JSON.stringify({ 
         authenticated: false,
         error: 'Session expired - please re-authenticate'

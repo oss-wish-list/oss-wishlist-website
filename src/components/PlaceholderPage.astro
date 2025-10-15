@@ -1,4 +1,6 @@
 ---
+// For public assets, manually add base URL
+const logoUrl = import.meta.env.BASE_URL + 'logo.png';
 ---
 
 <html lang="en">
@@ -6,12 +8,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="OSS Wishlist - Coming November 2025" />
-    <link rel="icon" type="image/png" href="/logo.png" />
+    <link rel="icon" type="image/png" href={logoUrl} />
     <title>OSS Wishlist - Coming Soon</title>
   </head>
   <body>
     <div class="container">
-      <img src="/logo.png" alt="OSS Wishlist Logo" class="logo" />
+      <img src={logoUrl} alt="OSS Wishlist Logo" class="logo" />
       <h1>Open Source Wishlist</h1>
       <p class="tagline">
         Creating a <span class="sustainable">sustainable</span> and <span class="thriving">thriving</span> open source ecosystem, one wish at a time

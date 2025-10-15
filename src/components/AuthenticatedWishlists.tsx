@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getApiPath } from '../config/app';
 
 interface AuthenticatedWishlistsProps {
   children: React.ReactNode;
@@ -15,7 +16,7 @@ export default function AuthenticatedWishlists({ children }: AuthenticatedWishli
   const checkSession = async () => {
     try {
       // Check cookie-based session first (most reliable)
-      const response = await fetch('/oss-wishlist-website/api/auth/session');
+      const response = await fetch(getApiPath('/api/auth/session'));
       if (response.ok) {
         const sessionData = await response.json();
         setUser(sessionData);
@@ -55,7 +56,7 @@ export default function AuthenticatedWishlists({ children }: AuthenticatedWishli
   };
 
   const login = () => {
-    window.location.href = '/api/auth/github';
+    window.location.href = getApiPath('/api/auth/github');
   };
 
   if (loading) {

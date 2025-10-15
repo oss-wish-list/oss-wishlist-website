@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { getApiPath } from '../config/app';
 
 interface User {
   login: string;
@@ -29,7 +30,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const checkSession = async () => {
     try {
       // Check cookie-based session first (most reliable)
-      const response = await fetch('/oss-wishlist-website/api/auth/session');
+      const response = await fetch(getApiPath('/api/auth/session'));
       if (response.ok) {
         const sessionData = await response.json();
         setUser(sessionData);
@@ -69,12 +70,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const login = () => {
-    window.location.href = '/api/auth/github';
+    window.location.href = getApiPath('/api/auth/github');
   };
 
   const logout = async () => {
     try {
-      await fetch('/api/auth/logout', { method: 'POST' });
+      await fetch(getApiPath('/api/auth/logout'), { method: 'POST' });
       setUser(null);
       sessionStorage.removeItem('github_session'); // Clear session storage on logout
       window.location.reload();

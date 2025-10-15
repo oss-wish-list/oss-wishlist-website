@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { getApiPath } from '../config/app';
 
 interface Service {
   id: string;
@@ -36,13 +37,15 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
   const [user, setUser] = useState<GitHubUser | null>(null);
   const [repositories, setRepositories] = useState<GitHubRepository[]>([]);
   const [loadingRepos, setLoadingRepos] = useState(false);
-  const [selectedRepos, setSelectedRepos] = useState<GitHubRepository[]>([]);
+  const [selectedRepo, setSelectedRepo] = useState<GitHubRepository | null>(null);
+  const [existingWishlists, setExistingWishlists] = useState<Record<string, { issueUrl: string; issueNumber: number }>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState<{
     issueNumber: number;
     issueUrl: string;
     issueTitle: string;
+    isUpdate?: boolean;
   } | null>(null);
   const [manualRepoUrl, setManualRepoUrl] = useState('');
   const [manualRepoData, setManualRepoData] = useState<{
@@ -54,6 +57,9 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
   
   // Step management
   const [currentStep, setCurrentStep] = useState<'auth' | 'repo' | 'wishlist'>('auth');
+  const [isEditingExisting, setIsEditingExisting] = useState(false);
+  const [existingIssueNumber, setExistingIssueNumber] = useState<number | null>(null);
+  const [originalServices, setOriginalServices] = useState<string[]>([]);
   
   // Wishlist form state
   const [wishlistData, setWishlistData] = useState({
@@ -65,6 +71,9 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
     organizationName: '',
     additionalNotes: ''
   });
+  
+  // Checkbox for FUNDING.yml PR
+  const [createFundingPR, setCreateFundingPR] = useState(false);
 
   // Available services from content collections
   const availableServices = services.length > 0 ? services : [
@@ -98,7 +107,7 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
   const checkUserSession = async () => {
     try {
       setLoadingRepos(true);
-      const response = await fetch('/oss-wishlist-website/api/auth/session');
+      const response = await fetch(getApiPath('/api/auth/session'));
       
       if (response.ok) {
         const data = await response.json();
@@ -119,11 +128,17 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
 
   const fetchUserRepositories = async () => {
     try {
-      const response = await fetch('/oss-wishlist-website/api/repositories');
+      const response = await fetch(getApiPath('/api/repositories'));
       
       if (response.ok) {
         const data = await response.json();
-        setRepositories(data.repositories || []);
+        const repos = data.repositories || [];
+        setRepositories(repos);
+        
+        // Check for existing wishlists for these repositories
+        if (repos.length > 0) {
+          checkExistingWishlists(repos.map((r: GitHubRepository) => r.html_url));
+        }
       } else {
         // If fetching fails, just keep repositories empty
         setRepositories([]);
@@ -131,6 +146,188 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
     } catch (err) {
       console.error('Error fetching repositories:', err);
       setRepositories([]);
+    }
+  };
+
+  const checkExistingWishlists = async (repositoryUrls: string[]) => {
+    try {
+      const response = await fetch(getApiPath('/api/check-existing-wishlists'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ repositoryUrls }),
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        const existingMap: Record<string, { issueUrl: string; issueNumber: number }> = {};
+        
+        for (const [url, info] of Object.entries(data.results)) {
+          if ((info as any).exists) {
+            existingMap[url] = {
+              issueUrl: (info as any).issueUrl,
+              issueNumber: (info as any).issueNumber,
+            };
+          }
+        }
+        
+        setExistingWishlists(existingMap);
+      }
+    } catch (err) {
+      console.error('Error checking existing wishlists:', err);
+    }
+  };
+
+  const loadExistingWishlistData = async (issueNumber: number) => {
+    try {
+      const GITHUB_TOKEN = import.meta.env.GITHUB_TOKEN || import.meta.env.PUBLIC_GITHUB_TOKEN;
+      const response = await fetch(
+        `https://api.github.com/repos/oss-wishlist/wishlists/issues/${issueNumber}`,
+        {
+          headers: GITHUB_TOKEN ? {
+            'Authorization': `token ${GITHUB_TOKEN}`,
+            'Accept': 'application/vnd.github.v3+json',
+          } : {
+            'Accept': 'application/vnd.github.v3+json',
+          },
+        }
+      );
+      
+      if (!response.ok) {
+        console.error('Failed to load existing wishlist');
+        return;
+      }
+      
+      const issue = await response.json();
+      const body = issue.body || '';
+      
+      console.log('Issue body:', body);
+      
+      const updatedData: any = {};
+      
+      // Parse the issue body to extract form data
+      // The actual format uses ** markers and ## headers
+      
+      // Project Title (uses **Project:** format)
+      const titleMatch = body.match(/\*\*Project:\*\*\s*(.+?)(?:\n|$)/);
+      console.log('Title match:', titleMatch);
+      if (titleMatch) {
+        updatedData.projectTitle = titleMatch[1].trim();
+      }
+      
+      // Urgency Level (uses **Urgency:** format)
+      const urgencyMatch = body.match(/\*\*Urgency:\*\*\s*(.+?)(?:\n|$)/);
+      console.log('Urgency match:', urgencyMatch);
+      if (urgencyMatch) {
+        const urgency = urgencyMatch[1].trim().toLowerCase();
+        if (urgency === 'low' || urgency === 'medium' || urgency === 'high') {
+          updatedData.urgency = urgency;
+        }
+      }
+      
+      // Organization Type (might not exist in old format)
+      const orgTypeMatch = body.match(/\*\*Organization Type:\*\*\s*(.+?)(?:\n|$)/);
+      if (orgTypeMatch) {
+        const orgType = orgTypeMatch[1].trim().toLowerCase();
+        if (orgType === 'individual' || orgType === 'company' || orgType === 'nonprofit' || orgType === 'foundation') {
+          updatedData.organizationType = orgType;
+        }
+      }
+      
+      // Organization Name (might not exist in old format)
+      const orgNameMatch = body.match(/\*\*Organization Name:\*\*\s*(.+?)(?:\n|$)/);
+      if (orgNameMatch) {
+        updatedData.organizationName = orgNameMatch[1].trim();
+      }
+      
+      // Timeline (might not exist in old format)
+      const timelineMatch = body.match(/\*\*Timeline:\*\*\s*(.+?)(?:\n|$)/);
+      if (timelineMatch) {
+        updatedData.timeline = timelineMatch[1].trim();
+      }
+      
+      // Project Description
+      const descriptionMatch = body.match(/## Project Description\s*\n(.+?)(?:\n\n|$)/s);
+      if (descriptionMatch) {
+        updatedData.additionalNotes = descriptionMatch[1].trim();
+      }
+      
+      // Additional Notes (append if exists)
+      const notesMatch = body.match(/## Additional Notes\s*\n(.+?)(?:\n\n|$)/s);
+      if (notesMatch) {
+        const notes = notesMatch[1].trim();
+        if (updatedData.additionalNotes) {
+          updatedData.additionalNotes += '\n\n' + notes;
+        } else {
+          updatedData.additionalNotes = notes;
+        }
+      }
+      
+      // Services Requested (uses ## header with list)
+      const servicesMatch = body.match(/## Services Requested\s*\n(.+?)(?:\n\n|$)/s);
+      console.log('Services match:', servicesMatch);
+      if (servicesMatch) {
+        const servicesText = servicesMatch[1].trim();
+        const parsedServices: string[] = [];
+        
+        // Parse list items (e.g., "- aws-credits", "- Funding Strategy")
+        const serviceLines = servicesText.split('\n').map((line: string) => line.trim());
+        
+        for (const line of serviceLines) {
+          // Remove leading "- " or "* "
+          const cleanLine = line.replace(/^[-*]\s*/, '').trim();
+          
+          // Check if it's a service ID (lowercase with hyphens) or a display name
+          if (cleanLine) {
+            // Try to match against known service IDs first
+            const serviceId = cleanLine.toLowerCase().replace(/\s+/g, '-');
+            
+            // Also map common display names to IDs
+            const serviceMapping: Record<string, string> = {
+              'security audit': 'dependency-security-audit',
+              'dependency security audit': 'dependency-security-audit',
+              'governance setup': 'governance-setup',
+              'project governance setup': 'governance-setup',
+              'legal consultation': 'legal-consult',
+              'legal consult': 'legal-consult',
+              'stakeholder mediation': 'stakeholder-mediation',
+              'funding strategy': 'funding-strategy',
+              'community strategy': 'community-building-strategy',
+              'community building strategy': 'community-building-strategy',
+              'developer relations strategy': 'developer-relations-strategy',
+              'devrel strategy': 'developer-relations-strategy',
+              'moderation strategy': 'moderation-strategy',
+              'leadership onboarding': 'leadership-onboarding',
+              'github copilot budget': 'github-copilot-budget',
+              'aws credits': 'aws-credits',
+              'aws-credits': 'aws-credits',
+            };
+            
+            const mappedId = serviceMapping[cleanLine.toLowerCase()] || serviceId;
+            if (!parsedServices.includes(mappedId)) {
+              parsedServices.push(mappedId);
+            }
+          }
+        }
+        
+        updatedData.selectedServices = parsedServices;
+        setOriginalServices(parsedServices);
+      }
+      
+      // Update all form data at once
+      console.log('Updated data to set:', updatedData);
+      setWishlistData(prev => {
+        const newData = { ...prev, ...updatedData };
+        console.log('New wishlist data:', newData);
+        return newData;
+      });
+      
+      setIsEditingExisting(true);
+      setExistingIssueNumber(issueNumber);
+      
+    } catch (err) {
+      console.error('Error loading existing wishlist data:', err);
     }
   };
 
@@ -149,16 +346,18 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
   const initiateGitHubAuth = () => {
     setLoading(false);
     setError('');
-    window.location.href = '/api/auth/github';
+    window.location.href = getApiPath('/api/auth/github');
   };
 
-  const parseGitHubUrl = (url: string) => {
+  const parseProjectUrl = (url: string) => {
     try {
-      const cleanUrl = url.replace(/\.git$/, '');
-      const match = cleanUrl.match(/github\.com\/([^\/]+)\/([^\/\?#]+)/);
+      const urlObj = new URL(url);
       
-      if (match) {
-        const [, username, repoName] = match;
+      // Check if it's a GitHub URL to extract more detailed info
+      const githubMatch = url.match(/github\.com\/([^\/]+)\/([^\/\?#]+)/);
+      
+      if (githubMatch) {
+        const [, username, repoName] = githubMatch;
         return {
           username,
           name: repoName,
@@ -166,7 +365,17 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
           url: `https://github.com/${username}/${repoName}`
         };
       }
-      return null;
+      
+      // For non-GitHub URLs, extract what we can from the URL
+      const pathParts = urlObj.pathname.split('/').filter(p => p);
+      const projectName = pathParts[pathParts.length - 1] || urlObj.hostname;
+      
+      return {
+        username: urlObj.hostname,
+        name: projectName,
+        description: 'Project entered manually',
+        url: url
+      };
     } catch {
       return null;
     }
@@ -174,10 +383,10 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
 
   const handleManualRepoSubmit = () => {
     setError('');
-    const repoData = parseGitHubUrl(manualRepoUrl);
+    const repoData = parseProjectUrl(manualRepoUrl);
     
     if (!repoData) {
-      setError('Please enter a valid GitHub repository URL (e.g., https://github.com/username/repository)');
+      setError('Please enter a valid URL (e.g., https://github.com/username/repository or https://example.com/project)');
       return;
     }
     
@@ -186,7 +395,7 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
   };
 
   const proceedToWishlist = () => {
-    if ((user && selectedRepos.length > 0) || manualRepoData) {
+    if ((user && selectedRepo) || manualRepoData) {
       setCurrentStep('wishlist');
     }
   };
@@ -213,18 +422,42 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
       return;
     }
 
+    // Basic client-side validation for spam patterns
+    const fieldsToCheck = [
+      wishlistData.projectTitle,
+      wishlistData.organizationName,
+      wishlistData.additionalNotes
+    ].filter(Boolean).join(' ');
+
+    // Check for excessive URLs
+    const urlCount = (fieldsToCheck.match(/https?:\/\//gi) || []).length;
+    if (urlCount > 3) {
+      setError('Too many URLs detected. Please limit links in your submission.');
+      return;
+    }
+
+    // Check for excessive capitalization
+    if (fieldsToCheck.length > 20) {
+      const capsCount = (fieldsToCheck.match(/[A-Z]/g) || []).length;
+      const lettersCount = (fieldsToCheck.match(/[a-zA-Z]/g) || []).length;
+      if (lettersCount > 0 && capsCount / lettersCount > 0.6) {
+        setError('Please avoid excessive capitalization in your submission.');
+        return;
+      }
+    }
+
     setLoading(true);
     setError('');
 
     try {
       // Create array of repository info
-      const repositories = selectedRepos.length > 0 
-        ? selectedRepos.map(repo => ({
-            name: repo.name,
-            url: repo.html_url,
+      const repositories = selectedRepo 
+        ? [{
+            name: selectedRepo.name,
+            url: selectedRepo.html_url,
             username: user?.login || '',
-            description: repo.description || ''
-          }))
+            description: selectedRepo.description || ''
+          }]
         : manualRepoData 
           ? [manualRepoData]
           : [];
@@ -290,6 +523,8 @@ ${wishlistData.additionalNotes || 'None provided'}
           title: issueTitle,
           body: issueBody,
           labels: ['wishlist', `${wishlistData.urgency}-priority`],
+          isUpdate: isEditingExisting,
+          ...(existingIssueNumber && { issueNumber: existingIssueNumber }), // Only include if exists
           formData: {
             projectTitle: wishlistData.projectTitle,
             projectUrl: repositories[0].url, // Use first repo as primary
@@ -298,22 +533,46 @@ ${wishlistData.additionalNotes || 'None provided'}
             urgency: wishlistData.urgency,
             description: repositories[0].description || '',
             additionalNotes: wishlistData.additionalNotes || '',
-            repositories: repositories // Include all repositories
+            repositories: repositories, // Include all repositories
+            createFundingPR: createFundingPR // Include FUNDING.yml PR flag
           }
         })
       });
 
       const result = await response.json();
 
-      if (!response.ok) {
-        throw new Error(result.error || 'Failed to create wishlist');
+      if (!response.ok || !result.success) {
+        // Handle validation errors with field information
+        if (result.field) {
+          // Convert technical field names to user-friendly labels
+          const fieldLabels: Record<string, string> = {
+            'formData.projectTitle': 'Project Title',
+            'formData.timeline': 'Timeline',
+            'formData.organizationName': 'Organization Name',
+            'formData.additionalNotes': 'Additional Notes',
+            'formData.description': 'Project Description',
+            'title': 'Title',
+            'body': 'Content'
+          };
+          
+          const friendlyFieldName = fieldLabels[result.field] || result.field;
+          const errorMessage = `${friendlyFieldName}: ${result.details || result.error}`;
+          throw new Error(errorMessage);
+        }
+        // Include details from moderation failures or other API errors
+        const errorMessage = result.details 
+          ? `${result.error}: ${result.details}`
+          : result.error || 'Failed to create wishlist';
+        throw new Error(errorMessage);
       }
 
-      // Success! Store the result
+      // Success! Store the result (data is now nested under result.data)
+      const issueData = result.data;
       setSuccess({
-        issueNumber: result.issue.number,
-        issueUrl: result.issue.url,
-        issueTitle: result.issue.title
+        issueNumber: issueData.issue.number,
+        issueUrl: issueData.issue.url,
+        issueTitle: issueData.issue.title,
+        isUpdate: issueData.updated || false
       });
       
     } catch (err) {
@@ -396,12 +655,9 @@ ${wishlistData.additionalNotes || 'None provided'}
         {repositories.length > 0 && (
           <div className="bg-white p-8 rounded-lg shadow-sm border mb-8">
             <div className="max-w-2xl mx-auto">
-              <h3 className="text-xl font-bold text-gray-900 mb-2 text-center">Select Your Repositories</h3>
-              <p className="text-gray-600 text-sm mb-2 text-center">
-                Choose up to 3 repositories from your GitHub account
-              </p>
+              <h3 className="text-xl font-bold text-gray-900 mb-2 text-center">Select Your Repository</h3>
               <p className="text-blue-600 text-xs mb-6 text-center">
-                {selectedRepos.length}/3 selected
+                {selectedRepo ? '1 selected' : 'No repository selected'}
               </p>
               
               {error && (
@@ -412,38 +668,51 @@ ${wishlistData.additionalNotes || 'None provided'}
               
               <div className="space-y-2 max-h-96 overflow-y-auto mb-6">
                 {repositories.map((repo) => {
-                  const isSelected = selectedRepos.some(r => r.id === repo.id);
-                  const canSelect = selectedRepos.length < 3 || isSelected;
+                  const isSelected = selectedRepo?.id === repo.id;
+                  const hasExistingWishlist = existingWishlists[repo.html_url];
                   
                   return (
                     <button
                       key={repo.id}
                       onClick={() => {
                         if (isSelected) {
-                          setSelectedRepos(selectedRepos.filter(r => r.id !== repo.id));
-                        } else if (canSelect) {
-                          setSelectedRepos([...selectedRepos, repo]);
+                          setSelectedRepo(null);
+                        } else {
+                          setSelectedRepo(repo);
                         }
                       }}
-                      disabled={!canSelect}
                       className={`w-full text-left p-4 border rounded-lg transition-colors ${
-                        isSelected 
-                          ? 'border-blue-500 bg-blue-50' 
-                          : canSelect
-                            ? 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'
-                            : 'border-gray-200 bg-gray-50 opacity-50 cursor-not-allowed'
+                        hasExistingWishlist
+                          ? isSelected
+                            ? 'border-gray-400 bg-gray-200'
+                            : 'border-gray-300 bg-gray-100 hover:border-gray-400 hover:bg-gray-200'
+                          : isSelected 
+                            ? 'border-blue-500 bg-blue-50' 
+                            : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'
                       }`}
                     >
                       <div className="flex items-start gap-3">
                         <input
-                          type="checkbox"
+                          type="radio"
                           checked={isSelected}
                           readOnly
                           className="mt-1"
-                          disabled={!canSelect}
                         />
                         <div className="flex-1">
-                          <h4 className="font-semibold text-gray-900">{repo.name}</h4>
+                          <div className="flex items-start justify-between gap-2">
+                            <h4 className="font-semibold text-gray-900">{repo.name}</h4>
+                            {hasExistingWishlist && (
+                              <a
+                                href={hasExistingWishlist.issueUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded border border-amber-300 hover:bg-amber-200 transition-colors flex items-center gap-1 shrink-0"
+                              >
+                                <span>✓ Existing Wishlist</span>
+                              </a>
+                            )}
+                          </div>
                           {repo.description && (
                             <p className="text-sm text-gray-600 mt-1">{repo.description}</p>
                           )}
@@ -464,12 +733,21 @@ ${wishlistData.additionalNotes || 'None provided'}
                 })}
               </div>
               
-              {selectedRepos.length > 0 && (
+              {selectedRepo && (
                 <button
-                  onClick={() => setCurrentStep('repo')}
+                  onClick={async () => {
+                    const hasExisting = selectedRepo && existingWishlists[selectedRepo.html_url];
+                    if (hasExisting) {
+                      await loadExistingWishlistData(hasExisting.issueNumber);
+                    } else {
+                      setIsEditingExisting(false);
+                      setExistingIssueNumber(null);
+                    }
+                    setCurrentStep('repo');
+                  }}
                   className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
                 >
-                  Continue with {selectedRepos.length} {selectedRepos.length === 1 ? 'Repository' : 'Repositories'}
+                  {selectedRepo && existingWishlists[selectedRepo.html_url] ? 'Edit Existing Wishlist' : 'Continue with Repository'}
                 </button>
               )}
             </div>
@@ -480,10 +758,10 @@ ${wishlistData.additionalNotes || 'None provided'}
         <div className="bg-white p-8 rounded-lg shadow-sm border mb-8">
           <div className="max-w-md mx-auto">
             <h3 className="text-xl font-bold text-gray-900 mb-2 text-center">
-              {repositories.length > 0 ? 'Or Enter Repository URL Manually' : 'Enter Repository URL'}
+              {repositories.length > 0 ? 'Or, enter your project URL manually' : 'Enter Project URL'}
             </h3>
             <p className="text-gray-600 text-sm mb-4 text-center">
-              Paste your GitHub repository URL below
+              This can be anywhere.
             </p>
             
             {error && (
@@ -495,14 +773,14 @@ ${wishlistData.additionalNotes || 'None provided'}
             <div className="space-y-4">
               <div>
                 <label htmlFor="repo-url" className="block text-sm font-medium text-gray-700 mb-2">
-                  GitHub Repository URL
+                  Project URL
                 </label>
                   <input
                     id="repo-url"
                     type="url"
                     value={manualRepoUrl}
                     onChange={(e) => setManualRepoUrl(e.target.value)}
-                    placeholder="https://github.com/username/repository"
+                    placeholder="https://oss-wishlist.com"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
@@ -526,13 +804,13 @@ ${wishlistData.additionalNotes || 'None provided'}
   // Step 2: Repository Selection/Confirmation
   if (currentStep === 'repo') {
     // Show manual repo confirmation OR selected repos from OAuth
-    if (manualRepoData || selectedRepos.length > 0) {
+    if (manualRepoData || selectedRepo) {
       return (
         <div className="max-w-4xl mx-auto">
           <div className="bg-white p-6 rounded-lg shadow-sm border mb-8">
             <div className="max-w-2xl mx-auto">
               <h3 className="text-lg font-semibold text-gray-900 mb-4 text-center">
-                Confirm Repository Details
+                Confirm Project Details
               </h3>
               
               {manualRepoData && (
@@ -544,20 +822,18 @@ ${wishlistData.additionalNotes || 'None provided'}
                 </div>
               )}
               
-              {selectedRepos.length > 0 && (
+              {selectedRepo && (
                 <div className="space-y-3 mb-6">
                   <p className="text-sm text-gray-600 text-center mb-3">
-                    {selectedRepos.length} {selectedRepos.length === 1 ? 'repository' : 'repositories'} selected
+                    Repository selected
                   </p>
-                  {selectedRepos.map((repo) => (
-                    <div key={repo.id} className="bg-gray-50 border rounded-lg p-4">
-                      <h4 className="font-semibold text-gray-900">{repo.name}</h4>
-                      {repo.description && (
-                        <p className="text-sm text-gray-600 mt-1">{repo.description}</p>
-                      )}
-                      <p className="text-sm text-blue-600 mt-2">{repo.html_url}</p>
-                    </div>
-                  ))}
+                  <div className="bg-gray-50 border rounded-lg p-4">
+                    <h4 className="font-semibold text-gray-900">{selectedRepo.name}</h4>
+                    {selectedRepo.description && (
+                      <p className="text-sm text-gray-600 mt-1">{selectedRepo.description}</p>
+                    )}
+                    <p className="text-sm text-blue-600 mt-2">{selectedRepo.html_url}</p>
+                  </div>
                 </div>
               )}
               
@@ -566,13 +842,13 @@ ${wishlistData.additionalNotes || 'None provided'}
                   onClick={proceedToWishlist}
                   className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700"
                 >
-                  Create Wishlist
+                  {isEditingExisting ? 'Update Wishlist' : 'Create Wishlist'}
                 </button>
                 <button
                   onClick={() => {
                     setManualRepoData(null);
                     setManualRepoUrl('');
-                    setSelectedRepos([]);
+                    setSelectedRepo(null);
                     setCurrentStep('auth');
                   }}
                   className="px-4 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
@@ -618,9 +894,14 @@ ${wishlistData.additionalNotes || 'None provided'}
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">🎉 Wishlist Created Successfully!</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                {success.isUpdate ? '🎉 Wishlist Updated Successfully!' : '🎉 Wishlist Created Successfully!'}
+              </h3>
               <p className="text-gray-600 mb-6">
-                Your wishlist has been submitted as GitHub issue #{success.issueNumber}
+                {success.isUpdate 
+                  ? `Your wishlist has been updated in GitHub issue #${success.issueNumber}`
+                  : `Your wishlist has been submitted as GitHub issue #${success.issueNumber}`
+                }
               </p>
               
               <div className="bg-gray-50 rounded-lg p-4 mb-6">
@@ -670,18 +951,72 @@ ${wishlistData.additionalNotes || 'None provided'}
     return (
       <div className="max-w-4xl mx-auto">
         <form onSubmit={handleSubmitWishlist} className="space-y-8">
-          {/* Header */}
-          <div className="bg-white p-6 rounded-lg shadow-sm border">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">🎯 Create Your Wishlist</h2>
-            <p className="text-gray-600">
-              Select the services you need help with for your project.
-            </p>
-            {/* Debug info */}
-            <div className="mt-2 text-xs text-gray-400">
-              Debug: Step={currentStep}, HasRepo={!!(manualRepoData || (selectedRepos.length > 0 && user))}
+          {/* Repository Info Header */}
+          <div className="bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-300 rounded-lg p-6 shadow-sm">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0">
+                <svg className="w-12 h-12 text-gray-600" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 1 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 0 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 0 1 1-1h8zM5 12.25v3.25a.25.25 0 0 0 .4.2l1.45-1.087a.25.25 0 0 1 .3 0L8.6 15.7a.25.25 0 0 0 .4-.2v-3.25a.25.25 0 0 0-.25-.25h-3.5a.25.25 0 0 0-.25.25z"/>
+                </svg>
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-sm font-medium text-gray-600 mb-1">Creating Wishlist For</h3>
+                {selectedRepo ? (
+                  <>
+                    <p className="text-xl font-bold text-gray-900 mb-2">{selectedRepo.name}</p>
+                    <a 
+                      href={selectedRepo.html_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-blue-600 hover:text-blue-800 hover:underline break-all inline-flex items-center gap-1"
+                    >
+                      {selectedRepo.html_url}
+                      <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
+                    </a>
+                    {selectedRepo.description && (
+                      <p className="text-sm text-gray-600 mt-2">{selectedRepo.description}</p>
+                    )}
+                  </>
+                ) : manualRepoData ? (
+                  <>
+                    <p className="text-xl font-bold text-gray-900 mb-2">{manualRepoData.name}</p>
+                    <a 
+                      href={manualRepoData.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-blue-600 hover:text-blue-800 hover:underline break-all inline-flex items-center gap-1"
+                    >
+                      {manualRepoData.url}
+                      <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
+                    </a>
+                    {manualRepoData.description && (
+                      <p className="text-sm text-gray-600 mt-2">{manualRepoData.description}</p>
+                    )}
+                  </>
+                ) : null}
+              </div>
             </div>
           </div>
 
+          {/* Edit Mode Header */}
+          {isEditingExisting && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">✏️</span>
+                <div>
+                  <h2 className="text-lg font-semibold text-blue-900">Editing Existing Wishlist</h2>
+                  <p className="text-sm text-blue-700">
+                    You're updating wishlist #{existingIssueNumber}. All fields below are pre-filled with current values.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+          
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
               <p className="text-red-800">{error}</p>
@@ -711,44 +1046,61 @@ ${wishlistData.additionalNotes || 'None provided'}
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
               🛠️ Services Needed <span className="text-red-500">*</span>
             </h3>
+            {isEditingExisting && originalServices.length > 0 && (
+              <p className="text-sm text-gray-600 mb-4 bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <span className="font-medium">Currently selected services</span> are highlighted. You can modify your selection below.
+              </p>
+            )}
             <div className="grid gap-4 md:grid-cols-2">
-              {availableServices.map((service) => (
-                <div
-                  key={service.id}
-                  onClick={() => handleServiceToggle(service.id)}
-                  className={`p-4 border rounded-lg cursor-pointer transition-colors ${
-                    wishlistData.selectedServices.includes(service.id)
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-gray-900">{service.title}</h4>
-                      <p className="text-sm text-gray-600 mt-1">{service.description}</p>
-                      <div className="flex items-center justify-between mt-2">
-                        <span className="inline-block bg-gray-100 px-2 py-1 rounded text-xs text-gray-600">
-                          {service.category}
-                        </span>
-                        {service.slug && (
-                          <a
-                            href={`/services/${service.slug}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-xs text-blue-600 hover:text-blue-800 underline"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            Learn more →
-                          </a>
-                        )}
+              {availableServices.map((service) => {
+                const isSelected = wishlistData.selectedServices.includes(service.id);
+                const wasOriginallySelected = originalServices.includes(service.id);
+                
+                return (
+                  <div
+                    key={service.id}
+                    onClick={() => handleServiceToggle(service.id)}
+                    className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                      isSelected
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-semibold text-gray-900">{service.title}</h4>
+                          {wasOriginallySelected && (
+                            <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded border border-green-300">
+                              Currently selected
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm text-gray-600 mt-1">{service.description}</p>
+                        <div className="flex items-center justify-between mt-2">
+                          <span className="inline-block bg-gray-100 px-2 py-1 rounded text-xs text-gray-600">
+                            {service.category}
+                          </span>
+                          {service.slug && (
+                            <a
+                              href={`/services/${service.slug}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs text-blue-600 hover:text-blue-800 underline"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              Learn more →
+                            </a>
+                          )}
+                        </div>
                       </div>
+                      {isSelected && (
+                        <div className="ml-2 text-blue-600 text-lg">✓</div>
+                      )}
                     </div>
-                    {wishlistData.selectedServices.includes(service.id) && (
-                      <div className="ml-2 text-blue-600 text-lg">✓</div>
-                    )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
@@ -837,33 +1189,58 @@ ${wishlistData.additionalNotes || 'None provided'}
 
           {/* Submit */}
           <div className="bg-white p-6 rounded-lg shadow-sm border">
-            <div className="flex justify-between items-center">
+            {/* FUNDING.yml PR Checkbox */}
+            <div className={`mb-6 p-4 rounded-lg border ${manualRepoData ? 'bg-gray-100 border-gray-300' : 'bg-gray-50 border-gray-200'}`}>
+              <label className={`flex items-start space-x-3 ${manualRepoData ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}`}>
+                <input
+                  type="checkbox"
+                  checked={createFundingPR && !manualRepoData}
+                  onChange={(e) => setCreateFundingPR(e.target.checked)}
+                  disabled={!!manualRepoData}
+                  className="mt-0.5 h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 disabled:cursor-not-allowed"
+                />
+                <div className="flex-1">
+                  <span className="text-gray-900 font-medium text-sm">Create a PR to add FUNDING.yml to this repository</span>
+                  <p className="text-xs text-gray-600 mt-1">
+                    {manualRepoData 
+                      ? 'Only available for GitHub repositories selected from your account' 
+                      : 'Automatically submit a pull request to add GitHub Sponsors funding information to your repo'
+                    }
+                  </p>
+                </div>
+              </label>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
               <button
                 type="button"
                 onClick={() => setCurrentStep('repo')}
-                className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium transition-colors order-2 sm:order-1"
               >
                 ← Back
               </button>
               <button
                 type="submit"
                 disabled={loading || wishlistData.selectedServices.length === 0 || !wishlistData.projectTitle.trim()}
-                className="px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400 flex items-center space-x-2"
+                className="flex-1 px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2 order-1 sm:order-2"
               >
                 {loading ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                    <span>Creating...</span>
+                    <span>{isEditingExisting ? 'Updating...' : 'Creating...'}</span>
                   </>
                 ) : (
                   <>
-                    <span>🚀 Create Wishlist</span>
+                    <span>{isEditingExisting ? '✏️ Update Wishlist' : '🚀 Create Wishlist'}</span>
                   </>
                 )}
               </button>
             </div>
-            <p className="text-sm text-gray-500 mt-2 text-center">
-              This will create a GitHub issue with your wishlist details
+            <p className="text-xs text-gray-500 mt-3 text-center">
+              {isEditingExisting 
+                ? `This will update the existing wishlist (Issue #${existingIssueNumber})` 
+                : 'This will create a GitHub issue with your wishlist details'
+              }
             </p>
           </div>
         </form>

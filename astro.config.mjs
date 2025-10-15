@@ -6,7 +6,7 @@ import node from '@astrojs/node';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://oss-wish-list.github.io',
-  // base: '/oss-wishlist-website', // Uncomment for GitHub Pages, comment out for Digital Ocean
+  base: '/oss-wishlist-website', // Uncomment for GitHub Pages, comment out for Digital Ocean
   output: 'server',
   adapter: node({
     mode: 'standalone'

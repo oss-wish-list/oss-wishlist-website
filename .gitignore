@@ -109,3 +109,6 @@ _site/
 .jekyll-cache/
 .jekyll-metadata
 Gemfile.lock
+
+# Copilot documentation and notes
+copilot_notes/

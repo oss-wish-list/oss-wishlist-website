@@ -188,9 +188,8 @@ export function verifySession(sessionToken: string, secret?: string): SessionDat
       throw new Error('Session verification must be done server-side');
     }
     
-    const actualSecret = secret || process.env.OAUTH_STATE_SECRET;
-    if (!actualSecret) {
-      throw new Error('Session secret not available');
+    if (!secret) {
+      throw new Error('Session secret not provided');
     }
     
     const decoded = Buffer.from(sessionToken, 'base64').toString('utf8');
@@ -207,7 +206,7 @@ export function verifySession(sessionToken: string, secret?: string): SessionDat
     }
     
     // Verify signature
-    const expectedSignature = createHmac('sha256', actualSecret)
+    const expectedSignature = createHmac('sha256', secret)
       .update(payload)
       .digest('hex');
     
