@@ -7,11 +7,6 @@ export const POST: APIRoute = async ({ request }) => {
     const body = await request.json();
     const sessionData = body.sessionData;
     
-      hasSessionData: !!sessionData,
-      isAuthenticated: sessionData?.authenticated || false,
-      user: sessionData?.user?.login || 'none'
-    });
-    
     if (!sessionData || !sessionData.authenticated) {
       return new Response(JSON.stringify({ authenticated: false }), {
         status: 401,

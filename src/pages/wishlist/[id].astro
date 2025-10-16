@@ -1,8 +1,9 @@
 ---
-import { getBasePath } from '../lib/paths';
-const basePath = getBasePath();
+import { getBasePath } from '../../lib/paths';
 import Layout from '../../components/Layout.astro';
 import { getCollection, getEntry } from 'astro:content';
+
+const basePath = getBasePath();
 
 // Generate static paths for all wishlists
 export async function getStaticPaths() {
