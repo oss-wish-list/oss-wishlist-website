@@ -6,6 +6,7 @@ import type { APIRoute } from 'astro';
 import { GITHUB_CONFIG } from '../../config/github.js';
 import { wishlistSubmissionSchema, formatZodError } from '../../lib/validation.js';
 import { jsonSuccess, jsonError, ApiErrors } from '../../lib/api-response.js';
+import { formatIssueFormBody } from '../../lib/issue-form-parser.js';
 
 export const prerender = false;
 
@@ -42,55 +43,42 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     // Get GitHub token from environment
-    const githubToken = import.meta.env.GITHUB_TOKEN || process.env.GITHUB_TOKEN;
+    const githubToken = import.meta.env.GITHUB_TOKEN;
     if (!githubToken) {
       console.error('GitHub token not found in environment variables');
       return ApiErrors.serverError('Server configuration error');
     }
 
-    // If we have form data, create a clean, readable issue body
+    // If we have form data, create issue body using the structured issue form format
     let finalIssueBody = issueBody;
     if (formData) {
-      // Map service IDs to proper service names
-      const serviceMap: { [key: string]: string } = {
-        'security-audit': 'Security Audit',
-        'dependency-security-audit': 'Dependency Security Audit',
-        'governance-setup': 'Governance Setup', 
-        'project-governance-setup': 'Project Governance Setup',
-        'legal-consultation': 'Legal Consultation',
-        'stakeholder-mediation': 'Stakeholder Mediation',
-        'funding-strategy': 'Funding Strategy'
-      };
+      // Separate services and resources
+      const services: string[] = [];
+      const resources: string[] = [];
       
-      const servicesList = formData.services.map((serviceId: string) => {
-        const serviceName = serviceMap[serviceId] || serviceId;
-        return `- ${serviceName}`;
-      }).join('\n');
+      for (const item of formData.services) {
+        // Check if it's a resource (hosting, infrastructure, etc.)
+        if (item.toLowerCase().includes('hosting') || 
+            item.toLowerCase().includes('infrastructure') ||
+            item.toLowerCase().includes('github copilot')) {
+          resources.push(item);
+        } else {
+          services.push(item);
+        }
+      }
       
-      // Create a clean, readable issue body similar to issue #5
-      const timestamp = new Date().toISOString();
-      
-      finalIssueBody = `**Project:** ${formData.projectTitle}
-**Repository:** ${formData.projectUrl}
-**Maintainer:** @${formData.maintainer}
-**Urgency:** ${formData.urgency}
-**Create FUNDING.yml PR:** ${formData.createFundingPR ? 'Yes ✅' : 'No'}
-
-## Services Requested
-${servicesList}
-
-## Project Description
-${formData.description}
-
-${formData.additionalNotes ? `## Additional Notes
-${formData.additionalNotes}` : ''}
-
----
-**Created:** ${timestamp}  
-**Last Updated:** ${timestamp}
-
----
-*Submitted via [OSS Wishlist Platform](${process.env.PUBLIC_SITE_URL || 'https://oss-wishlist.com'})*`;
+      // Format using issue form structure
+      finalIssueBody = formatIssueFormBody({
+        project: formData.projectTitle,
+        maintainer: formData.maintainer,
+        repository: formData.projectUrl,
+        urgency: formData.urgency.toLowerCase(),
+        services: services,
+        resources: resources,
+        additionalContext: formData.description + 
+          (formData.additionalNotes ? '\n\n' + formData.additionalNotes : ''),
+        wantsFundingYml: formData.createFundingPR === true
+      });
     }
 
     // If this is an update, add a comment instead of creating a new issue
@@ -107,7 +95,7 @@ ${finalIssueBody}
 **Last Updated:** ${updateTimestamp}
 
 ---
-*Updated via [OSS Wishlist Platform](${process.env.PUBLIC_SITE_URL || 'https://oss-wishlist.com'})*`;
+*Updated via [OSS Wishlist Platform](${import.meta.env.PUBLIC_SITE_URL || 'https://oss-wishlist.com'})*`;
 
       const response = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.ORG}/${GITHUB_CONFIG.REPO}/issues/${issueNumber}/comments`, {
         method: 'POST',
@@ -144,6 +132,9 @@ ${finalIssueBody}
       });
 
       const issue = await issueResponse.json();
+      
+      // Invalidate cache after update (trigger background refresh)
+      fetch(`${new URL(request.url).origin}/api/wishlists?refresh=true`).catch(() => {});
       
       return jsonSuccess({
         updated: true,
@@ -186,6 +177,9 @@ ${finalIssueBody}
     }
 
     const issue = await response.json();
+    
+    // Invalidate cache after creation (trigger background refresh)
+    fetch(`${new URL(request.url).origin}/api/wishlists?refresh=true`).catch(() => {});
     
     return jsonSuccess({
       issue: {

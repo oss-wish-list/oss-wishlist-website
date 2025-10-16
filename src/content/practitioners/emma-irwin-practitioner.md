@@ -30,7 +30,7 @@ sponsor_tiers:
   "Moderation Strategy": 2500
   "Governance Setup": 4000
   "Leadership Onboarding": 2000
-  "Succession Planning and Onboarding": 3500
+  "Succession Planning and Trusted Leadership": 3500
 
 years_experience: 18
 notable_experience: 

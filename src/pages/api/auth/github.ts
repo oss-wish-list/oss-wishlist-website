@@ -9,7 +9,6 @@ export const GET: APIRoute = async ({ cookies, redirect, locals }) => {
   const redirectUri = import.meta.env.GITHUB_REDIRECT_URI ?? process.env.GITHUB_REDIRECT_URI;
   
   // Debug logging
-  console.log('OAuth Debug:', {
     hasClientId: !!clientId,
     hasRedirectUri: !!redirectUri,
     clientIdPreview: clientId?.substring(0, 10),

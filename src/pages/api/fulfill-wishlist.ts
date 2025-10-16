@@ -6,11 +6,6 @@ export const prerender = false;
 async function sendEmail(to: string, subject: string, body: string) {
   // For development, we'll just log the email content
   // In production, you'd integrate with SendGrid, Resend, Nodemailer, etc.
-  console.log('=== EMAIL NOTIFICATION ===');
-  console.log(`To: ${to}`);
-  console.log(`Subject: ${subject}`);
-  console.log(`Body:\n${body}`);
-  console.log('========================');
   
   // You can replace this with actual email sending logic
   // Example with fetch to a webhook or email API:
@@ -93,7 +88,6 @@ Submitted: ${fulfillmentData.timestamp}
     }
 
     // Log the submission
-    console.log('Fulfillment request processed successfully:', fulfillmentData);
 
     return new Response(JSON.stringify({
       success: true,

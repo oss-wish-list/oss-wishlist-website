@@ -1,9 +1,10 @@
 ---
+import { getBasePath } from '../lib/paths';
+const basePath = getBasePath();
 import Layout from '../components/Layout.astro';
 import { getCollection } from 'astro:content';
 
 const services = await getCollection('services');
-const allTags = [...new Set(services.flatMap(service => service.data.tags))];
 ---
 
 <Layout title="Services & Resources - OSS Wishlist" description="Browse all available services and resources for open source projects">
@@ -11,22 +12,13 @@ const allTags = [...new Set(services.flatMap(service => service.data.tags))];
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-12">
         <h1 class="text-5xl font-bold text-gray-900 mb-6">Services & Resources</h1>
-        <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-6">
-          Each service is designed to reflect excellence in open source project design with sustainability in mind, with outcomes validated by <a href="https://chaoss.community/" target="_blank" rel="noopener noreferrer" class="text-emerald-600 hover:text-emerald-700 underline">CHAOSS</a> metrics
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+          Each service addresses a critical capability for project and community sustainability. They build on peer-validated frameworks and metrics from open source communities and foundations. Our playbooks and rubrics are openly licensed and welcome contributions. Resources are dependant on technology need and availability.
         </p>
-        
-        <!-- Availability Notice -->
-        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-4xl mx-auto">
-          <p class="text-sm text-blue-800">
-            <span class="font-medium">Notice:</span> Greyed out services and resources are currently unfunded or lack available practitioners. 
-            You can help by <a href={`${import.meta.env.BASE_URL}/ecosystem-guardians`} class="text-blue-600 hover:text-blue-700 underline font-medium">funding resources</a> or 
-            <a href={`${import.meta.env.BASE_URL}/apply-practitioner`} class="text-blue-600 hover:text-blue-700 underline font-medium">joining as a practitioner</a>.
-          </p>
-        </div>
       </div>
 
       <!-- Type Filter -->
-      <div class="mb-6 text-center">
+      <div class="mb-8 text-center">
         <div class="flex flex-wrap justify-center gap-2">
           <button class="type-filter-btn active px-6 py-3 rounded-lg text-sm font-medium bg-gray-600 text-white" 
                   data-type="all">
@@ -43,33 +35,14 @@ const allTags = [...new Set(services.flatMap(service => service.data.tags))];
         </div>
       </div>
 
-      <!-- Tag Filter -->
-      <div class="mb-8 text-center">
-        <div class="flex flex-wrap justify-center gap-2">
-          <button class="tag-filter-btn active px-4 py-2 rounded-full text-sm font-medium bg-gray-600 text-white" 
-                  data-tag="all">
-            All Tags
-          </button>
-          {allTags.map(tag => (
-            <button class="tag-filter-btn px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-700 border hover:bg-gray-50" 
-                    data-tag={tag}>
-              {tag}
-            </button>
-          ))}
-        </div>
-      </div>
-
       <!-- Services Grid -->
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8" id="services-grid">
         {services.map((service) => (
-          <div class={`service-card bg-white p-6 rounded-lg shadow-sm border transition-shadow ${
-            service.data.available === false ? 'opacity-60 grayscale' : 'hover:shadow-md'
-          }`} 
-               data-tags={service.data.tags.join(' ')}
+          <div class="service-card bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow" 
                data-type={service.data.type}>
             <div class="flex justify-between items-start mb-4">
               <div>
-                <h3 class={`text-xl font-semibold ${service.data.available === false ? 'text-gray-500' : 'text-gray-900'}`}>
+                <h3 class="text-xl font-semibold text-gray-900">
                   {service.data.title}
                 </h3>
                 <div class="flex items-center gap-2 mt-1">
@@ -81,7 +54,7 @@ const allTags = [...new Set(services.flatMap(service => service.data.tags))];
                     {service.data.type === 'resource' ? 'Resource' : 'Service'}
                   </span>
                   {service.data.available === false && (
-                    <span class="inline-block px-2 py-1 text-xs font-medium bg-gray-100 text-gray-600 rounded-full">
+                    <span class="inline-block px-2 py-1 text-xs font-medium bg-red-100 text-red-700 rounded-full">
                       Currently Unavailable
                     </span>
                   )}
@@ -89,49 +62,29 @@ const allTags = [...new Set(services.flatMap(service => service.data.tags))];
               </div>
             </div>
             
-            <p class={`mb-4 ${service.data.available === false ? 'text-gray-400' : 'text-gray-600'}`}>
+            <p class="text-gray-600 mb-4">
               {service.data.description}
             </p>
             
             {service.data.available === false && service.data.unavailable_reason && (
               <p class="text-xs text-gray-500 italic mb-4">{service.data.unavailable_reason}</p>
             )}
-            
-            <div class="space-y-2 mb-6">
-              <div class="flex justify-between text-sm">
-                <span class={service.data.available === false ? 'text-gray-400' : 'text-gray-500'}>Time estimate:</span>
-                <span class={`font-medium ${service.data.available === false ? 'text-gray-400' : 'text-gray-900'}`}>
-                  {service.data.estimated_hours}
-                </span>
-              </div>
-            </div>
-
-            {service.data.tags && (
-              <div class="mb-4">
-                <div class="flex flex-wrap gap-2">
-                  {service.data.tags.map(tag => (
-                    <span class={`px-2 py-1 text-xs rounded ${
-                      service.data.available === false 
-                        ? 'bg-gray-50 text-gray-400' 
-                        : 'bg-gray-100 text-gray-600'
-                    }`}>
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
 
             <div class="pt-4 border-t">
               {service.data.available ? (
-                <a href={`${import.meta.env.BASE_URL}/services/${service.slug}`} 
+                <a href={`${basePath}/services/${service.slug}`} 
                    class="text-gray-600 font-medium hover:text-gray-700">
                   Learn more →
                 </a>
               ) : (
-                <span class="text-sm text-gray-400 italic">
-                  {service.data.type === 'resource' ? 'Funding needed' : 'Practitioners needed'}
-                </span>
+                service.data.type === 'resource' ? (
+                  <span class="text-sm text-gray-500 italic">Funding needed</span>
+                ) : (
+                  <a href={`${basePath}/apply-practitioner`}
+                     class="text-sm text-blue-600 hover:text-blue-700 font-medium">
+                    Practitioners needed →
+                  </a>
+                )
               )}
             </div>
           </div>
@@ -147,7 +100,7 @@ const allTags = [...new Set(services.flatMap(service => service.data.tags))];
           <p class="text-gray-600 mb-6">
             Create a wishlist with the services you need and share it with your community
           </p>
-          <a href={`${import.meta.env.BASE_URL}/maintainers`} 
+          <a href={`${basePath}/maintainers`} 
              class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
             Create Your Wishlist
           </a>
@@ -158,24 +111,19 @@ const allTags = [...new Set(services.flatMap(service => service.data.tags))];
 </Layout>
 
 <script>
-  // Dual filtering (type and tag)
+  // Type filtering only
   document.addEventListener('DOMContentLoaded', function() {
     const typeFilterButtons = document.querySelectorAll('.type-filter-btn');
-    const tagFilterButtons = document.querySelectorAll('.tag-filter-btn');
     const serviceCards = document.querySelectorAll('.service-card');
     
     let currentType = 'all';
-    let currentTag = 'all';
 
     function filterCards() {
       serviceCards.forEach(card => {
         const cardType = card.getAttribute('data-type');
-        const cardTags = card.getAttribute('data-tags');
-        
         const typeMatch = currentType === 'all' || cardType === currentType;
-        const tagMatch = currentTag === 'all' || cardTags.includes(currentTag);
         
-        if (typeMatch && tagMatch) {
+        if (typeMatch) {
           card.style.display = 'block';
         } else {
           card.style.display = 'none';
@@ -190,23 +138,6 @@ const allTags = [...new Set(services.flatMap(service => service.data.tags))];
         
         // Update active button
         typeFilterButtons.forEach(btn => {
-          btn.classList.remove('active', 'bg-gray-600', 'text-white');
-          btn.classList.add('bg-white', 'text-gray-700');
-        });
-        button.classList.add('active', 'bg-gray-600', 'text-white');
-        button.classList.remove('bg-white', 'text-gray-700');
-        
-        filterCards();
-      });
-    });
-
-    // Tag filtering
-    tagFilterButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        currentTag = button.getAttribute('data-tag');
-        
-        // Update active button
-        tagFilterButtons.forEach(btn => {
           btn.classList.remove('active', 'bg-gray-600', 'text-white');
           btn.classList.add('bg-white', 'text-gray-700');
         });

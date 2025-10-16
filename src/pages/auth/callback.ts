@@ -24,7 +24,7 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
   const existingSessionCookie = cookies.get('github_session')?.value;
   if (existingSessionCookie && code) {
     // Verify if the session is actually valid
-    const sessionSecret = import.meta.env.OAUTH_STATE_SECRET || process.env.OAUTH_STATE_SECRET;
+    const sessionSecret = import.meta.env.OAUTH_STATE_SECRET;
     const sessionData = verifySession(existingSessionCookie, sessionSecret);
     
     // If session exists but doesn't have accessToken, clear it (old format)
@@ -92,9 +92,9 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
   cookies.delete('oauth_state');
   
   try {
-    const clientId = import.meta.env.GITHUB_CLIENT_ID || process.env.GITHUB_CLIENT_ID;
-    const clientSecret = import.meta.env.GITHUB_CLIENT_SECRET || process.env.GITHUB_CLIENT_SECRET;
-    const redirectUri = import.meta.env.GITHUB_REDIRECT_URI || process.env.GITHUB_REDIRECT_URI;
+    const clientId = import.meta.env.GITHUB_CLIENT_ID;
+    const clientSecret = import.meta.env.GITHUB_CLIENT_SECRET;
+    const redirectUri = import.meta.env.GITHUB_REDIRECT_URI;
     
     if (!clientId || !clientSecret || !redirectUri) {
       throw new Error('GitHub OAuth configuration missing');
@@ -121,31 +121,26 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
     };
     
     // Create signed session token
-    const sessionSecret = import.meta.env.OAUTH_STATE_SECRET || process.env.OAUTH_STATE_SECRET;
+    const sessionSecret = import.meta.env.OAUTH_STATE_SECRET;
     if (!sessionSecret) {
       throw new Error('Session secret not configured');
     }
     
     const sessionToken = createSession(sessionData, sessionSecret);
     
-    // Use base path for correct redirect
-    const redirectUrl = withBaseUrl('maintainers?auth=success', url.origin);
-    
-    // Create Set-Cookie header manually with correct base path
+    // Set session cookie using Astro's API
     const maxAge = 60 * 60 * 24; // 24 hours
-    // Use root path for cookie so it's available across all subpaths
-    const cookieValue = `github_session=${sessionToken}; Path=/; Max-Age=${maxAge}; HttpOnly; SameSite=Lax`;
+    cookies.set('github_session', sessionToken, {
+      path: '/',
+      maxAge: maxAge,
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: import.meta.env.PROD
+    });
     
-    // Redirect to maintainers page with cookie header
-    return new Response(null, {
-      status: 302,
-      headers: {
-        'Location': redirectUrl,
-        'Set-Cookie': cookieValue,
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache'
-      }
-    });  } catch (error) {
+    // Redirect to maintainers page
+    return redirect(withBasePath('maintainers?auth=success'));
+  } catch (error) {
     console.error('Error in GitHub OAuth callback:', error);
     
     // If we already have a session set, the error might be from a duplicate request

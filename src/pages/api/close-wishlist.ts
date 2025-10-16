@@ -19,7 +19,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       });
     }
 
-    const sessionSecret = import.meta.env.OAUTH_STATE_SECRET || process.env.OAUTH_STATE_SECRET;
+    const sessionSecret = import.meta.env.OAUTH_STATE_SECRET;
     const session = verifySession(sessionCookie.value, sessionSecret);
     
     if (!session) {
@@ -59,7 +59,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     }
 
     // Use bot token for writing to the wishlists repo
-    const botToken = import.meta.env.GITHUB_TOKEN || process.env.GITHUB_TOKEN;
+    const botToken = import.meta.env.GITHUB_TOKEN;
     if (!botToken) {
       return new Response(JSON.stringify({
         error: 'Configuration Error',

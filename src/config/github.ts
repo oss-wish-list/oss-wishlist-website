@@ -3,7 +3,7 @@
 
 export const GITHUB_CONFIG = {
   // Organization and repository
-  ORG: 'oss-wish-list',
+  ORG: 'oss-wishlist',
   REPO: 'wishlists',
   
   // GitHub project board

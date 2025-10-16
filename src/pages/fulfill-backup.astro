@@ -36,13 +36,6 @@ if (urlString.includes('?')) {
 }
 
 // Debug all methods
-console.log('=== URL DEBUGGING ===');
-console.log('Astro.url:', url.toString());
-console.log('Astro.request.url:', request.url);
-console.log('Search params from Astro.url:', url.search);
-console.log('Method 1 (Astro.url):', { wishlist: wishlistParam, project: projectParam });
-console.log('Method 2 (request URL):', { wishlist: requestWishlistParam, project: requestProjectParam });
-console.log('Method 3 (raw parsing):', { wishlist: rawWishlistParam, project: rawProjectParam });
 
 // Get wishlist data and services for detailed display
 let wishlistData = null;

@@ -3,15 +3,24 @@ import type { APIRoute } from 'astro';
 export const prerender = false;
 
 export const GET: APIRoute = async () => {
+  try {
+    const envInfo = {
+    GITHUB_CLIENT_ID: import.meta.env.GITHUB_CLIENT_ID || 'MISSING',
+    GITHUB_CLIENT_SECRET: import.meta.env.GITHUB_CLIENT_SECRET ? 'SET' : 'MISSING',
+    GITHUB_REDIRECT_URI: import.meta.env.GITHUB_REDIRECT_URI || 'MISSING',
+    OAUTH_STATE_SECRET: import.meta.env.OAUTH_STATE_SECRET ? 'SET' : 'MISSING',
+    BASE_PATH: import.meta.env.PUBLIC_BASE_PATH || '/',
+    SITE_URL: import.meta.env.PUBLIC_SITE_URL || 'http://localhost:4321',
+    clientIdPreview: (import.meta.env.GITHUB_CLIENT_ID || '').substring(0, 8),
+    redirectUriPreview: (import.meta.env.GITHUB_REDIRECT_URI || '').substring(0, 30)
+  };
+
   const envDebug = {
-    GITHUB_CLIENT_ID: import.meta.env.GITHUB_CLIENT_ID || process.env.GITHUB_CLIENT_ID || 'MISSING',
-    GITHUB_CLIENT_SECRET: (import.meta.env.GITHUB_CLIENT_SECRET || process.env.GITHUB_CLIENT_SECRET) ? 'SET' : 'MISSING',
-    GITHUB_REDIRECT_URI: import.meta.env.GITHUB_REDIRECT_URI || process.env.GITHUB_REDIRECT_URI || 'MISSING',
-    OAUTH_STATE_SECRET: (import.meta.env.OAUTH_STATE_SECRET || process.env.OAUTH_STATE_SECRET) ? 'SET' : 'MISSING',
-    nodeEnv: process.env.NODE_ENV,
-    // Show first few chars of actual values for debugging
-    clientIdPreview: (import.meta.env.GITHUB_CLIENT_ID || process.env.GITHUB_CLIENT_ID || '').substring(0, 8),
-    redirectUriPreview: (import.meta.env.GITHUB_REDIRECT_URI || process.env.GITHUB_REDIRECT_URI || '').substring(0, 30)
+    raw: envInfo,
+    timestamp: new Date().toISOString(),
+    mode: import.meta.env.MODE,
+    prod: import.meta.env.PROD,
+    dev: import.meta.env.DEV
   };
 
   return new Response(JSON.stringify(envDebug, null, 2), {
@@ -20,4 +29,10 @@ export const GET: APIRoute = async () => {
       'Content-Type': 'application/json',
     },
   });
+  } catch (error) {
+    return new Response(JSON.stringify({ error: String(error) }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
 };

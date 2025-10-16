@@ -1,0 +1,102 @@
+name: Wishlist Submission
+description: Create a wishlist for your open source project
+title: "[Wishlist] "
+labels: ["wishlist"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Create Your Project Wishlist
+        
+        Identify the services and resources most critical for your project's sustainability and health.
+
+  - type: input
+    id: project
+    attributes:
+      label: Project Name
+      description: The name of your open source project
+      placeholder: e.g., My Awesome Project
+    validations:
+      required: true
+
+  - type: input
+    id: maintainer
+    attributes:
+      label: Maintainer GitHub Username
+      description: Your GitHub username (without @)
+      placeholder: e.g., username
+    validations:
+      required: true
+
+  - type: input
+    id: repository
+    attributes:
+      label: Project Repository
+      description: Link to your project's main repository
+      placeholder: https://github.com/org/repo
+    validations:
+      required: true
+
+  - type: dropdown
+    id: urgency
+    attributes:
+      label: Urgency Level
+      description: How urgently does your project need support?
+      options:
+        - Low - Planning for future
+        - Medium - Needed within months
+        - High - Needed within weeks
+        - Critical - Needed immediately
+      default: 1
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: services
+    attributes:
+      label: Services Requested
+      description: Select the services you need (check all that apply)
+      options:
+        - label: Dependency Security Audit
+        - label: Funding Strategy
+        - label: Governance Setup
+        - label: Succession Planning and Trusted Leadership
+        - label: Moderation Strategy
+
+  - type: checkboxes
+    id: resources
+    attributes:
+      label: Resources Requested
+      description: Select the resources you need (check all that apply)
+      options:
+        - label: Hosting and Infrastructure
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional Context
+      description: Any additional information about your project's needs
+      placeholder: Tell us more about your project and what kind of support would be most helpful...
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: funding_yml
+    attributes:
+      label: FUNDING.yml Setup
+      description: Would you like us to create a PR to add a FUNDING.yml file to your repository?
+      options:
+        - label: Yes, create a FUNDING.yml PR for my repository
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Acknowledgment
+      description: By submitting this wishlist, you acknowledge that
+      options:
+        - label: I am a maintainer or authorized representative of this project
+        - label: The information provided is accurate and up-to-date
+      validations:
+        required: true

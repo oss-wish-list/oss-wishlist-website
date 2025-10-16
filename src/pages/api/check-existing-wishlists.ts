@@ -3,7 +3,7 @@ import { GITHUB_CONFIG } from '../../config/github.js';
 
 export const prerender = false;
 
-const GITHUB_TOKEN = import.meta.env.GITHUB_TOKEN || process.env.GITHUB_TOKEN;
+const GITHUB_TOKEN = import.meta.env.GITHUB_TOKEN;
 
 interface GitHubIssue {
   id: number;

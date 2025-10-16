@@ -16,7 +16,10 @@ export default function AuthenticatedWishlists({ children }: AuthenticatedWishli
   const checkSession = async () => {
     try {
       // Check cookie-based session first (most reliable)
-      const response = await fetch(getApiPath('/api/auth/session'));
+      const apiPath = getApiPath('/api/auth/session');
+      
+      const response = await fetch(apiPath);
+      
       if (response.ok) {
         const sessionData = await response.json();
         setUser(sessionData);
@@ -29,6 +32,7 @@ export default function AuthenticatedWishlists({ children }: AuthenticatedWishli
         setLoading(false);
         return;
       }
+      
       
       // Fallback: check session storage (for faster subsequent loads)
       const sessionDataString = sessionStorage.getItem('github_session');
@@ -48,8 +52,9 @@ export default function AuthenticatedWishlists({ children }: AuthenticatedWishli
           sessionStorage.removeItem('github_session');
         }
       }
+      
     } catch (error) {
-      console.error('Session check failed:', error);
+      console.error('[AuthenticatedWishlists] Session check failed:', error);
     } finally {
       setLoading(false);
     }

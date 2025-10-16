@@ -1,0 +1,238 @@
+---
+import { getBasePath } from '../lib/paths';
+const basePath = getBasePath();
+import Layout from '../components/Layout.astro';
+---
+
+<Layout title="How OSS Wishlist Works - Open Source Sustainability Platform">
+  <!-- Hero Section -->
+  <section class="bg-gradient-to-br from-gray-100 to-gray-200 py-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">How OSS Wishlist Works</h1>
+      <p class="text-xl text-gray-600">
+        Connecting open source maintainers with the resources they need for sustainable project health
+      </p>
+    </div>
+  </section>
+
+  <!-- Overview -->
+  <section class="py-12 bg-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="prose prose-lg max-w-none">
+        <p class="text-lg text-gray-700 mb-6">
+          OSS Wishlist bridges the gap between open source projects that need support and the ecosystem that depends on them. 
+          We provide a structured pathway for maintainers to get expert help in critical areas like security, governance, 
+          funding strategy, and community building.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- The Process -->
+  <section class="py-16 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">The Process</h2>
+        <p class="text-gray-600 max-w-2xl mx-auto">
+          A simple three-step process that connects needs with resources
+        </p>
+      </div>
+      
+      <div class="grid md:grid-cols-3 gap-8 mb-12">
+        <div class="bg-white p-8 rounded-lg shadow-sm">
+          <div class="bg-emerald-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span class="text-emerald-700 text-2xl font-bold">1</span>
+          </div>
+          <h3 class="text-xl font-semibold mb-3 text-center">Maintainers Create Wishlists</h3>
+          <p class="text-gray-600 mb-4">
+            Open source maintainers browse our catalog of services and resources, then create a wishlist 
+            identifying critical needs for their project's sustainability.
+          </p>
+          <ul class="text-gray-600 space-y-2 text-sm">
+            <li>• Choose from curated services and resources</li>
+            <li>• Services include security audits, governance setup, funding strategy, and more</li>
+            <li>• Resources include infrastructure hosting, moderation tools, etc.</li>
+            <li>• Wishlists are currently public (transitioning to private for security)</li>
+          </ul>
+        </div>
+        
+        <div class="bg-white p-8 rounded-lg shadow-sm">
+          <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span class="text-blue-700 text-2xl font-bold">2</span>
+          </div>
+          <h3 class="text-xl font-semibold mb-3 text-center">Ecosystem Sponsors Fund Wishes</h3>
+          <p class="text-gray-600 mb-4">
+            Companies, foundations, and individuals who depend on open source step in to fund 
+            one or more wishes from a project's wishlist.
+          </p>
+          <ul class="text-gray-600 space-y-2 text-sm">
+            <li>• Browse active wishlists from projects you depend on</li>
+            <li>• Fund specific services or resources</li>
+            <li>• Funds managed through GitHub Sponsors or Open Collective</li>
+            <li>• Direct, measurable impact on project sustainability</li>
+          </ul>
+        </div>
+        
+        <div class="bg-white p-8 rounded-lg shadow-sm">
+          <div class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span class="text-purple-700 text-2xl font-bold">3</span>
+          </div>
+          <h3 class="text-xl font-semibold mb-3 text-center">Practitioners Deliver Services</h3>
+          <p class="text-gray-600 mb-4">
+            Vetted open source practitioners with validated expertise are matched with funded wishes 
+            to deliver professional services.
+          </p>
+          <ul class="text-gray-600 space-y-2 text-sm">
+            <li>• Practitioners meet quality standards set by OSS Wishlist</li>
+            <li>• Hired through our platform or provided by Ecosystem Guardians</li>
+            <li>• Work directly with maintainers on critical needs</li>
+            <li>• Fair compensation for expertise and labor</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Who's Involved -->
+  <section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">Who's Involved</h2>
+      </div>
+      
+      <div class="grid md:grid-cols-2 gap-8">
+        <div class="border rounded-lg p-8">
+          <h3 class="text-2xl font-semibold mb-4 text-gray-900">Maintainers</h3>
+          <p class="text-gray-600 mb-4">
+            The creators and stewards of open source projects who need support to maintain 
+            sustainable, healthy projects.
+          </p>
+          <div class="bg-gray-50 p-4 rounded">
+            <h4 class="font-semibold text-gray-900 mb-2">What you get:</h4>
+            <ul class="text-gray-600 space-y-1 text-sm">
+              <li>• Access to expert services and resources</li>
+              <li>• No upfront costs</li>
+              <li>• Professional help in critical areas</li>
+              <li>• Support for long-term sustainability</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="border rounded-lg p-8">
+          <h3 class="text-2xl font-semibold mb-4 text-gray-900">Ecosystem Sponsors</h3>
+          <p class="text-gray-600 mb-4">
+            Companies, foundations, and individuals who depend on open source and want to invest 
+            in the health of projects they rely on.
+          </p>
+          <div class="bg-gray-50 p-4 rounded">
+            <h4 class="font-semibold text-gray-900 mb-2">What you get:</h4>
+            <ul class="text-gray-600 space-y-1 text-sm">
+              <li>• Measurable, verifiable impact</li>
+              <li>• Direct support for projects you depend on</li>
+              <li>• Transparent use of funds</li>
+              <li>• Strengthened open source ecosystem</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="border rounded-lg p-8">
+          <h3 class="text-2xl font-semibold mb-4 text-gray-900">Practitioners</h3>
+          <p class="text-gray-600 mb-4">
+            Experts in open source sustainability, security, governance, community building, 
+            and related fields who deliver professional services.
+          </p>
+          <div class="bg-gray-50 p-4 rounded">
+            <h4 class="font-semibold text-gray-900 mb-2">What you get:</h4>
+            <ul class="text-gray-600 space-y-1 text-sm">
+              <li>• Fair compensation for expertise</li>
+              <li>• Meaningful work strengthening OSS</li>
+              <li>• Community of fellow practitioners</li>
+              <li>• Recognition for your expertise</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="border rounded-lg p-8">
+          <h3 class="text-2xl font-semibold mb-4 text-gray-900">Ecosystem Guardians</h3>
+          <p class="text-gray-600 mb-4">
+            Trusted organizations that provide funding, vetted practitioners, or both to support 
+            open source sustainability at scale.
+          </p>
+          <div class="bg-gray-50 p-4 rounded">
+            <h4 class="font-semibold text-gray-900 mb-2">Current Guardians:</h4>
+            <ul class="text-gray-600 space-y-1 text-sm">
+              <li>• OpenSSF</li>
+              <li>• Sovereign Tech Fund</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- What Makes Us Different -->
+  <section class="py-16 bg-gray-50">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">What Makes OSS Wishlist Different</h2>
+      </div>
+      
+      <div class="space-y-6">
+        <div class="bg-white p-6 rounded-lg shadow-sm">
+          <h3 class="text-xl font-semibold mb-2 text-gray-900">Human-Centered Support</h3>
+          <p class="text-gray-600">
+            While tools and automation are valuable, some problems require human expertise. We focus on 
+            connecting projects with experienced practitioners who can provide strategic guidance, 
+            hands-on help, and thoughtful solutions.
+          </p>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-sm">
+          <h3 class="text-xl font-semibold mb-2 text-gray-900">Curated Services</h3>
+          <p class="text-gray-600">
+            Our catalog is carefully curated to address the most critical needs for project sustainability: 
+            security, governance, funding, community health, and infrastructure. We focus on quality over quantity.
+          </p>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-sm">
+          <h3 class="text-xl font-semibold mb-2 text-gray-900">Transparent and Accountable</h3>
+          <p class="text-gray-600">
+            Funds flow through established platforms like GitHub Sponsors or Open Collective. Work is 
+            documented and verifiable. Impact is measurable.
+          </p>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-sm">
+          <h3 class="text-xl font-semibold mb-2 text-gray-900">Ecosystem Approach</h3>
+          <p class="text-gray-600">
+            We bring together all the stakeholders in open source sustainability: maintainers who need help, 
+            sponsors who can provide it, practitioners who deliver services, and guardians who ensure quality and scale.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Call to Action -->
+  <section class="py-16 bg-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-3xl font-bold text-gray-900 mb-4">Ready to Get Started?</h2>
+      <p class="text-xl text-gray-600 mb-8">
+        Whether you maintain a project, want to support the ecosystem, or offer your expertise
+      </p>
+      
+      <div class="grid md:grid-cols-3 gap-4">
+        <a href={`${basePath}/maintainers`} class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors block text-center min-h-[44px] flex items-center justify-center">
+          Create a Wishlist
+        </a>
+        <a href={`${basePath}/wishlists`} class="bg-slate-600 text-white px-6 py-3 rounded-lg hover:bg-slate-700 transition-colors block text-center min-h-[44px] flex items-center justify-center">
+          Fulfill a Wish
+        </a>
+        <a href={`${basePath}/apply-practitioner`} class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors block text-center min-h-[44px] flex items-center justify-center">
+          Become a Practitioner
+        </a>
+      </div>
+    </div>
+  </section>
+</Layout>

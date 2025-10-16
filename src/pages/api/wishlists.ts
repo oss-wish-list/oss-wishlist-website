@@ -4,10 +4,19 @@
 //
 import type { APIRoute } from 'astro';
 import { GITHUB_CONFIG } from '../../config/github.js';
+import { parseIssueForm } from '../../lib/issue-form-parser.js';
+import { readFile } from 'fs/promises';
+import { join } from 'path';
 
 export const prerender = false;
 
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+const GITHUB_TOKEN = import.meta.env.GITHUB_TOKEN;
+const CACHE_FILE = join(process.cwd(), 'public', 'wishlist-cache', 'all-wishlists.json');
+
+// Cache configuration - for in-memory cache as fallback
+const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes in milliseconds
+let cachedWishlists: any = null;
+let cacheTimestamp = 0;
 
 interface GitHubIssue {
   id: number;
@@ -52,14 +61,17 @@ async function fetchGitHubIssues(): Promise<GitHubIssue[]> {
         'Authorization': `token ${GITHUB_TOKEN}`,
         'Accept': 'application/vnd.github.v3+json',
       },
-    }
+    },
   );
-
+  
   if (!response.ok) {
-    throw new Error(`GitHub API error: ${response.status}`);
+    const errorBody = await response.text();
+    console.error(`GitHub API error response:`, errorBody);
+    throw new Error(`GitHub API error: ${response.status} - ${errorBody}`);
   }
 
-  return response.json();
+  const data = await response.json();
+  return data;
 }
 
 async function fetchProjectBoardData(): Promise<Map<number, string>> {
@@ -117,12 +129,20 @@ async function fetchProjectBoardData(): Promise<Map<number, string>> {
       },
     }),
   });
-
+  
   if (!response.ok) {
+    const errorText = await response.text();
+    console.error('GraphQL error:', response.status, errorText);
     throw new Error(`GitHub GraphQL API error: ${response.status}`);
   }
 
   const data = await response.json();
+  
+  if (data.errors) {
+    console.error('GraphQL query errors:', data.errors);
+    throw new Error('GraphQL query failed');
+  }
+  
   const statusMap = new Map<number, string>();
 
   if (data.data?.organization?.projectV2?.items?.nodes) {
@@ -143,99 +163,93 @@ async function fetchProjectBoardData(): Promise<Map<number, string>> {
   return statusMap;
 }
 
-function parseIssueBody(body: string) {
-  // Parse clean issue format (like issue #5)
-  console.log('Raw issue body:', body);
-  
-  let projectTitle = '';
-  let maintainerName = '';
-  let wishes: string[] = [];
-  let urgency = 'medium';
-
-  const lines = body.split('\n');
-  
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
-    
-    // Parse simple **field:** format
-    if (line.startsWith('**Project:**')) {
-      projectTitle = line.replace('**Project:**', '').trim();
-    } else if (line.startsWith('**Maintainer:**')) {
-      maintainerName = line.replace('**Maintainer:**', '').replace('@', '').trim();
-    } else if (line.startsWith('**Urgency:**')) {
-      urgency = line.replace('**Urgency:**', '').toLowerCase().trim();
-    } else if (line === '## Services Requested') {
-      // Parse the services list that follows
-      i++;
-      while (i < lines.length) {
-        const serviceLine = lines[i].trim();
-        
-        // Stop if we hit another section
-        if (serviceLine.startsWith('#') || serviceLine.startsWith('**') || serviceLine.startsWith('---')) {
-          break;
-        }
-        
-        // Parse service items (both - Service and - [ ] Service formats)
-        if (serviceLine.startsWith('- ')) {
-          const service = serviceLine
-            .replace(/^-\s*(\[\s*[x\s]?\s*\])?\s*/, '') // Remove - or - [ ] or - [x]
-            .trim();
-          if (service) {
-            wishes.push(service);
-          }
-        }
-        
-        i++;
-      }
-      // Step back one since the outer loop will increment
-      i--;
-    }
-  }
-
-  console.log('Parsed data:', { projectTitle, maintainerName, wishes, urgency });
-  return { projectTitle, maintainerName, wishes, urgency };
-}
-
 export const GET: APIRoute = async () => {
   try {
-    console.log('GitHub token available:', !!GITHUB_TOKEN);
-    
     if (!GITHUB_TOKEN) {
+      console.error('ERROR: GitHub token not configured');
       return new Response(JSON.stringify({ error: 'GitHub token not configured' }), {
         status: 500,
         headers: { 'Content-Type': 'application/json' },
       });
     }
 
-    const [issues, statusMap] = await Promise.all([
+    // Try to load from file cache first (instant!)
+    try {
+      const cacheData = await readFile(CACHE_FILE, 'utf-8');
+      const cached = JSON.parse(cacheData);
+      const cacheAge = Date.now() - new Date(cached.lastUpdated).getTime();
+      
+      // Use file cache if less than 10 minutes old
+      if (cacheAge < CACHE_DURATION) {
+        return new Response(JSON.stringify(cached.wishlists), {
+          status: 200,
+          headers: { 
+            'Content-Type': 'application/json',
+            'X-Cache': 'FILE-HIT',
+            'X-Cache-Age': Math.round(cacheAge / 1000).toString(),
+            'Cache-Control': 'public, max-age=600'
+          },
+        });
+      }
+    } catch (error) {
+      // No file cache available, will fetch from GitHub
+    }
+
+    // Check if we have valid in-memory cached data
+    const now = Date.now();
+    if (cachedWishlists && (now - cacheTimestamp) < CACHE_DURATION) {
+      return new Response(JSON.stringify(cachedWishlists), {
+        status: 200,
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-Cache': 'MEMORY-HIT',
+          'Cache-Control': 'public, max-age=600'
+        },
+      });
+    }
+
+    // Fetch issues with timeout (5 seconds)
+    const issuesPromise = Promise.race([
       fetchGitHubIssues(),
-      fetchProjectBoardData().catch((error) => {
-        console.warn('Project board fetch failed:', error);
-        return new Map(); // Fallback if project board fails
-      }),
+      new Promise<GitHubIssue[]>((_, reject) => {
+        setTimeout(() => reject(new Error('GitHub Issues API timeout after 5s')), 5000);
+      })
+    ]);
+    
+    // Fetch project board with timeout (optional, can fail)
+    const statusMapPromise = Promise.race([
+      fetchProjectBoardData(),
+      new Promise<Map<number, string>>((resolve) => {
+        setTimeout(() => {
+          console.warn('GraphQL timeout after 3s, continuing without status data');
+          resolve(new Map());
+        }, 3000); // 3 second timeout
+      })
+    ]).catch((error) => {
+      console.warn('Project board fetch failed:', error.message);
+      return new Map(); // Fallback if project board fails
+    });
+    
+    const [issues, statusMap] = await Promise.all([
+      issuesPromise,
+      statusMapPromise
     ]);
 
-    console.log(`Fetched ${issues.length} issues`);
-    console.log(`Status map size: ${statusMap.size}`);
-
     const wishlists = issues.map(issue => {
-      const parsed = parseIssueBody(issue.body);
+      // Use the new issue form parser
+      const parsed = parseIssueForm(issue.body);
       const status = statusMap.get(issue.number) || 'Open';
       
-      // Debug logging
-      console.log(`Issue #${issue.number}:`);
-      console.log(`  Parsed title: "${parsed.projectTitle}"`);
-      console.log(`  Parsed maintainer: "${parsed.maintainerName}"`);
-      console.log(`  Parsed wishes: [${parsed.wishes.join(', ')}]`);
-      console.log(`  Urgency: ${parsed.urgency}`);
+      // Combine services and resources into wishes array
+      const wishes = [...parsed.services, ...parsed.resources];
       
       return {
         id: issue.number,
         title: issue.title,
         url: issue.html_url,
-        projectTitle: parsed.projectTitle || issue.title,
-        maintainerName: parsed.maintainerName || issue.user.login,
-        wishes: parsed.wishes,
+        projectTitle: parsed.project || issue.title,
+        maintainerName: parsed.maintainer || issue.user.login,
+        wishes: wishes,
         urgency: parsed.urgency,
         status,
         labels: issue.labels,
@@ -248,9 +262,26 @@ export const GET: APIRoute = async () => {
       };
     });
 
+    // Update in-memory cache
+    cachedWishlists = wishlists;
+    cacheTimestamp = now;
+
+    // Update file cache in background (don't wait for it)
+    const siteUrl = import.meta.env.PUBLIC_SITE_URL || 'http://localhost:4324';
+    const basePath = import.meta.env.PUBLIC_BASE_PATH || '/oss-wishlist-website';
+    fetch(`${siteUrl}${basePath}/api/cache-wishlist`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ wishlists }),
+    }).catch(() => {});
+
     return new Response(JSON.stringify(wishlists), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'X-Cache': 'MISS',
+        'Cache-Control': 'public, max-age=600'
+      },
     });
   } catch (error) {
     console.error('Error fetching wishlists:', error);

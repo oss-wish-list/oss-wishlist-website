@@ -202,7 +202,6 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
       const issue = await response.json();
       const body = issue.body || '';
       
-      console.log('Issue body:', body);
       
       const updatedData: any = {};
       
@@ -211,14 +210,12 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
       
       // Project Title (uses **Project:** format)
       const titleMatch = body.match(/\*\*Project:\*\*\s*(.+?)(?:\n|$)/);
-      console.log('Title match:', titleMatch);
       if (titleMatch) {
         updatedData.projectTitle = titleMatch[1].trim();
       }
       
       // Urgency Level (uses **Urgency:** format)
       const urgencyMatch = body.match(/\*\*Urgency:\*\*\s*(.+?)(?:\n|$)/);
-      console.log('Urgency match:', urgencyMatch);
       if (urgencyMatch) {
         const urgency = urgencyMatch[1].trim().toLowerCase();
         if (urgency === 'low' || urgency === 'medium' || urgency === 'high') {
@@ -266,7 +263,6 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
       
       // Services Requested (uses ## header with list)
       const servicesMatch = body.match(/## Services Requested\s*\n(.+?)(?:\n\n|$)/s);
-      console.log('Services match:', servicesMatch);
       if (servicesMatch) {
         const servicesText = servicesMatch[1].trim();
         const parsedServices: string[] = [];
@@ -316,10 +312,8 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
       }
       
       // Update all form data at once
-      console.log('Updated data to set:', updatedData);
       setWishlistData(prev => {
         const newData = { ...prev, ...updatedData };
-        console.log('New wishlist data:', newData);
         return newData;
       });
       

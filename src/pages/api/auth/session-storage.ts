@@ -7,7 +7,6 @@ export const POST: APIRoute = async ({ request }) => {
     const body = await request.json();
     const sessionData = body.sessionData;
     
-    console.log('Session storage check:', {
       hasSessionData: !!sessionData,
       isAuthenticated: sessionData?.authenticated || false,
       user: sessionData?.user?.login || 'none'
@@ -28,7 +27,6 @@ export const POST: APIRoute = async ({ request }) => {
     const maxAge = 24 * 60 * 60 * 1000; // 24 hours
 
     if (sessionAge > maxAge) {
-      console.log('Session expired');
       return new Response(JSON.stringify({ authenticated: false, error: 'Session expired' }), {
         status: 401,
         headers: {

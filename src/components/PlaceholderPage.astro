@@ -1,6 +1,9 @@
 ---
+import { getBasePath } from '../lib/paths';
+
+const basePath = getBasePath();
 // For public assets, use base URL + path (ensure proper slash)
-const logoUrl = import.meta.env.BASE_URL.replace(/\/$/, '') + '/logo.png';
+const logoUrl = `${basePath}logo.png`;
 ---
 
 <html lang="en">
@@ -14,9 +17,9 @@ const logoUrl = import.meta.env.BASE_URL.replace(/\/$/, '') + '/logo.png';
   <body>
     <div class="container">
       <img src={logoUrl} alt="OSS Wishlist Logo" class="logo" />
-      <h1>The Missing Bridge to Open Source <span class="sustainable">Sustainability</span></h1>
+      <h1>The Missing Bridge to Open Source Sustainability</h1>
       <p class="subtitle">
-        Let someone help
+        Let someone help...
       </p>
       <div class="coming-soon">
         <h2>Launching November 2025</h2>
@@ -24,7 +27,7 @@ const logoUrl = import.meta.env.BASE_URL.replace(/\/$/, '') + '/logo.png';
       <div class="cards">
         <div class="card">
           <h3>Open Source Maintainers</h3>
-          <p>Strengthen your project's long-term sustainability with expert human support in security, governance, funding and community leadership strategy.</p>
+          <p>Identify from a list of sustainability services which are most critical for your project's health and where you need expert support.</p>
         </div>
         <div class="card">
           <h3>Wishlist Sponsors</h3>
@@ -104,9 +107,11 @@ const logoUrl = import.meta.env.BASE_URL.replace(/\/$/, '') + '/logo.png';
   }
   
   .subtitle {
-    font-size: 1.125rem;
-    color: #6b7280;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #059669;
     margin-bottom: 2rem;
+    font-style: italic;
   }
   
   .sustainable {

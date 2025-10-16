@@ -1,4 +1,6 @@
 ---
+import { getBasePath } from '../lib/paths';
+const basePath = getBasePath();
 import Layout from '../components/Layout.astro';
 import AuthenticatedForm from '../components/AuthenticatedForm.tsx';
 import { getCollection } from 'astro:content';
@@ -16,7 +18,7 @@ const serviceCategories = [...new Set(services.map(s => s.data.service_category 
       <div class="text-center mb-12">
         <div class="mb-4">
           <a 
-            href={`${import.meta.env.BASE_URL}/practitioners`}
+            href={`${basePath}/practitioners`}
             class="text-gray-600 hover:text-gray-700 font-medium text-sm"
           >
             ← Back to Practitioners

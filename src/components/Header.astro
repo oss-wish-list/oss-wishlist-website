@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import { getBasePath } from '../lib/paths';
+import AuthButtonAstro from './AuthButtonAstro.astro';
 
 export interface Props {
   title: string;
@@ -31,12 +32,13 @@ const logoUrl = `${basePath}logo.png`;
             <img src={logoUrl} alt="OSS Wishlist" class="h-8 w-8" />
             <a href={basePath} class="text-xl font-bold text-gray-900">OSS Wishlist</a>
           </div>
-          <div class="flex space-x-6">
+          <div class="flex items-center space-x-6">
             <a href={`${basePath}about`} class="text-gray-700 hover:text-gray-900">About</a>
             <a href={`${basePath}catalog`} class="text-gray-700 hover:text-gray-900">Services & Resources</a>
-            <a href={`${basePath}maintainers`} class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+            <a href={`${basePath}maintainers`} class="text-gray-700 hover:text-gray-900">
               Create Wishlist
             </a>
+            <AuthButtonAstro />
           </div>
         </div>
       </nav>

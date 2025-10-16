@@ -1,4 +1,6 @@
 ---
+import { getBasePath } from '../lib/paths';
+const basePath = getBasePath();
 import Layout from '../components/Layout.astro';
 import { getCollection } from 'astro:content';
 
@@ -96,7 +98,7 @@ const featuredGuardians = allGuardians.filter(guardian => guardian.data.featured
       <div class="text-center bg-gray-50 p-8 rounded-lg">
         <h3 class="text-xl font-bold text-gray-900 mb-4">Ready to Fund Some Wishes?</h3>
         <p class="text-gray-600 mb-6">Browse current project needs and choose what resonates with your mission</p>
-        <a href={`${import.meta.env.BASE_URL}/wishlists`} class="bg-gray-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
+        <a href={`${basePath}/wishlists`} class="bg-gray-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
           Browse Project Wishes
         </a>
       </div>

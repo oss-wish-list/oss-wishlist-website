@@ -2,8 +2,10 @@
 import Layout from '../components/Layout.astro';
 import PlaceholderPage from '../components/PlaceholderPage.astro';
 import { getCollection } from 'astro:content';
+import { getBasePath } from '../lib/paths';
 
 // Check if site is in placeholder mode
+const basePath = getBasePath();
 const siteMode = import.meta.env.PUBLIC_SITE_MODE || 'full';
 const isPlaceholder = siteMode === 'placeholder';
 
@@ -24,70 +26,35 @@ const companyServices = services.filter(service =>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
       <div class="max-w-4xl mx-auto">
         <h1 class="text-5xl font-bold text-gray-900 mb-6">
-          The Missing Bridge to Open Source <span class="text-emerald-600">Sustainability</span>
+          The Missing Bridge to Open Source Sustainability
         </h1>
-        <p class="text-xl text-gray-600 mb-8">
-          Let someone help
+        <p class="text-2xl font-semibold text-emerald-600 mb-8 italic">
+          Let someone help...
         </p>
         
         <!-- Audience Selection -->
         <div class="grid md:grid-cols-3 gap-6 mb-8">
           <div class="bg-white p-6 rounded-lg shadow-sm border flex flex-col">
             <h3 class="text-xl font-semibold mb-2">Open Source Maintainers</h3>
-            <p class="text-gray-600 mb-4 flex-grow">Strengthen your project's long-term sustainability with expert human support in security, governance, funding, and community and leadership strategy.</p>
-            <a href={`${import.meta.env.BASE_URL}/maintainers`} class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors block text-center min-h-[44px] flex items-center justify-center">
+            <p class="text-gray-600 mb-4 flex-grow">Identify from a list of sustainability services which are most critical for your project's health and where you need expert support.</p>
+            <a href={`${basePath}/maintainers`} class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors block text-center min-h-[44px] flex items-center justify-center">
               Create or update your wishlist
             </a>
           </div>
           <div class="bg-white p-6 rounded-lg shadow-sm border flex flex-col">
             <h3 class="text-xl font-semibold mb-2">Wishlist Sponsors</h3>
             <p class="text-gray-600 mb-4 flex-grow">Invest in the health and sustainability of open source projects that power your organization and our shared ecosystem, with measurable, verifiable impact.</p>
-            <a href={`${import.meta.env.BASE_URL}/companies`} class="bg-slate-600 text-white px-6 py-3 rounded-lg hover:bg-slate-700 transition-colors block text-center min-h-[44px] flex items-center justify-center">
+            <a href={`${basePath}/companies`} class="bg-slate-600 text-white px-6 py-3 rounded-lg hover:bg-slate-700 transition-colors block text-center min-h-[44px] flex items-center justify-center">
               Fulfill a wish
             </a>
           </div>
           <div class="bg-white p-6 rounded-lg shadow-sm border flex flex-col">
             <h3 class="text-xl font-semibold mb-2">Open Source Practitioners</h3>
             <p class="text-gray-600 mb-4 flex-grow">Join a community dedicated to strengthening open source sustainability through meaningful, paid work that recognizes and values your expertise.</p>
-            <a href={`${import.meta.env.BASE_URL}/practitioners`} class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors block text-center min-h-[44px] flex items-center justify-center">
+            <a href={`${basePath}/practitioners`} class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors block text-center min-h-[44px] flex items-center justify-center">
               Join as a practitioner
             </a>
           </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- How it Works -->
-  <section class="py-16 bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-12">
-        <h2 class="text-3xl font-bold text-gray-900 mb-4">How it works</h2>
-      </div>
-      
-      <div class="grid md:grid-cols-3 gap-8">
-        <div class="text-center">
-          <div class="bg-gray-200 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span class="text-gray-700 text-2xl font-bold">1</span>
-          </div>
-          <h3 class="text-xl font-semibold mb-2">Maintainers create wishlists</h3>
-          <p class="text-gray-600">Identifying from our catalogue, critical services and resources required to ensure a sustainable operating level. Lists are public for the first launch, but will transition to private for privacy and security of projects and their communities.</p>
-        </div>
-        
-        <div class="text-center">
-          <div class="bg-gray-200 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span class="text-gray-700 text-2xl font-bold">2</span>
-          </div>
-          <h3 class="text-xl font-semibold mb-2">Ecosystem Sponsors step in to fund one or more wishes on a wishlist</h3>
-          <p class="text-gray-600">Companies, foundations and individuals contribute to funding wishes.  Funds are managed in [TBD GitHub Sponsors or Open Collective]</p>
-        </div>
-        
-        <div class="text-center">
-          <div class="bg-gray-200 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span class="text-gray-700 text-2xl font-bold">3</span>
-          </div>
-          <h3 class="text-xl font-semibold mb-2">Open Source Practioners are dispatched</h3>
-          <p class="text-gray-600">Practioners with validated expertise, using standards set by Open Source Wishlist are dispatched to help. They are either hired through our platform, or provided directly by Ecosystem Gaurdians. </p>
         </div>
       </div>
     </div>
