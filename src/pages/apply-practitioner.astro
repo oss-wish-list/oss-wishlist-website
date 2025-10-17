@@ -27,7 +27,7 @@ const serviceCategories = [...new Set(services.map(s => s.data.service_category 
       </div>
 
       <!-- Benefits Section -->
-      <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-8 mb-12">
+      <div class="bg-gray-100 rounded-lg p-8 mb-12">
         <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Why Join Our Practitioner Community?</h2>
         <div class="grid md:grid-cols-3 gap-6">
           <div class="text-center">
@@ -59,7 +59,7 @@ const serviceCategories = [...new Set(services.map(s => s.data.service_category 
               id="fullName" 
               name="fullName" 
               required 
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500" 
               placeholder="Your full name"
             />
           </div>
@@ -70,7 +70,7 @@ const serviceCategories = [...new Set(services.map(s => s.data.service_category 
               id="email" 
               name="email" 
               required 
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500" 
               placeholder="your@email.com"
             />
           </div>
@@ -84,7 +84,7 @@ const serviceCategories = [...new Set(services.map(s => s.data.service_category 
             id="title" 
             name="title" 
             required 
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500" 
             placeholder="e.g., Senior Software Engineer, Community Manager, Security Consultant"
           />
         </div>
@@ -96,7 +96,7 @@ const serviceCategories = [...new Set(services.map(s => s.data.service_category 
               type="text" 
               id="company" 
               name="company" 
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500" 
               placeholder="Your current employer or 'Independent'"
             />
           </div>
@@ -106,7 +106,7 @@ const serviceCategories = [...new Set(services.map(s => s.data.service_category 
               type="text" 
               id="location" 
               name="location" 
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500" 
               placeholder="City, Country or Remote"
             />
           </div>
@@ -119,7 +119,7 @@ const serviceCategories = [...new Set(services.map(s => s.data.service_category 
             <select 
               id="experience" 
               name="experience" 
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500"
             >
               <option value="">Select experience level</option>
               <option value="0-2">0-2 years</option>
@@ -150,7 +150,7 @@ const serviceCategories = [...new Set(services.map(s => s.data.service_category 
             id="otherSpecialties" 
             name="otherSpecialties" 
             rows="2" 
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500" 
             placeholder="Other specialties not listed above..."
           ></textarea>
         </div>
@@ -163,7 +163,7 @@ const serviceCategories = [...new Set(services.map(s => s.data.service_category 
             name="bio" 
             required 
             rows="4" 
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500" 
             placeholder="Tell us about your background, experience, and what makes you a great practitioner for our network (2-3 sentences)..."
           ></textarea>
         </div>
@@ -176,7 +176,7 @@ const serviceCategories = [...new Set(services.map(s => s.data.service_category 
               type="text" 
               id="github" 
               name="github" 
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500" 
               placeholder="yourusername"
             />
             <p class="text-xs text-gray-500 mt-1">For GitHub Sponsors integration</p>
@@ -187,7 +187,7 @@ const serviceCategories = [...new Set(services.map(s => s.data.service_category 
               type="url" 
               id="linkedin" 
               name="linkedin" 
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500" 
               placeholder="https://linkedin.com/in/yourprofile"
             />
           </div>
@@ -200,7 +200,7 @@ const serviceCategories = [...new Set(services.map(s => s.data.service_category 
               type="url" 
               id="mastodon" 
               name="mastodon" 
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500" 
               placeholder="https://mastodon.social/@yourusername"
             />
           </div>
@@ -210,7 +210,7 @@ const serviceCategories = [...new Set(services.map(s => s.data.service_category 
               type="url" 
               id="website" 
               name="website" 
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500" 
               placeholder="https://yourwebsite.com"
             />
           </div>
@@ -223,7 +223,7 @@ const serviceCategories = [...new Set(services.map(s => s.data.service_category 
             id="projects" 
             name="projects" 
             rows="3" 
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500" 
             placeholder="List notable open source projects you've contributed to, maintained, or founded..."
           ></textarea>
         </div>
@@ -235,7 +235,7 @@ const serviceCategories = [...new Set(services.map(s => s.data.service_category 
             <select 
               id="availability" 
               name="availability" 
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500"
             >
               <option value="available">Available immediately</option>
               <option value="limited">Limited availability</option>
@@ -260,7 +260,7 @@ const serviceCategories = [...new Set(services.map(s => s.data.service_category 
                 name="proBonoCapacity" 
                 min="1" 
                 max="10"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500" 
                 placeholder="e.g., 2"
               />
               <p class="text-xs text-gray-500 mt-1">How many pro bono contracts are you willing to take per month?</p>
@@ -272,7 +272,7 @@ const serviceCategories = [...new Set(services.map(s => s.data.service_category 
                 id="proBonoCriteriaText" 
                 name="proBonoCriteriaText" 
                 rows="3" 
-                class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                 placeholder="Please describe the criteria for cases where you would accept pro bono work (e.g., non-profit organizations, solo maintainers, specific project types, etc.)"
               ></textarea>
             </div>
@@ -286,7 +286,7 @@ const serviceCategories = [...new Set(services.map(s => s.data.service_category 
             id="additionalInfo" 
             name="additionalInfo" 
             rows="3" 
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500" 
             placeholder="Anything else you'd like us to know? Certifications, languages, preferred project types, etc."
           ></textarea>
         </div>
@@ -295,7 +295,7 @@ const serviceCategories = [...new Set(services.map(s => s.data.service_category 
         <div class="text-center pt-6">
           <button 
             type="submit"
-            class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+            class="bg-gray-900 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors"
           >
             Submit Practitioner Application
           </button>

@@ -1,6 +1,43 @@
 import { useState, useEffect } from 'react';
 import { getApiPath } from '../config/app';
 
+// Heroicon SVG components
+const PencilIcon = () => (
+  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+  </svg>
+);
+
+const TrashIcon = () => (
+  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+  </svg>
+);
+
+const SparklesIcon = () => (
+  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
+  </svg>
+);
+
+const StarIcon = () => (
+  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+  </svg>
+);
+
+const ClockIcon = () => (
+  <svg className="w-4 h-4 inline" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+
+const RocketIcon = () => (
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+  </svg>
+);
+
 interface Service {
   id: string;
   title: string;
@@ -390,33 +427,33 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
 ${repositories.map(repo => `  - [${repo.name}](${repo.url}) - ${repo.description || 'No description'}`).join('\n')}
 - **Maintainer:** @${repositories[0].username}`;
 
-      const issueBody = `# 🎯 OSS Project Wishlist
+      const issueBody = `# OSS Project Wishlist
 
-## 📁 Project Information
+## Project Information
 ${repositoriesSection}
 
-## 🛠️ Services Requested
+## Services Requested
 ${wishlistData.selectedServices.map(serviceId => {
   const service = availableServices.find(s => s.id === serviceId);
   const serviceLink = service?.slug ? `${window.location.origin}/services/${service.slug}` : '';
   return `- **${service?.title || serviceId}** (${service?.category || 'General'})
   ${service?.description || 'No description available'}${serviceLink ? `
-  📖 [Learn more about this service](${serviceLink})` : ''}`;
+  [Learn more about this service](${serviceLink})` : ''}`;
 }).join('\n')}
 
-## ⏰ Project Details
+## Project Details
 - **Urgency:** ${wishlistData.urgency.charAt(0).toUpperCase() + wishlistData.urgency.slice(1)}
 - **Timeline:** ${wishlistData.timeline || 'Flexible'}
 
-## 🏢 Organization
+## Organization
 - **Type:** ${wishlistData.organizationType.charAt(0).toUpperCase() + wishlistData.organizationType.slice(1)}
 ${wishlistData.organizationName ? `- **Name:** ${wishlistData.organizationName}` : ''}
 
-## 📝 Additional Notes
+## Additional Notes
 ${wishlistData.additionalNotes || 'None provided'}
 
 ---
-💝 **Ready to help?** Comment below or reach out to the maintainer!
+**Ready to help?** Comment below or reach out to the maintainer!
 
 *Created via [OSS Wishlist Platform](${window.location.origin})*
 `;
@@ -577,7 +614,7 @@ ${wishlistData.additionalNotes || 'None provided'}
         <div className="max-w-4xl mx-auto">
           <div className="bg-white p-8 rounded-lg shadow-sm border text-center">
             <div className="mb-6">
-              <svg className="mx-auto h-16 w-16 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="mx-auto h-16 w-16 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </div>
@@ -659,7 +696,7 @@ ${wishlistData.additionalNotes || 'None provided'}
           <div className="bg-white p-8 rounded-lg shadow-sm border mb-8">
             <div className="max-w-2xl mx-auto">
               <h3 className="text-xl font-bold text-gray-900 mb-2 text-center">Select Your Repository</h3>
-              <p className="text-blue-600 text-xs mb-6 text-center">
+              <p className="text-gray-600 text-xs mb-6 text-center">
                 {selectedRepo ? '1 selected' : 'No repository selected'}
               </p>
               
@@ -694,8 +731,8 @@ ${wishlistData.additionalNotes || 'None provided'}
                       }}
                       className={`w-full text-left p-4 border rounded-lg transition-colors cursor-pointer ${
                         isSelected 
-                          ? 'border-blue-500 bg-blue-50' 
-                          : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'
+                          ? 'border-gray-900 bg-gray-100' 
+                          : 'border-gray-200 hover:border-gray-400 hover:bg-gray-50'
                       }`}
                     >
                       <div className="flex items-start gap-3">
@@ -720,11 +757,12 @@ ${wishlistData.additionalNotes || 'None provided'}
                                     }}
                                     className={`text-xs px-2 py-1 rounded border transition-colors flex items-center gap-1 shrink-0 ${
                                       isSelected && selectedAction === 'edit'
-                                        ? 'bg-amber-200 text-amber-900 border-amber-400'
-                                        : 'bg-amber-100 text-amber-800 border-amber-300 hover:bg-amber-200'
+                                        ? 'bg-gray-200 text-gray-900 border-gray-400'
+                                        : 'bg-gray-100 text-gray-800 border-gray-300 hover:bg-gray-200'
                                     }`}
                                   >
-                                    <span>✏️ Edit</span>
+                                    <PencilIcon />
+                                    <span>Edit</span>
                                   </button>
                                   <button
                                     type="button"
@@ -735,17 +773,19 @@ ${wishlistData.additionalNotes || 'None provided'}
                                     }}
                                     className={`text-xs px-2 py-1 rounded border transition-colors flex items-center gap-1 shrink-0 ${
                                       isSelected && selectedAction === 'close'
-                                        ? 'bg-red-200 text-red-900 border-red-400'
-                                        : 'bg-red-100 text-red-800 border-red-300 hover:bg-red-200'
+                                        ? 'bg-gray-300 text-gray-900 border-gray-500'
+                                        : 'bg-gray-200 text-gray-800 border-gray-400 hover:bg-gray-300'
                                     }`}
                                     title="Close this wishlist"
                                   >
-                                    <span>🗑️ Close</span>
+                                    <TrashIcon />
+                                    <span>Close</span>
                                   </button>
                                 </>
                               ) : (
-                                <span className="text-xs px-2 py-1 rounded border bg-green-100 text-green-800 border-green-300 flex items-center gap-1 shrink-0">
-                                  <span>✨ Create Wishlist</span>
+                                <span className="text-xs px-2 py-1 rounded border bg-gray-50 text-gray-700 border-gray-300 flex items-center gap-1 shrink-0">
+                                  <SparklesIcon />
+                                  <span>Create Wishlist</span>
                                 </span>
                               )}
                             </div>
@@ -759,8 +799,9 @@ ${wishlistData.additionalNotes || 'None provided'}
                                 {repo.language}
                               </span>
                             )}
-                            <span className="text-xs text-gray-500">
-                              ⭐ {repo.stargazers_count}
+                            <span className="text-xs text-gray-500 flex items-center gap-1">
+                              <StarIcon />
+                              {repo.stargazers_count}
                             </span>
                           </div>
                         </div>
@@ -808,7 +849,7 @@ ${wishlistData.additionalNotes || 'None provided'}
                     }
                   }}
                   disabled={loading}
-                  className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  className="w-full bg-gray-900 text-white py-3 px-6 rounded-lg hover:bg-gray-800 transition-colors font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
                   {loading ? (
                     <span className="flex items-center justify-center gap-2">
@@ -854,8 +895,8 @@ ${wishlistData.additionalNotes || 'None provided'}
                     type="url"
                     value={manualRepoUrl}
                     onChange={(e) => setManualRepoUrl(e.target.value)}
-                    placeholder="https://oss-wishlist.com"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="https://github.com/owner/repo"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                   />
                 </div>
                 
@@ -863,7 +904,7 @@ ${wishlistData.additionalNotes || 'None provided'}
                   <button
                     onClick={handleManualRepoSubmit}
                     disabled={!manualRepoUrl.trim()}
-                    className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400"
+                    className="flex-1 bg-gray-900 text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-800 disabled:bg-gray-400"
                   >
                     Continue
                   </button>
@@ -891,7 +932,7 @@ ${wishlistData.additionalNotes || 'None provided'}
                 <div className="bg-gray-50 border rounded-lg p-4 mb-6">
                   <h4 className="font-semibold text-gray-900">{manualRepoData.name}</h4>
                   <p className="text-sm text-gray-600 mt-1">{manualRepoData.description}</p>
-                  <p className="text-sm text-blue-600 mt-2">{manualRepoData.url}</p>
+                  <p className="text-sm text-gray-700 underline mt-2">{manualRepoData.url}</p>
                   <p className="text-sm text-gray-500 mt-2">Maintainer: @{manualRepoData.username}</p>
                 </div>
               )}
@@ -906,7 +947,7 @@ ${wishlistData.additionalNotes || 'None provided'}
                     {selectedRepo.description && (
                       <p className="text-sm text-gray-600 mt-1">{selectedRepo.description}</p>
                     )}
-                    <p className="text-sm text-blue-600 mt-2">{selectedRepo.html_url}</p>
+                    <p className="text-sm text-gray-700 underline mt-2">{selectedRepo.html_url}</p>
                   </div>
                 </div>
               )}
@@ -921,9 +962,19 @@ ${wishlistData.additionalNotes || 'None provided'}
                     console.log('=============================');
                     proceedToWishlist();
                   }}
-                  className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700"
+                  className="flex-1 bg-gray-900 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-800 flex items-center justify-center gap-2"
                 >
-                  {isEditingExisting ? '✏️ Update Wishlist' : '🚀 Create Wishlist'}
+                  {isEditingExisting ? (
+                    <>
+                      <PencilIcon />
+                      <span>Update Wishlist</span>
+                    </>
+                  ) : (
+                    <>
+                      <RocketIcon />
+                      <span>Create Wishlist</span>
+                    </>
+                  )}
                 </button>
                 <button
                   onClick={() => {
@@ -1004,7 +1055,7 @@ ${wishlistData.additionalNotes || 'None provided'}
                   href={success.issueUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 inline-flex items-center justify-center"
+                  className="bg-gray-900 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-800 inline-flex items-center justify-center"
                 >
                   <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd"></path>
@@ -1056,7 +1107,7 @@ ${wishlistData.additionalNotes || 'None provided'}
                       href={selectedRepo.html_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-blue-600 hover:text-blue-800 hover:underline break-all inline-flex items-center gap-1"
+                      className="text-sm text-gray-700 hover:text-gray-900 hover:underline break-all inline-flex items-center gap-1"
                     >
                       {selectedRepo.html_url}
                       <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1074,7 +1125,7 @@ ${wishlistData.additionalNotes || 'None provided'}
                       href={manualRepoData.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-blue-600 hover:text-blue-800 hover:underline break-all inline-flex items-center gap-1"
+                      className="text-sm text-gray-700 hover:text-gray-900 hover:underline break-all inline-flex items-center gap-1"
                     >
                       {manualRepoData.url}
                       <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1092,12 +1143,14 @@ ${wishlistData.additionalNotes || 'None provided'}
 
           {/* Edit Mode Header */}
           {isEditingExisting && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <div className="flex items-center gap-2">
-                <span className="text-2xl">✏️</span>
+            <div className="bg-gray-100 border border-gray-300 rounded-lg p-4">
+              <div className="flex items-center gap-3">
+                <svg className="w-6 h-6 text-gray-700" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                </svg>
                 <div>
-                  <h2 className="text-lg font-semibold text-blue-900">Editing Existing Wishlist</h2>
-                  <p className="text-sm text-blue-700">
+                  <h2 className="text-lg font-semibold text-gray-900">Editing Existing Wishlist</h2>
+                  <p className="text-sm text-gray-700">
                     You're updating wishlist #{existingIssueNumber}. All fields below are pre-filled with current values.
                   </p>
                 </div>
@@ -1121,7 +1174,7 @@ ${wishlistData.additionalNotes || 'None provided'}
               value={wishlistData.projectTitle}
               onChange={(e) => setWishlistData(prev => ({ ...prev, projectTitle: e.target.value }))}
               placeholder="Enter your project title (e.g., 'My Awesome Library')"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
               required
             />
             <p className="text-sm text-gray-500 mt-2">
@@ -1132,10 +1185,10 @@ ${wishlistData.additionalNotes || 'None provided'}
           {/* Services Selection */}
           <div className="bg-white p-6 rounded-lg shadow-sm border">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              🛠️ Services Needed <span className="text-red-500">*</span>
+              Services Needed <span className="text-red-500">*</span>
             </h3>
             {isEditingExisting && originalServices.length > 0 && (
-              <p className="text-sm text-gray-600 mb-4 bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <p className="text-sm text-gray-600 mb-4 bg-gray-50 border border-gray-200 rounded-lg p-3">
                 <span className="font-medium">Currently selected services</span> are highlighted. You can modify your selection below.
               </p>
             )}
@@ -1150,7 +1203,7 @@ ${wishlistData.additionalNotes || 'None provided'}
                     onClick={() => handleServiceToggle(service.id)}
                     className={`p-4 border rounded-lg cursor-pointer transition-colors ${
                       isSelected
-                        ? 'border-blue-500 bg-blue-50'
+                        ? 'border-gray-900 bg-gray-100'
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
@@ -1174,7 +1227,7 @@ ${wishlistData.additionalNotes || 'None provided'}
                               href={`/services/${service.slug}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-xs text-blue-600 hover:text-blue-800 underline"
+                              className="text-xs text-gray-700 hover:text-gray-900 underline"
                               onClick={(e) => e.stopPropagation()}
                             >
                               Learn more →
@@ -1183,7 +1236,7 @@ ${wishlistData.additionalNotes || 'None provided'}
                         </div>
                       </div>
                       {isSelected && (
-                        <div className="ml-2 text-blue-600 text-lg">✓</div>
+                        <div className="ml-2 text-gray-900 text-lg">✓</div>
                       )}
                     </div>
                   </div>
@@ -1194,7 +1247,10 @@ ${wishlistData.additionalNotes || 'None provided'}
 
           {/* Project Details */}
           <div className="bg-white p-6 rounded-lg shadow-sm border">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">⏰ Project Details</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <ClockIcon />
+              <span>Project Details</span>
+            </h3>
             <div className="grid gap-6 md:grid-cols-2">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -1203,11 +1259,11 @@ ${wishlistData.additionalNotes || 'None provided'}
                 <select
                   value={wishlistData.urgency}
                   onChange={(e) => setWishlistData(prev => ({ ...prev, urgency: e.target.value as any }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                 >
-                  <option value="low">🟢 Low - Flexible timeline</option>
-                  <option value="medium">🟡 Medium - Preferred timeline</option>
-                  <option value="high">🔴 High - Urgent need</option>
+                  <option value="low">Low - Flexible timeline</option>
+                  <option value="medium">Medium - Preferred timeline</option>
+                  <option value="high">High - Urgent need</option>
                 </select>
               </div>
 
@@ -1220,7 +1276,7 @@ ${wishlistData.additionalNotes || 'None provided'}
                   value={wishlistData.timeline}
                   onChange={(e) => setWishlistData(prev => ({ ...prev, timeline: e.target.value }))}
                   placeholder="e.g., 'Within 3 months', 'Q1 2024', 'Flexible'"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                 />
               </div>
             </div>
@@ -1228,7 +1284,7 @@ ${wishlistData.additionalNotes || 'None provided'}
 
           {/* Organization Details */}
           <div className="bg-white p-6 rounded-lg shadow-sm border">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">🏢 Organization Details</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Organization Details</h3>
             <div className="grid gap-6 md:grid-cols-2">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -1237,12 +1293,12 @@ ${wishlistData.additionalNotes || 'None provided'}
                 <select
                   value={wishlistData.organizationType}
                   onChange={(e) => setWishlistData(prev => ({ ...prev, organizationType: e.target.value as any }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                 >
-                  <option value="individual">👤 Individual maintainer</option>
-                  <option value="company">🏢 Company</option>
-                  <option value="nonprofit">🌍 Nonprofit organization</option>
-                  <option value="foundation">🏛️ Foundation</option>
+                  <option value="individual">Individual maintainer</option>
+                  <option value="company">Company</option>
+                  <option value="nonprofit">Nonprofit organization</option>
+                  <option value="foundation">Foundation</option>
                 </select>
               </div>
 
@@ -1256,7 +1312,7 @@ ${wishlistData.additionalNotes || 'None provided'}
                     value={wishlistData.organizationName}
                     onChange={(e) => setWishlistData(prev => ({ ...prev, organizationName: e.target.value }))}
                     placeholder="Enter organization name"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                   />
                 </div>
               )}
@@ -1265,13 +1321,13 @@ ${wishlistData.additionalNotes || 'None provided'}
 
           {/* Additional Notes */}
           <div className="bg-white p-6 rounded-lg shadow-sm border">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">📝 Additional Notes</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Additional Notes</h3>
             <textarea
               value={wishlistData.additionalNotes}
               onChange={(e) => setWishlistData(prev => ({ ...prev, additionalNotes: e.target.value }))}
               rows={4}
               placeholder="Any additional information about your project, specific requirements, or context that would help supporters understand your needs..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
             />
           </div>
 
@@ -1285,7 +1341,7 @@ ${wishlistData.additionalNotes || 'None provided'}
                   checked={createFundingPR && !manualRepoData}
                   onChange={(e) => setCreateFundingPR(e.target.checked)}
                   disabled={!!manualRepoData}
-                  className="mt-0.5 h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 disabled:cursor-not-allowed"
+                  className="mt-0.5 h-5 w-5 text-gray-900 border-gray-300 rounded focus:ring-gray-500 disabled:cursor-not-allowed"
                 />
                 <div className="flex-1">
                   <span className="text-gray-900 font-medium text-sm">Create a PR to add FUNDING.yml to this repository</span>
@@ -1310,7 +1366,7 @@ ${wishlistData.additionalNotes || 'None provided'}
               <button
                 type="submit"
                 disabled={loading || wishlistData.selectedServices.length === 0 || !wishlistData.projectTitle.trim()}
-                className="flex-1 px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2 order-1 sm:order-2"
+                className="flex-1 px-8 py-3 bg-gray-900 text-white rounded-lg font-semibold hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2 order-1 sm:order-2"
               >
                 {loading ? (
                   <>
@@ -1319,7 +1375,17 @@ ${wishlistData.additionalNotes || 'None provided'}
                   </>
                 ) : (
                   <>
-                    <span>{isEditingExisting ? '✏️ Update Wishlist' : '🚀 Create Wishlist'}</span>
+                    {isEditingExisting ? (
+                      <>
+                        <PencilIcon />
+                        <span>Update Wishlist</span>
+                      </>
+                    ) : (
+                      <>
+                        <RocketIcon />
+                        <span>Create Wishlist</span>
+                      </>
+                    )}
                   </>
                 )}
               </button>

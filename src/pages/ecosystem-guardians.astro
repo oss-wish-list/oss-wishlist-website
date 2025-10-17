@@ -14,7 +14,7 @@ const sortedGuardians = guardians.sort((a, b) => a.data.name.localeCompare(b.dat
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="max-w-4xl mx-auto text-center">
         <h1 class="text-5xl font-bold text-gray-900 mb-6">
-          <span class="text-emerald-600">Wishlist Sponsors</span>
+          <span class="text-gray-700">Wishlist Sponsors</span>
         </h1>
         <p class="text-xl text-gray-600 mb-8">
           Meet the organizations, foundations and individuals protecting and nurturing the open source ecosystem. 
@@ -146,7 +146,7 @@ const sortedGuardians = guardians.sort((a, b) => a.data.name.localeCompare(b.dat
             <div class="flex items-center justify-between">
               <div class="flex items-center space-x-2">
                 {guardian.data.verified && (
-                  <span class="text-green-600 text-xs">✅ Verified</span>
+                  <span class="text-gray-700 text-xs">✓ Verified</span>
                 )}
               </div>
               <a 
@@ -171,12 +171,12 @@ const sortedGuardians = guardians.sort((a, b) => a.data.name.localeCompare(b.dat
       
       <div class="grid md:grid-cols-4 gap-8">
         <div class="text-center">
-          <div class="text-4xl font-bold text-green-400 mb-2">$0</div>
+          <div class="text-4xl font-bold text-white mb-2">$0</div>
           <p class="text-gray-300">Wishes funded</p>
         </div>
         
         <div class="text-center">
-          <div class="text-4xl font-bold text-blue-400 mb-2">0</div>
+          <div class="text-4xl font-bold text-white mb-2">0</div>
           <p class="text-gray-300">Projects supported</p>
         </div>
         
@@ -186,7 +186,7 @@ const sortedGuardians = guardians.sort((a, b) => a.data.name.localeCompare(b.dat
         </div>
         
         <div class="text-center">
-          <div class="text-4xl font-bold text-orange-400 mb-2">0</div>
+          <div class="text-4xl font-bold text-gray-400 mb-2">0</div>
           <p class="text-gray-300">Active sponsors</p>
         </div>
       </div>

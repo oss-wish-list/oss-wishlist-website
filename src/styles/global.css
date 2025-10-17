@@ -15,7 +15,7 @@
   
   /* Improved focus styles for accessibility */
   *:focus-visible {
-    @apply outline-2 outline-offset-2 outline-blue-600;
+    @apply outline-2 outline-offset-2 outline-gray-600;
   }
 }
 
@@ -23,7 +23,7 @@
 @layer components {
   /* Button variants */
   .btn-primary {
-    @apply bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-700 focus:bg-orange-700 transition-colors duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed;
+    @apply bg-gray-900 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-800 focus:bg-gray-800 transition-colors duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed;
   }
   
   .btn-secondary {
@@ -32,11 +32,11 @@
   
   /* Form input styles */
   .form-input {
-    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200;
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all duration-200;
   }
   
   .form-textarea {
-    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 resize-vertical min-h-[100px];
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all duration-200 resize-vertical min-h-[100px];
   }
   
   .form-label {
@@ -45,25 +45,25 @@
   
   /* Service card component */
   .service-card {
-    @apply bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-all duration-200 hover:border-orange-200;
+    @apply bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-all duration-200 hover:border-gray-400;
   }
   
   /* Price tier badges */
   .price-low {
-    @apply bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-medium;
+    @apply bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium;
   }
   
   .price-medium {
-    @apply bg-orange-200 text-orange-900 px-3 py-1 rounded-full text-sm font-medium;
+    @apply bg-gray-200 text-gray-900 px-3 py-1 rounded-full text-sm font-medium;
   }
   
   .price-high {
-    @apply bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium;
+    @apply bg-gray-700 text-white px-3 py-1 rounded-full text-sm font-medium;
   }
   
   /* Content/prose styles for service detail pages */
   .prose-content {
-    @apply prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-orange-600 hover:prose-a:text-orange-700 prose-strong:text-gray-900 prose-code:text-orange-600 prose-code:bg-orange-50 prose-code:px-1 prose-code:rounded;
+    @apply prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-gray-900 prose-a:underline hover:prose-a:text-gray-700 prose-strong:text-gray-900 prose-code:text-gray-800 prose-code:bg-gray-100 prose-code:px-1 prose-code:rounded;
   }
   
   .prose-content h2 {
@@ -76,7 +76,7 @@
   }
   
   .filter-btn.active {
-    @apply bg-orange-600 text-white border-orange-600;
+    @apply bg-gray-900 text-white border-gray-900;
   }
   
   .filter-btn:not(.active) {
@@ -86,15 +86,6 @@
 
 /* Custom utility classes */
 @layer utilities {
-  /* Gradients */
-  .gradient-blue {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  }
-  
-  .gradient-green {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  }
-  
   /* Custom shadows */
   .shadow-soft {
     box-shadow: 0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04);

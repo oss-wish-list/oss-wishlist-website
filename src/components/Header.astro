@@ -1,79 +1,330 @@
 ---
-import '../styles/global.css';
 import { getBasePath } from '../lib/paths';
 import AuthButtonAstro from './AuthButtonAstro.astro';
 
-export interface Props {
-  title: string;
-  description?: string;
-}
+// This is a standalone header component extracted from Layout.astro
+// It contains the navigation menu with dropdowns for:
+// - Browse Wishlists (top-level)
+// - Services (top-level)
+// - For Maintainers (dropdown: Manage Wishlists, Find Practitioners)
+// - Community (dropdown: Join Community, View Opportunities, Find Practitioners, Become Practitioner, Code of Conduct)
+// - For Sponsors (dropdown: Browse Wishlists to Fund, Sponsor Directory, How Funding Works)
+// - Resources (dropdown: How It Works, FAQ)
+// - Auth Button
 
-const { title, description = "Get the help your open source project needs" } = Astro.props;
-// Use centralized path utility
 const basePath = getBasePath(); // Returns with trailing slash
 const logoUrl = `${basePath}logo.png`;
 ---
 
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="description" content={description} />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/png" href={logoUrl} />
-    <meta name="generator" content={Astro.generator} />
-    <title>{title}</title>
-  </head>
-  <body class="bg-gray-50 min-h-screen">
-    <header class="bg-white shadow-sm border-b">
-      <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-16">
-          <div class="flex items-center space-x-4">
-            <img src={logoUrl} alt="OSS Wishlist" class="h-8 w-8" />
-            <a href={basePath} class="text-xl font-bold text-gray-900">OSS Wishlist</a>
-          </div>
-          <div class="flex items-center space-x-6">
-            <a href={`${basePath}about`} class="text-gray-700 hover:text-gray-900">About</a>
-            <a href={`${basePath}catalog`} class="text-gray-700 hover:text-gray-900">Services & Resources</a>
-            <a href={`${basePath}maintainers`} class="text-gray-700 hover:text-gray-900">
-              Your Wishlists
-            </a>
-            <AuthButtonAstro />
-          </div>
-        </div>
-      </nav>
-    </header>
-
-    <main>
-      <slot />
-    </main>
-
-    <footer class="bg-gray-900 text-white py-12 mt-20">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center">
-          <p class="text-gray-400">
-            Open Source Wishlist - Connecting maintainers with the services they need
-          </p>
-          <div class="mt-4 flex justify-center space-x-6">
-            <a href="https://github.com/oss-wishlist" class="text-gray-400 hover:text-white">
-              GitHub
-            </a>
-            <a href={`${basePath}CODE_OF_CONDUCT.md`} class="text-gray-400 hover:text-white">
-              Code of Conduct
-            </a>
-          </div>
-        </div>
+<header class="bg-white shadow-sm border-b">
+  <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
+    <div class="flex justify-between items-center h-16">
+      <div class="flex items-center space-x-4">
+        <img src={logoUrl} alt="Open Source Wishlist logo" class="h-8 w-8" />
+        <a href={basePath} class="text-xl font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 rounded">Open Source Wishlist</a>
       </div>
-    </footer>
-  </body>
-</html>
+      
+      <!-- Desktop Navigation -->
+      <div class="hidden md:flex space-x-6 items-center">
+        <!-- Wish Catalog -->
+        <a href={`${basePath}catalog`} class="text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 rounded px-2 py-1 min-h-[44px] flex items-center">Wish Catalog</a>
+        
+        <!-- For Maintainers Dropdown -->
+        <div class="relative" id="maintainers-dropdown">
+          <button 
+            class="text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 rounded px-2 py-1 flex items-center space-x-1 min-h-[44px]"
+            aria-expanded="false"
+            aria-haspopup="true"
+            aria-label="For Maintainers menu"
+            id="maintainers-dropdown-button"
+          >
+            <span>For Maintainers</span>
+            <svg class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+          
+          <div 
+            id="maintainers-menu"
+            class="absolute left-0 mt-2 w-56 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none hidden z-50"
+            role="menu"
+            aria-orientation="vertical"
+            aria-labelledby="maintainers-dropdown-button"
+          >
+            <div class="py-1" role="none">
+              <a href={`${basePath}maintainers`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Manage Wishlists</a>
+              <a href={`${basePath}practitioners`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Browse Practitioners</a>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Community Dropdown -->
+        <div class="relative" id="community-dropdown">
+          <button 
+            class="text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 rounded px-2 py-1 flex items-center space-x-1 min-h-[44px]"
+            aria-expanded="false"
+            aria-haspopup="true"
+            aria-label="Community menu"
+            id="community-dropdown-button"
+          >
+            <span>Community</span>
+            <svg class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+          
+          <div 
+            id="community-menu"
+            class="absolute left-0 mt-2 w-64 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none hidden z-50"
+            role="menu"
+            aria-orientation="vertical"
+            aria-labelledby="community-dropdown-button"
+          >
+            <div class="py-1" role="none">
+              <a href="https://join.slack.com/t/opensourcewishlist/shared_invite/zt-3dvyh48xf-y6uqKHyd6Ur~WfkcawReuQ" target="_blank" rel="noopener noreferrer" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Join the Community (Slack)</a>
+              <a href={`${basePath}apply-practitioner`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Become a Practitioner</a>
+              <a href={`${basePath}practitioners`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Browse Practitioners</a>
+              <a href={`${basePath}CODE_OF_CONDUCT.md`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Code of Conduct</a>
+            </div>
+          </div>
+        </div>
+        
+        <!-- For Sponsors Dropdown -->
+        <div class="relative" id="sponsors-dropdown">
+          <button 
+            class="text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 rounded px-2 py-1 flex items-center space-x-1 min-h-[44px]"
+            aria-expanded="false"
+            aria-haspopup="true"
+            aria-label="For Sponsors menu"
+            id="sponsors-dropdown-button"
+          >
+            <span>For Sponsors</span>
+            <svg class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+          
+          <div 
+            id="sponsors-menu"
+            class="absolute left-0 mt-2 w-64 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none hidden z-50"
+            role="menu"
+            aria-orientation="vertical"
+            aria-labelledby="sponsors-dropdown-button"
+          >
+            <div class="py-1" role="none">
+              <a href={`${basePath}wishlists`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Browse Wishlists</a>
+              <a href={`${basePath}ecosystem-guardians`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Sponsor Directory</a>
+              <a href={`${basePath}apply-sponsor`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Become a Sponsor</a>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Resources Dropdown -->
+        <div class="relative" id="resources-dropdown">
+          <button 
+            class="text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 rounded px-2 py-1 flex items-center space-x-1 min-h-[44px]"
+            aria-expanded="false"
+            aria-haspopup="true"
+            aria-label="Resources menu"
+            id="resources-dropdown-button"
+          >
+            <span>Resources</span>
+            <svg class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+          
+          <div 
+            id="resources-menu"
+            class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none hidden z-50"
+            role="menu"
+            aria-orientation="vertical"
+            aria-labelledby="resources-dropdown-button"
+          >
+            <div class="py-1" role="none">
+              <a href={`${basePath}how-it-works`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">How It Works</a>
+              <a href={`${basePath}faq`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">FAQ</a>
+            </div>
+          </div>
+        </div>
+        
+        <AuthButtonAstro />
+      </div>
 
-<style is:global>
-  html {
-    scroll-behavior: smooth;
-  }
-  
-  body {
-    font-family: system-ui, sans-serif;
-  }
-</style>
+      <!-- Mobile menu button -->
+      <button 
+        id="mobile-menu-button" 
+        class="md:hidden text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 rounded p-2"
+        aria-expanded="false"
+        aria-label="Toggle navigation menu"
+        aria-controls="mobile-menu"
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile Navigation Menu -->
+    <div id="mobile-menu" class="hidden md:hidden pb-4" role="navigation" aria-label="Mobile navigation">
+      <div class="space-y-1">
+        <a href={`${basePath}maintainers`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Your wishlists</a>
+        <a href={`${basePath}wishlists`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">View wishlists</a>
+        <a href={`${basePath}catalog`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Service Catalog</a>
+        <a href={`${basePath}practitioners`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Practitioner Community</a>
+        <a href={`${basePath}apply-practitioner`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Become a Practitioner</a>
+        <a href={`${basePath}ecosystem-guardians`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Wishlist Sponsors</a>
+        <a href={`${basePath}how-it-works`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">How it works</a>
+        <a href={`${basePath}faq`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">FAQ</a>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Mobile menu toggle
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    if (mobileMenuButton && mobileMenu) {
+      mobileMenuButton.addEventListener('click', function() {
+        const isExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
+        mobileMenuButton.setAttribute('aria-expanded', (!isExpanded).toString());
+        mobileMenu.classList.toggle('hidden');
+      });
+    }
+    
+    // Dropdown IDs
+    const dropdowns = [
+      { id: 'maintainers', button: 'maintainers-dropdown-button', menu: 'maintainers-menu', container: 'maintainers-dropdown' },
+      { id: 'community', button: 'community-dropdown-button', menu: 'community-menu', container: 'community-dropdown' },
+      { id: 'sponsors', button: 'sponsors-dropdown-button', menu: 'sponsors-menu', container: 'sponsors-dropdown' },
+      { id: 'resources', button: 'resources-dropdown-button', menu: 'resources-menu', container: 'resources-dropdown' }
+    ];
+    
+    // Initialize each dropdown
+    dropdowns.forEach(dropdown => {
+      const button = document.getElementById(dropdown.button);
+      const menu = document.getElementById(dropdown.menu);
+      const container = document.getElementById(dropdown.container);
+      
+      if (button && menu && container) {
+        // Toggle dropdown
+        button.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const icon = button.querySelector('svg');
+          const isHidden = menu.classList.contains('hidden');
+          
+          // Close all other dropdowns
+          dropdowns.forEach(other => {
+            if (other.id !== dropdown.id) {
+              const otherMenu = document.getElementById(other.menu);
+              const otherButton = document.getElementById(other.button);
+              const otherIcon = otherButton?.querySelector('svg');
+              if (otherMenu) {
+                otherMenu.classList.add('hidden');
+                otherButton?.setAttribute('aria-expanded', 'false');
+                if (otherIcon) otherIcon.style.transform = 'rotate(0deg)';
+              }
+            }
+          });
+          
+          // Toggle current dropdown
+          if (isHidden) {
+            menu.classList.remove('hidden');
+            button.setAttribute('aria-expanded', 'true');
+            if (icon) icon.style.transform = 'rotate(180deg)';
+            const firstItem = menu.querySelector('a');
+            if (firstItem) firstItem.focus();
+          } else {
+            menu.classList.add('hidden');
+            button.setAttribute('aria-expanded', 'false');
+            if (icon) icon.style.transform = 'rotate(0deg)';
+          }
+        });
+        
+        // Keyboard navigation for dropdown button
+        button.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            button.click();
+          } else if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            if (menu.classList.contains('hidden')) {
+              button.click();
+            }
+          }
+        });
+        
+        // Keyboard navigation for menu items
+        const menuItems = menu.querySelectorAll('a');
+        menuItems.forEach((item, index) => {
+          item.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+              e.preventDefault();
+              menu.classList.add('hidden');
+              button.setAttribute('aria-expanded', 'false');
+              const icon = button.querySelector('svg');
+              if (icon) icon.style.transform = 'rotate(0deg)';
+              button.focus();
+            } else if (e.key === 'ArrowDown') {
+              e.preventDefault();
+              const nextItem = menuItems[index + 1];
+              if (nextItem) nextItem.focus();
+            } else if (e.key === 'ArrowUp') {
+              e.preventDefault();
+              if (index === 0) {
+                button.focus();
+              } else {
+                menuItems[index - 1].focus();
+              }
+            }
+          });
+        });
+      }
+    });
+    
+    // Close all dropdowns when clicking outside
+    document.addEventListener('click', function(event) {
+      dropdowns.forEach(dropdown => {
+        const container = document.getElementById(dropdown.container);
+        const menu = document.getElementById(dropdown.menu);
+        const button = document.getElementById(dropdown.button);
+        
+        if (container && menu && !container.contains(event.target)) {
+          menu.classList.add('hidden');
+          button?.setAttribute('aria-expanded', 'false');
+          const icon = button?.querySelector('svg');
+          if (icon) icon.style.transform = 'rotate(0deg)';
+        }
+      });
+    });
+    
+    // Close dropdowns and mobile menu when pressing Escape
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        dropdowns.forEach(dropdown => {
+          const menu = document.getElementById(dropdown.menu);
+          const button = document.getElementById(dropdown.button);
+          if (menu) {
+            menu.classList.add('hidden');
+            button?.setAttribute('aria-expanded', 'false');
+            const icon = button?.querySelector('svg');
+            if (icon) icon.style.transform = 'rotate(0deg)';
+          }
+        });
+        
+        if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+          mobileMenu.classList.add('hidden');
+          if (mobileMenuButton) {
+            mobileMenuButton.setAttribute('aria-expanded', 'false');
+            mobileMenuButton.focus();
+          }
+        }
+      }
+    });
+  });
+</script>
