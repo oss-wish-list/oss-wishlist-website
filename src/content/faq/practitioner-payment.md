@@ -5,7 +5,7 @@ category: "For Open Source Practitioners"
 order: 2
 ---
 
-Practitioners are compensated directly by the Ecosystem Sponsors who sponsor the work:
+Practitioners are compensated directly by the Wishlist Sponsors who sponsor the work:
 
 - **Direct Payment**: Sponsors pay practitioners directly, not through the platform
 - **Fair Rates**: We provide guidance on market rates to ensure fair compensation

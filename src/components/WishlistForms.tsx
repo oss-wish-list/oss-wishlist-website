@@ -38,6 +38,7 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
   const [repositories, setRepositories] = useState<GitHubRepository[]>([]);
   const [loadingRepos, setLoadingRepos] = useState(false);
   const [selectedRepo, setSelectedRepo] = useState<GitHubRepository | null>(null);
+  const [selectedAction, setSelectedAction] = useState<'create' | 'edit' | 'close' | null>(null);
   const [existingWishlists, setExistingWishlists] = useState<Record<string, { issueUrl: string; issueNumber: number }>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -103,6 +104,14 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
       checkUserSession();
     }
   }, []);
+
+  // Update page title when editing mode changes
+  useEffect(() => {
+    const titleElement = document.getElementById('title-action');
+    if (titleElement) {
+      titleElement.textContent = isEditingExisting ? 'Edit Your' : 'Create Your';
+    }
+  }, [isEditingExisting]);
 
   const checkUserSession = async () => {
     try {
@@ -181,147 +190,52 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
 
   const loadExistingWishlistData = async (issueNumber: number) => {
     try {
-      const GITHUB_TOKEN = import.meta.env.GITHUB_TOKEN || import.meta.env.PUBLIC_GITHUB_TOKEN;
-      const response = await fetch(
-        `https://api.github.com/repos/oss-wishlist/wishlists/issues/${issueNumber}`,
-        {
-          headers: GITHUB_TOKEN ? {
-            'Authorization': `token ${GITHUB_TOKEN}`,
-            'Accept': 'application/vnd.github.v3+json',
-          } : {
-            'Accept': 'application/vnd.github.v3+json',
-          },
-        }
-      );
+      // Use the API endpoint to get cached wishlist data
+      const apiUrl = getApiPath(`/api/get-wishlist?issueNumber=${issueNumber}`);
+      console.log('Fetching cached data from:', apiUrl);
+      const response = await fetch(apiUrl);
+      
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
       
       if (!response.ok) {
-        console.error('Failed to load existing wishlist');
-        return;
+        console.error('Failed to load cached wishlist data, status:', response.status);
+        const text = await response.text();
+        console.error('Response body:', text);
+        return false;
       }
       
-      const issue = await response.json();
-      const body = issue.body || '';
+      const cachedData = await response.json();
+      console.log('Loaded cached data:', cachedData);
       
+      const updatedData: any = {
+        projectTitle: cachedData.projectTitle || '',
+        selectedServices: cachedData.wishes || [],
+        urgency: cachedData.urgency || 'medium',
+        timeline: cachedData.timeline || '',
+        organizationType: cachedData.organizationType || 'individual',
+        organizationName: cachedData.organizationName || '',
+        additionalNotes: cachedData.additionalNotes || '',
+      };
       
-      const updatedData: any = {};
+      console.log('Prepared updated data:', updatedData);
       
-      // Parse the issue body to extract form data
-      // The actual format uses ** markers and ## headers
+      // Set original services for comparison
+      setOriginalServices(cachedData.wishes || []);
       
-      // Project Title (uses **Project:** format)
-      const titleMatch = body.match(/\*\*Project:\*\*\s*(.+?)(?:\n|$)/);
-      if (titleMatch) {
-        updatedData.projectTitle = titleMatch[1].trim();
-      }
-      
-      // Urgency Level (uses **Urgency:** format)
-      const urgencyMatch = body.match(/\*\*Urgency:\*\*\s*(.+?)(?:\n|$)/);
-      if (urgencyMatch) {
-        const urgency = urgencyMatch[1].trim().toLowerCase();
-        if (urgency === 'low' || urgency === 'medium' || urgency === 'high') {
-          updatedData.urgency = urgency;
-        }
-      }
-      
-      // Organization Type (might not exist in old format)
-      const orgTypeMatch = body.match(/\*\*Organization Type:\*\*\s*(.+?)(?:\n|$)/);
-      if (orgTypeMatch) {
-        const orgType = orgTypeMatch[1].trim().toLowerCase();
-        if (orgType === 'individual' || orgType === 'company' || orgType === 'nonprofit' || orgType === 'foundation') {
-          updatedData.organizationType = orgType;
-        }
-      }
-      
-      // Organization Name (might not exist in old format)
-      const orgNameMatch = body.match(/\*\*Organization Name:\*\*\s*(.+?)(?:\n|$)/);
-      if (orgNameMatch) {
-        updatedData.organizationName = orgNameMatch[1].trim();
-      }
-      
-      // Timeline (might not exist in old format)
-      const timelineMatch = body.match(/\*\*Timeline:\*\*\s*(.+?)(?:\n|$)/);
-      if (timelineMatch) {
-        updatedData.timeline = timelineMatch[1].trim();
-      }
-      
-      // Project Description
-      const descriptionMatch = body.match(/## Project Description\s*\n(.+?)(?:\n\n|$)/s);
-      if (descriptionMatch) {
-        updatedData.additionalNotes = descriptionMatch[1].trim();
-      }
-      
-      // Additional Notes (append if exists)
-      const notesMatch = body.match(/## Additional Notes\s*\n(.+?)(?:\n\n|$)/s);
-      if (notesMatch) {
-        const notes = notesMatch[1].trim();
-        if (updatedData.additionalNotes) {
-          updatedData.additionalNotes += '\n\n' + notes;
-        } else {
-          updatedData.additionalNotes = notes;
-        }
-      }
-      
-      // Services Requested (uses ## header with list)
-      const servicesMatch = body.match(/## Services Requested\s*\n(.+?)(?:\n\n|$)/s);
-      if (servicesMatch) {
-        const servicesText = servicesMatch[1].trim();
-        const parsedServices: string[] = [];
-        
-        // Parse list items (e.g., "- aws-credits", "- Funding Strategy")
-        const serviceLines = servicesText.split('\n').map((line: string) => line.trim());
-        
-        for (const line of serviceLines) {
-          // Remove leading "- " or "* "
-          const cleanLine = line.replace(/^[-*]\s*/, '').trim();
-          
-          // Check if it's a service ID (lowercase with hyphens) or a display name
-          if (cleanLine) {
-            // Try to match against known service IDs first
-            const serviceId = cleanLine.toLowerCase().replace(/\s+/g, '-');
-            
-            // Also map common display names to IDs
-            const serviceMapping: Record<string, string> = {
-              'security audit': 'dependency-security-audit',
-              'dependency security audit': 'dependency-security-audit',
-              'governance setup': 'governance-setup',
-              'project governance setup': 'governance-setup',
-              'legal consultation': 'legal-consult',
-              'legal consult': 'legal-consult',
-              'stakeholder mediation': 'stakeholder-mediation',
-              'funding strategy': 'funding-strategy',
-              'community strategy': 'community-building-strategy',
-              'community building strategy': 'community-building-strategy',
-              'developer relations strategy': 'developer-relations-strategy',
-              'devrel strategy': 'developer-relations-strategy',
-              'moderation strategy': 'moderation-strategy',
-              'leadership onboarding': 'leadership-onboarding',
-              'github copilot budget': 'github-copilot-budget',
-              'aws credits': 'aws-credits',
-              'aws-credits': 'aws-credits',
-            };
-            
-            const mappedId = serviceMapping[cleanLine.toLowerCase()] || serviceId;
-            if (!parsedServices.includes(mappedId)) {
-              parsedServices.push(mappedId);
-            }
-          }
-        }
-        
-        updatedData.selectedServices = parsedServices;
-        setOriginalServices(parsedServices);
-      }
-      
-      // Update all form data at once
-      setWishlistData(prev => {
-        const newData = { ...prev, ...updatedData };
-        return newData;
-      });
+      // Update all form data directly (not using prev callback)
+      setWishlistData(updatedData);
+      console.log('Set wishlistData to:', updatedData);
       
       setIsEditingExisting(true);
       setExistingIssueNumber(issueNumber);
+      console.log('Set isEditingExisting to true, issueNumber:', issueNumber);
+      
+      return true;
       
     } catch (err) {
       console.error('Error loading existing wishlist data:', err);
+      return false;
     }
   };
 
@@ -761,23 +675,27 @@ ${wishlistData.additionalNotes || 'None provided'}
                   const hasExistingWishlist = existingWishlists[repo.html_url];
                   
                   return (
-                    <button
+                    <div
                       key={repo.id}
                       onClick={() => {
                         if (isSelected) {
                           setSelectedRepo(null);
+                          setSelectedAction(null);
                         } else {
                           setSelectedRepo(repo);
+                          // If no wishlist, default to create action
+                          if (!hasExistingWishlist) {
+                            setSelectedAction('create');
+                          } else {
+                            // Reset action when selecting a repo with existing wishlist
+                            setSelectedAction(null);
+                          }
                         }
                       }}
-                      className={`w-full text-left p-4 border rounded-lg transition-colors ${
-                        hasExistingWishlist
-                          ? isSelected
-                            ? 'border-gray-400 bg-gray-200'
-                            : 'border-gray-300 bg-gray-100 hover:border-gray-400 hover:bg-gray-200'
-                          : isSelected 
-                            ? 'border-blue-500 bg-blue-50' 
-                            : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'
+                      className={`w-full text-left p-4 border rounded-lg transition-colors cursor-pointer ${
+                        isSelected 
+                          ? 'border-blue-500 bg-blue-50' 
+                          : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'
                       }`}
                     >
                       <div className="flex items-start gap-3">
@@ -791,30 +709,44 @@ ${wishlistData.additionalNotes || 'None provided'}
                           <div className="flex items-start justify-between gap-2">
                             <h4 className="font-semibold text-gray-900">{repo.name}</h4>
                             <div className="flex items-center gap-2">
-                              {hasExistingWishlist && (
+                              {hasExistingWishlist ? (
                                 <>
-                                  <a
-                                    href={hasExistingWishlist.issueUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    onClick={(e) => e.stopPropagation()}
-                                    className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded border border-amber-300 hover:bg-amber-200 transition-colors flex items-center gap-1 shrink-0"
-                                  >
-                                    <span>✓ Existing Wishlist</span>
-                                  </a>
                                   <button
                                     type="button"
-                                    onClick={async (e) => {
+                                    onClick={(e) => {
                                       e.stopPropagation();
-                                      setExistingIssueNumber(hasExistingWishlist.issueNumber);
-                                      await handleCloseWishlist();
+                                      setSelectedRepo(repo);
+                                      setSelectedAction('edit');
                                     }}
-                                    className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded border border-red-300 hover:bg-red-200 transition-colors flex items-center gap-1 shrink-0"
+                                    className={`text-xs px-2 py-1 rounded border transition-colors flex items-center gap-1 shrink-0 ${
+                                      isSelected && selectedAction === 'edit'
+                                        ? 'bg-amber-200 text-amber-900 border-amber-400'
+                                        : 'bg-amber-100 text-amber-800 border-amber-300 hover:bg-amber-200'
+                                    }`}
+                                  >
+                                    <span>✏️ Edit</span>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setSelectedRepo(repo);
+                                      setSelectedAction('close');
+                                    }}
+                                    className={`text-xs px-2 py-1 rounded border transition-colors flex items-center gap-1 shrink-0 ${
+                                      isSelected && selectedAction === 'close'
+                                        ? 'bg-red-200 text-red-900 border-red-400'
+                                        : 'bg-red-100 text-red-800 border-red-300 hover:bg-red-200'
+                                    }`}
                                     title="Close this wishlist"
                                   >
-                                    🗑️ Close
+                                    <span>🗑️ Close</span>
                                   </button>
                                 </>
+                              ) : (
+                                <span className="text-xs px-2 py-1 rounded border bg-green-100 text-green-800 border-green-300 flex items-center gap-1 shrink-0">
+                                  <span>✨ Create Wishlist</span>
+                                </span>
                               )}
                             </div>
                           </div>
@@ -833,26 +765,63 @@ ${wishlistData.additionalNotes || 'None provided'}
                           </div>
                         </div>
                       </div>
-                    </button>
+                    </div>
                   );
                 })}
               </div>
               
-              {selectedRepo && (
+              {selectedRepo && selectedAction && (
                 <button
                   onClick={async () => {
                     const hasExisting = selectedRepo && existingWishlists[selectedRepo.html_url];
-                    if (hasExisting) {
-                      await loadExistingWishlistData(hasExisting.issueNumber);
-                    } else {
+                    
+                    if (selectedAction === 'close') {
+                      // Handle close action
+                      if (hasExisting) {
+                        setExistingIssueNumber(hasExisting.issueNumber);
+                        await handleCloseWishlist();
+                      }
+                    } else if (selectedAction === 'edit') {
+                      // Handle edit action
+                      if (hasExisting) {
+                        setLoading(true);
+                        setError(''); // Clear any previous errors
+                        // Set editing state FIRST before loading data
+                        setIsEditingExisting(true);
+                        setExistingIssueNumber(hasExisting.issueNumber);
+                        console.log('Set editing mode for issue #', hasExisting.issueNumber);
+                        const success = await loadExistingWishlistData(hasExisting.issueNumber);
+                        console.log('Wishlist data loaded, success:', success);
+                        setLoading(false);
+                        // Only navigate if data loaded successfully
+                        if (success) {
+                          setCurrentStep('wishlist');
+                        } else {
+                          setError('Failed to load wishlist data. Please try again.');
+                        }
+                      }
+                    } else if (selectedAction === 'create') {
+                      // Handle create action
                       setIsEditingExisting(false);
                       setExistingIssueNumber(null);
+                      setCurrentStep('wishlist');
                     }
-                    setCurrentStep('repo');
                   }}
-                  className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+                  disabled={loading}
+                  className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
-                  {selectedRepo && existingWishlists[selectedRepo.html_url] ? 'Edit Existing Wishlist' : 'Continue with Repository'}
+                  {loading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                      Processing...
+                    </span>
+                  ) : selectedAction === 'close' ? (
+                    'Continue to Close Wishlist'
+                  ) : selectedAction === 'edit' ? (
+                    'Continue to Edit Wishlist'
+                  ) : (
+                    'Continue with Repository'
+                  )}
                 </button>
               )}
             </div>
@@ -944,10 +913,17 @@ ${wishlistData.additionalNotes || 'None provided'}
               
               <div className="flex space-x-3">
                 <button
-                  onClick={proceedToWishlist}
+                  onClick={() => {
+                    console.log('=== REPO CONFIRMATION PAGE ===');
+                    console.log('isEditingExisting:', isEditingExisting);
+                    console.log('existingIssueNumber:', existingIssueNumber);
+                    console.log('wishlistData:', wishlistData);
+                    console.log('=============================');
+                    proceedToWishlist();
+                  }}
                   className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700"
                 >
-                  {isEditingExisting ? 'Update Wishlist' : 'Create Wishlist'}
+                  {isEditingExisting ? '✏️ Update Wishlist' : '🚀 Create Wishlist'}
                 </button>
                 <button
                   onClick={() => {
@@ -988,6 +964,13 @@ ${wishlistData.additionalNotes || 'None provided'}
 
   // Step 3: Wishlist Creation Form
   if (currentStep === 'wishlist') {
+    // Debug: Log current state when rendering wishlist form
+    console.log('=== RENDERING WISHLIST FORM ===');
+    console.log('isEditingExisting:', isEditingExisting);
+    console.log('wishlistData:', wishlistData);
+    console.log('selectedServices:', wishlistData.selectedServices);
+    console.log('================================');
+    
     // Show success state if wishlist was created
     if (success) {
       return (
@@ -1110,25 +1093,14 @@ ${wishlistData.additionalNotes || 'None provided'}
           {/* Edit Mode Header */}
           {isEditingExisting && (
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl">✏️</span>
-                  <div>
-                    <h2 className="text-lg font-semibold text-blue-900">Editing Existing Wishlist</h2>
-                    <p className="text-sm text-blue-700">
-                      You're updating wishlist #{existingIssueNumber}. All fields below are pre-filled with current values.
-                    </p>
-                  </div>
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">✏️</span>
+                <div>
+                  <h2 className="text-lg font-semibold text-blue-900">Editing Existing Wishlist</h2>
+                  <p className="text-sm text-blue-700">
+                    You're updating wishlist #{existingIssueNumber}. All fields below are pre-filled with current values.
+                  </p>
                 </div>
-                <button
-                  type="button"
-                  onClick={handleCloseWishlist}
-                  disabled={loading}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-sm font-medium whitespace-nowrap"
-                  title="Close this wishlist"
-                >
-                  🗑️ Close Wishlist
-                </button>
               </div>
             </div>
           )}

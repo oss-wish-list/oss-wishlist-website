@@ -77,7 +77,11 @@ export const POST: APIRoute = async ({ request }) => {
         resources: resources,
         additionalContext: formData.description + 
           (formData.additionalNotes ? '\n\n' + formData.additionalNotes : ''),
-        wantsFundingYml: formData.createFundingPR === true
+        wantsFundingYml: formData.createFundingPR === true,
+        timeline: formData.timeline,
+        organizationType: formData.organizationType,
+        organizationName: formData.organizationName,
+        additionalNotes: formData.additionalNotes
       });
     }
 
@@ -133,8 +137,15 @@ ${finalIssueBody}
 
       const issue = await issueResponse.json();
       
-      // Invalidate cache after update (trigger background refresh)
-      fetch(`${new URL(request.url).origin}/api/wishlists?refresh=true`).catch(() => {});
+      // Cache the updated wishlist and refresh the main cache
+      const origin = new URL(request.url).origin;
+      const basePath = import.meta.env.BASE_URL || '';
+      
+      // Cache this specific wishlist
+      fetch(`${origin}${basePath}/api/cache-wishlist?issueNumber=${issueNumber}`).catch(() => {});
+      
+      // Refresh the main cache
+      fetch(`${origin}${basePath}/api/wishlists?refresh=true`).catch(() => {});
       
       return jsonSuccess({
         updated: true,
@@ -178,8 +189,15 @@ ${finalIssueBody}
 
     const issue = await response.json();
     
-    // Invalidate cache after creation (trigger background refresh)
-    fetch(`${new URL(request.url).origin}/api/wishlists?refresh=true`).catch(() => {});
+    // Cache the individual wishlist and refresh the all-wishlists cache
+    const origin = new URL(request.url).origin;
+    const basePath = import.meta.env.BASE_URL || '';
+    
+    // Cache this specific wishlist
+    fetch(`${origin}${basePath}/api/cache-wishlist?issueNumber=${issue.number}`).catch(() => {});
+    
+    // Invalidate and refresh the main cache
+    fetch(`${origin}${basePath}/api/wishlists?refresh=true`).catch(() => {});
     
     return jsonSuccess({
       issue: {

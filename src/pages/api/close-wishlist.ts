@@ -132,6 +132,16 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
     const closedIssue = await closeResponse.json();
 
+    // Refresh the cache after closing
+    const origin = new URL(request.url).origin;
+    const basePath = import.meta.env.BASE_URL || '';
+    
+    // Remove the individual wishlist cache (it's now closed)
+    fetch(`${origin}${basePath}/api/cache-wishlist?issueNumber=${issueNumber}`).catch(() => {});
+    
+    // Refresh the main cache
+    fetch(`${origin}${basePath}/api/wishlists?refresh=true`).catch(() => {});
+
     return new Response(JSON.stringify({
       success: true,
       message: 'Wishlist closed successfully',

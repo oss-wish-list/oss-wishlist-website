@@ -22,14 +22,15 @@ const servicesData = services.map(service => ({
 
 <Layout title="Services for Open Source Maintainers - OSS Wishlist" description="Practitioner services to help open source maintainers scale projects, build communities, and create sustainable funding.">
   <!-- Hero Section -->
-  <section class="bg-gray-50 py-12">
+  <section class="bg-gray-50 py-12" id="hero-section">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="max-w-4xl mx-auto text-center">
-        <h1 class="text-5xl font-bold text-gray-900 mb-4">
-          Create Your <span class="text-gray-600">Project Wishlist</span>
+        <h1 class="text-5xl font-bold text-gray-900 mb-4" id="page-title">
+          <span id="title-action">Create Your</span> <span class="text-gray-600">Project Wishlist</span>
         </h1>
-        <p class="text-gray-600 text-base">
+        <p class="text-gray-600 text-base" id="page-description">
           Choose from the provided list of GitHub repositories associated with your account or provide a different project URL. You may only create one wishlist per project.
+          This will create a public issue in the <a href="https://github.com/oss-wishlist/wishlists/issues" target="_new">GitHub wishlists repository</a>. Private wishes are not yet available.
         </p>
       </div>
     </div>

@@ -5,8 +5,9 @@ import Layout from '../components/Layout.astro';
 import AuthenticatedForm from '../components/AuthenticatedForm.tsx';
 import { getCollection } from 'astro:content';
 
-// Get all services from the catalog
-const services = await getCollection('services');
+// Get all services from the catalog (exclude resources)
+const allServices = await getCollection('services');
+const services = allServices.filter(s => s.data.type === 'service');
 const serviceCategories = [...new Set(services.map(s => s.data.service_category || 'Other'))].sort();
 ---
 
@@ -16,16 +17,8 @@ const serviceCategories = [...new Set(services.map(s => s.data.service_category 
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Header -->
       <div class="text-center mb-12">
-        <div class="mb-4">
-          <a 
-            href={`${basePath}/practitioners`}
-            class="text-gray-600 hover:text-gray-700 font-medium text-sm"
-          >
-            ← Back to Practitioners
-          </a>
-        </div>
         <h1 class="text-5xl font-bold text-gray-900 mb-6">
-          Become an <span class="text-gray-600">OSS Practitioner</span>
+          Sign up as an <span class="text-gray-600">Open Source  Practitioner</span>
         </h1>
         <p class="text-xl text-gray-600 max-w-3xl mx-auto">
           Join our community of verified practitioners and help open source projects thrive. 
@@ -35,10 +28,10 @@ const serviceCategories = [...new Set(services.map(s => s.data.service_category 
 
       <!-- Benefits Section -->
       <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-8 mb-12">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Why Join Our Practitioner Network?</h2>
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Why Join Our Practitioner Community?</h2>
         <div class="grid md:grid-cols-3 gap-6">
           <div class="text-center">
-            <h3 class="font-semibold text-gray-900 mb-2">Get Hired</h3>
+            <h3 class="font-semibold text-gray-900 mb-2">Connect with opportunity</h3>
             <p class="text-sm text-gray-700">Connect with projects that need your specific skills and get paid for your expertise.</p>
           </div>
           <div class="text-center">
@@ -47,7 +40,7 @@ const serviceCategories = [...new Set(services.map(s => s.data.service_category 
           </div>
           <div class="text-center">
             <h3 class="font-semibold text-gray-900 mb-2">Give Back</h3>
-            <p class="text-sm text-gray-700">Help open source projects succeed and contribute to the ecosystem's growth.</p>
+            <p class="text-sm text-gray-700">Help open source projects overcome challenges, and  improve the sustainability of the ecosystem</p>
           </div>
         </div>
       </div>
@@ -313,29 +306,6 @@ const serviceCategories = [...new Set(services.map(s => s.data.service_category 
         </div>
       </form>
     </div>
-
-    <!-- What Happens Next -->
-    <div class="mt-12 bg-gray-50 rounded-lg p-6">
-      <h3 class="text-lg font-semibold text-gray-900 mb-3">What Happens Next?</h3>
-      <div class="space-y-2 text-gray-700">
-        <div class="flex items-start">
-          <span class="text-gray-600 mr-2">1.</span>
-          <span>We review your application within 5-7 business days</span>
-        </div>
-        <div class="flex items-start">
-          <span class="text-gray-600 mr-2">2.</span>
-          <span>If approved, we'll create your practitioner profile and verify your expertise</span>
-        </div>
-        <div class="flex items-start">
-          <span class="text-gray-600 mr-2">3.</span>
-          <span>You'll start receiving opportunities to help open source projects</span>
-        </div>
-        <div class="flex items-start">
-          <span class="text-gray-600 mr-2">4.</span>
-          <span>Get connected with projects that match your skills and interests</span>
-        </div>
-      </div>
-    </div>
   </div>
 
   <script>
@@ -373,54 +343,43 @@ const serviceCategories = [...new Set(services.map(s => s.data.service_category 
       data.specialties = specialties;
       
       try {
-        // For now, create a GitHub issue with the application
-        const issueBody = `
-# Practitioner Application
-
-**Name:** ${data.fullName}
-**Email:** ${data.email}
-**Title:** ${data.title}
-**Company:** ${data.company}
-**Location:** ${data.location}
-**Experience:** ${data.experience} years
-
-**Specialties:** ${specialties.join(', ')}
-${data.otherSpecialties ? `**Other Specialties:** ${data.otherSpecialties}` : ''}
-
-**Bio:** ${data.bio}
-
-**GitHub:** ${data.github}
-**LinkedIn:** ${data.linkedin}
-**Mastodon:** ${data.mastodon}
-**Website:** ${data.website}
-
-**Notable Projects:** ${data.projects}
-**Availability:** ${data.availability}
-**Pro Bono:** ${data.proBono ? 'Yes' : 'No'}
-${data.proBono && data.proBonoCapacity ? `**Pro Bono Capacity:** ${data.proBonoCapacity} contracts per month` : ''}
-${data.proBono && data.proBonoCriteriaText ? `**Pro Bono Criteria:** ${data.proBonoCriteriaText}` : ''}
-
-**Additional Info:** ${data.additionalInfo}
-        `;
-
-        const response = await fetch('/oss-wishlist-website/api/repositories', {
+        // Submit practitioner application via API (sends email to admin)
+        const response = await fetch('/oss-wishlist-website/api/submit-practitioner', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            title: `Practitioner Application: ${data.fullName}`,
-            body: issueBody,
-            labels: ['practitioner-application', 'pending-review']
+            fullName: data.fullName,
+            email: data.email,
+            title: data.title,
+            company: data.company,
+            location: data.location,
+            experience: data.experience,
+            specialties: specialties,
+            otherSpecialties: data.otherSpecialties,
+            bio: data.bio,
+            github: data.github,
+            linkedin: data.linkedin,
+            mastodon: data.mastodon,
+            website: data.website,
+            projects: data.projects,
+            availability: data.availability,
+            proBono: data.proBono,
+            proBonoCapacity: data.proBonoCapacity,
+            proBonoCriteriaText: data.proBonoCriteriaText,
+            additionalInfo: data.additionalInfo
           })
         });
 
-        if (response.ok) {
+        const result = await response.json();
+
+        if (response.ok && result.success) {
           // Show success message
           alert('Application submitted successfully! We\'ll review it and get back to you within 5-7 business days.');
           this.reset();
         } else {
-          throw new Error('Failed to submit application');
+          throw new Error(result.error || 'Failed to submit application');
         }
       } catch (error) {
         console.error('Error submitting application:', error);

@@ -4,6 +4,7 @@ description: "Develop comprehensive community moderation policies and incident r
 type: "service"
 service_type: "consulting"
 estimated_hours: "10-15 hours"
+flat_rate: "$5,000 USD"
 tags: ["governance", "community"]
 featured: true
 prerequisites: "Active project community with moderation needs"

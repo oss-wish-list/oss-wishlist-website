@@ -275,25 +275,25 @@ if (issueNumber && GITHUB_TOKEN) {
                   type="text" 
                   name="custom-practitioner-name" 
                   placeholder="Practitioner name and contact information"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 mb-4"
                 />
+                
+                <!-- Process Agreement (only for custom practitioner) -->
+                <div class="bg-blue-50 border border-blue-200 p-4 rounded-md">
+                  <div class="flex items-start">
+                    <input 
+                      type="checkbox" 
+                      id="process-agreement" 
+                      name="process-agreement" 
+                      class="mt-1 mr-3"
+                      required
+                    />
+                    <label for="process-agreement" class="text-sm text-gray-700">
+                      <strong>Process Agreement:</strong> I understand and agree to follow the OSS Wishlist process for fulfilling and reporting on wishes. This includes regular progress updates, adherence to project timelines, and completion reports upon project delivery.
+                    </label>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-
-          <!-- Process Agreement -->
-          <div class="bg-gray-50 p-4 rounded-md">
-            <div class="flex items-start">
-              <input 
-                type="checkbox" 
-                id="process-agreement" 
-                name="process-agreement" 
-                class="mt-1 mr-3"
-                required
-              />
-              <label for="process-agreement" class="text-sm text-gray-700">
-                <strong>Process Agreement:</strong> If I am providing my own practitioner, I understand and agree to follow the OSS Wishlist process for fulfilling and reporting on wishes. This includes regular progress updates, adherence to project timelines, and completion reports upon project delivery.
-              </label>
             </div>
           </div>
 
@@ -394,9 +394,7 @@ if (issueNumber && GITHUB_TOKEN) {
         bio: practitioner.data.bio,
         specialties: practitioner.data.specialties || [],
         location: practitioner.data.location || 'Not specified',
-        languages: practitioner.data.languages || [],
-        githubSponsors: practitioner.data.github_sponsors || null,
-        sponsorTiers: practitioner.data.sponsor_tiers || {}
+        languages: practitioner.data.languages || []
       };
       return acc;
     }, {})
@@ -411,18 +409,22 @@ if (issueNumber && GITHUB_TOKEN) {
     const practitionerDetails = document.getElementById('practitioner-details');
 
     function togglePractitionerFields() {
+      const processAgreement = document.getElementById('process-agreement');
+      
       if (selectPractitionerRadio.checked) {
         practitionerDropdown.style.display = 'block';
         customPractitioner.style.display = 'none';
         practitionerInfo.style.display = 'none';
         document.querySelector('select[name="selected-practitioner"]').required = true;
         document.querySelector('input[name="custom-practitioner-name"]').required = false;
+        processAgreement.required = false;
       } else if (providePractitionerRadio.checked) {
         practitionerDropdown.style.display = 'none';
         customPractitioner.style.display = 'block';
         practitionerInfo.style.display = 'none';
         document.querySelector('select[name="selected-practitioner"]').required = false;
         document.querySelector('input[name="custom-practitioner-name"]').required = true;
+        processAgreement.required = true;
       }
     }
 
@@ -442,21 +444,6 @@ if (issueNumber && GITHUB_TOKEN) {
                 <span><strong>Location:</strong> ${practitioner.location}</span>
                 <span><strong>Languages:</strong> ${practitioner.languages.join(', ')}</span>
               </div>
-              ${practitioner.githubSponsors ? `
-                <div class="mt-3 pt-3 border-t border-gray-200">
-                  <p class="text-xs text-gray-600 mb-2">
-                    💰 <strong>GitHub Sponsors:</strong> 
-                    <a href="https://github.com/sponsors/${practitioner.githubSponsors}" target="_blank" class="text-blue-600 hover:underline">
-                      @${practitioner.githubSponsors}
-                    </a>
-                  </p>
-                  <div id="pricing-info" class="text-xs bg-blue-50 p-2 rounded"></div>
-                </div>
-              ` : `
-                <div class="mt-3 pt-3 border-t border-gray-200">
-                  <p class="text-xs text-gray-500 italic">Pricing not yet configured. Contact practitioner for rates.</p>
-                </div>
-              `}
             </div>
           </div>
         `;
@@ -466,75 +453,6 @@ if (issueNumber && GITHUB_TOKEN) {
         practitionerInfo.style.display = 'none';
       }
     }
-
-    // Calculate and display pricing based on selected services
-    function updatePricing() {
-      const selectedPractitioner = practitionerSelect.value;
-      const pricingInfo = document.getElementById('pricing-info');
-      
-      if (!selectedPractitioner || !practitionerData[selectedPractitioner] || !pricingInfo) {
-        return;
-      }
-
-      const practitioner = practitionerData[selectedPractitioner];
-      
-      // If practitioner has no GitHub Sponsors or no tiers configured
-      if (!practitioner.githubSponsors || !practitioner.sponsorTiers || Object.keys(practitioner.sponsorTiers).length === 0) {
-        pricingInfo.innerHTML = '<p class="text-gray-500">Pricing not yet configured. Contact practitioner for custom rates.</p>';
-        return;
-      }
-
-      const checkedServices = Array.from(document.querySelectorAll('input[name="funded-services"]:checked'))
-        .map(cb => cb.value);
-
-      if (checkedServices.length === 0) {
-        pricingInfo.innerHTML = '<p class="text-gray-500">Select services to see pricing</p>';
-        return;
-      }
-
-      let totalCost = 0;
-      let pricingDetails = [];
-      let hasUnpriced = false;
-
-      checkedServices.forEach(service => {
-        if (practitioner.sponsorTiers && practitioner.sponsorTiers[service]) {
-          const price = practitioner.sponsorTiers[service];
-          totalCost += price;
-          pricingDetails.push(`<div class="flex justify-between">
-            <span>${service}:</span>
-            <span class="font-medium">$${price.toLocaleString()}</span>
-          </div>`);
-        } else {
-          hasUnpriced = true;
-          pricingDetails.push(`<div class="flex justify-between">
-            <span>${service}:</span>
-            <span class="text-gray-500 italic">Custom pricing</span>
-          </div>`);
-        }
-      });
-
-      let html = '<div class="space-y-1">' + pricingDetails.join('') + '</div>';
-      
-      if (totalCost > 0) {
-        html += `<div class="mt-2 pt-2 border-t border-blue-200 flex justify-between font-bold text-blue-900">
-          <span>Total (one-time):</span>
-          <span>$${totalCost.toLocaleString()}</span>
-        </div>`;
-      }
-
-      if (hasUnpriced) {
-        html += '<p class="mt-2 text-xs text-gray-600 italic">Some services require custom pricing - contact practitioner for details</p>';
-      }
-
-      pricingInfo.innerHTML = html;
-    }
-
-    // Update pricing when services are selected/deselected
-    document.addEventListener('change', (e) => {
-      if (e.target.name === 'funded-services') {
-        updatePricing();
-      }
-    });
 
     selectPractitionerRadio.addEventListener('change', togglePractitionerFields);
     providePractitionerRadio.addEventListener('change', togglePractitionerFields);

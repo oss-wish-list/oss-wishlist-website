@@ -4,6 +4,7 @@ description: "Establish trusted project governance structure, contributor guidel
 type: "service"
 service_type: "consulting"
 estimated_hours: "40-60 hours"
+flat_rate: "$7,500 USD"
 tags: ["community", "governance"]
 featured: true
 prerequisites: "Active open source project needing governance structure for decisition making, and things like fund distribution"

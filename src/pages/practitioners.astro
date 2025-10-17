@@ -24,14 +24,6 @@ if (wishlistSlug) {
     <div class="text-center mb-12">
       {selectedWishlist ? (
         <>
-          <div class="mb-4">
-            <a 
-              href={`${basePath}/wishlists`}
-              class="text-gray-600 hover:text-gray-700 font-medium text-sm"
-            >
-              ← Back to Wishlists
-            </a>
-          </div>
           <h1 class="text-5xl font-bold text-gray-900 mb-6">
             Practitioners for <span class="text-emerald-600">{projectName || selectedWishlist.data.project_name}</span>
           </h1>
@@ -44,8 +36,7 @@ if (wishlistSlug) {
         <>
           <h1 class="text-5xl font-bold text-gray-900 mb-6">Open Source <span class="text-emerald-600">Practitioners</span></h1>
           <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Connect with verified practitioners who can help bring your open source project to the next level. 
-            From security audits to community building, find the right expertise for your needs.
+           Open source practitioners are experienced subject matter experts in sustainability-critical areas. Through the 'Wishlist fulfillment' process, practitioners connect with maintainers and project communities to deliver outcomes defined by service requirements. Services are offered pro-bono or at predetermined flat rates. Learn more in our <a href={`${basePath}faq`}>FAQ</a>.
           </p>
           
           <!-- Apply to be a Practitioner CTA -->
@@ -53,7 +44,7 @@ if (wishlistSlug) {
             <div class="text-center">
               <h2 class="text-2xl font-bold text-gray-900 mb-2">Are You an Open Source <span class="text-emerald-600">Practitioner</span>?</h2>
               <p class="text-gray-700 mb-4">
-                Join our community of verified practitioners and help open source projects thrive. Get connected with projects that need your expertise.
+                Join our community of verified practitioners to help open source projects thrive. Questions? Please consult our FAQ.
               </p>
               <p class="text-sm text-gray-600 mb-4 italic">
                 Note: We only have room for 10 practitioners in this first launch, but will keep a waitlist for the next phase.
@@ -62,7 +53,7 @@ if (wishlistSlug) {
                 href="/oss-wishlist-website/apply-practitioner" 
                 class="bg-gray-700 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors inline-flex items-center"
               >
-                Apply to Become a Practitioner
+                Join as an Open Source Practitioner
               </a>
             </div>
           </div>
@@ -167,28 +158,7 @@ if (wishlistSlug) {
             </a>
           </div>
         </>
-      ) : (
-        <>
-          <h2 class="text-2xl font-bold text-gray-900 mb-4">Need Practitioner Help for Your Project?</h2>
-          <p class="text-gray-600 mb-6">
-            Browse project wishlists to see what expertise is in demand, or submit your own project needs.
-          </p>
-          <div class="flex justify-center space-x-4">
-            <a 
-              href={`${basePath}/wishlists`}
-              class="bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-800"
-            >
-              Browse Project Needs
-            </a>
-            <a 
-              href="/oss-wishlist-website/maintainers" 
-              class="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
-            >
-              Submit Your Project
-            </a>
-          </div>
-        </>
-      )}
+      ) : null}
     </div>
   </div>
 </Layout>

@@ -10,6 +10,11 @@ interface ParsedIssueForm {
   resources: string[];
   additionalContext?: string;
   wantsFundingYml: boolean;
+  // Optional form fields
+  timeline?: string;
+  organizationType?: 'individual' | 'company' | 'nonprofit' | 'foundation';
+  organizationName?: string;
+  additionalNotes?: string;
 }
 
 export function parseIssueForm(body: string): ParsedIssueForm {
@@ -88,6 +93,34 @@ export function parseIssueForm(body: string): ParsedIssueForm {
       case 'FUNDING.yml Setup':
         result.wantsFundingYml = content.includes('- [x]') || content.includes('- [X]');
         break;
+      
+      case 'Timeline':
+        if (content !== '_No response_') {
+          result.timeline = content;
+        }
+        break;
+      
+      case 'Organization Type':
+        const orgTypeMap: Record<string, 'individual' | 'company' | 'nonprofit' | 'foundation'> = {
+          'Individual maintainer': 'individual',
+          'Company': 'company',
+          'Nonprofit organization': 'nonprofit',
+          'Foundation': 'foundation'
+        };
+        result.organizationType = orgTypeMap[content] || 'individual';
+        break;
+      
+      case 'Organization Name':
+        if (content !== '_No response_') {
+          result.organizationName = content;
+        }
+        break;
+      
+      case 'Additional Notes':
+        if (content !== '_No response_') {
+          result.additionalNotes = content;
+        }
+        break;
     }
   }
 
@@ -104,6 +137,10 @@ export function formatIssueFormBody(data: {
   resources: string[];
   additionalContext?: string;
   wantsFundingYml?: boolean;
+  timeline?: string;
+  organizationType?: 'individual' | 'company' | 'nonprofit' | 'foundation';
+  organizationName?: string;
+  additionalNotes?: string;
 }): string {
   const urgencyDisplay: Record<string, string> = {
     'low': 'Low - Planning for future',
@@ -141,6 +178,28 @@ export function formatIssueFormBody(data: {
   
   if (data.additionalContext) {
     body += `### Additional Context\n\n${data.additionalContext}\n\n`;
+  }
+  
+  if (data.timeline) {
+    body += `### Timeline\n\n${data.timeline}\n\n`;
+  }
+  
+  if (data.organizationType) {
+    const orgTypeDisplay: Record<string, string> = {
+      'individual': 'Individual maintainer',
+      'company': 'Company',
+      'nonprofit': 'Nonprofit organization',
+      'foundation': 'Foundation'
+    };
+    body += `### Organization Type\n\n${orgTypeDisplay[data.organizationType]}\n\n`;
+  }
+  
+  if (data.organizationName) {
+    body += `### Organization Name\n\n${data.organizationName}\n\n`;
+  }
+  
+  if (data.additionalNotes) {
+    body += `### Additional Notes\n\n${data.additionalNotes}\n\n`;
   }
   
   if (data.wantsFundingYml) {

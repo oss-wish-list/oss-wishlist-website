@@ -64,15 +64,44 @@ const logoUrl = `${basePath}logo.png`;
                 aria-labelledby="wishlists-dropdown-button"
               >
                 <div class="py-1" role="none">
-                  <a href={`${basePath}maintainers`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Create or edit a wishlist</a>
+                  <a href={`${basePath}maintainers`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Your wishlists</a>
                   <a href={`${basePath}wishlists`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">View wishlists</a>
                 </div>
               </div>
             </div>
             
             <a href={`${basePath}catalog`} class="text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded px-2 py-1 min-h-[44px] flex items-center">Service Catalog</a>
-            <a href={`${basePath}practitioners`} class="text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded px-2 py-1 min-h-[44px] flex items-center">Our Practitioners</a>
-            <a href={`${basePath}ecosystem-guardians`} class="text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded px-2 py-1 min-h-[44px] flex items-center">Ecosystem Sponsors</a>
+            
+            <!-- Practitioners Dropdown -->
+            <div class="relative" id="practitioners-dropdown">
+              <button 
+                class="text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded px-2 py-1 flex items-center space-x-1 min-h-[44px]"
+                id="practitioners-dropdown-button"
+                aria-expanded="false"
+                aria-haspopup="true"
+              >
+                <span>Practitioners</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </button>
+              
+              <!-- Dropdown Menu -->
+              <div 
+                id="practitioners-menu"
+                class="absolute left-0 mt-2 w-56 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none hidden z-50"
+                role="menu"
+                aria-orientation="vertical"
+                aria-labelledby="practitioners-dropdown-button"
+              >
+                <div class="py-1" role="none">
+                  <a href={`${basePath}practitioners`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Practitioner Community</a>
+                  <a href={`${basePath}apply-practitioner`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Become a Practitioner</a>
+                </div>
+              </div>
+            </div>
+            
+            <a href={`${basePath}ecosystem-guardians`} class="text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded px-2 py-1 min-h-[44px] flex items-center">Wishlist Sponsors</a>
             
             <!-- About Dropdown -->
             <div class="relative" id="about-dropdown">
@@ -124,11 +153,12 @@ const logoUrl = `${basePath}logo.png`;
         <!-- Mobile Navigation Menu -->
         <div id="mobile-menu" class="hidden md:hidden pb-4" role="navigation" aria-label="Mobile navigation">
           <div class="space-y-1">
-            <a href={`${basePath}maintainers`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Create or edit a wishlist</a>
+            <a href={`${basePath}maintainers`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Your wishlists</a>
             <a href={`${basePath}wishlists`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">View wishlists</a>
             <a href={`${basePath}catalog`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Service Catalog</a>
-            <a href={`${basePath}practitioners`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Our Practitioners</a>
-            <a href={`${basePath}ecosystem-guardians`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Ecosystem Sponsors</a>
+            <a href={`${basePath}practitioners`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Practitioner Community</a>
+            <a href={`${basePath}apply-practitioner`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Become a Practitioner</a>
+            <a href={`${basePath}ecosystem-guardians`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Wishlist Sponsors</a>
             <a href={`${basePath}how-it-works`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">How it works</a>
             <a href={`${basePath}faq`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">FAQ</a>
           </div>
@@ -167,6 +197,16 @@ const logoUrl = `${basePath}logo.png`;
                 <path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zM8.834 6.313a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528 2.528 0 0 1 2.522-2.521h6.312zM18.956 8.834a2.528 2.528 0 0 1 2.522-2.521A2.528 2.528 0 0 1 24 8.834a2.528 2.528 0 0 1-2.522 2.521h-2.522V8.834zM17.688 8.834a2.528 2.528 0 0 1-2.523 2.521 2.527 2.527 0 0 1-2.52-2.521V2.522A2.527 2.527 0 0 1 15.165 0a2.528 2.528 0 0 1 2.523 2.522v6.312zM15.165 18.956a2.528 2.528 0 0 1 2.523 2.522A2.528 2.528 0 0 1 15.165 24a2.527 2.527 0 0 1-2.52-2.522v-2.522h2.52zM15.165 17.688a2.527 2.527 0 0 1-2.52-2.523 2.526 2.526 0 0 1 2.52-2.52h6.313A2.527 2.527 0 0 1 24 15.165a2.528 2.528 0 0 1-2.522 2.523h-6.313z"/>
               </svg>
               Slack
+            </a>
+            <a 
+              href={`${basePath}CODE_OF_CONDUCT.md`}
+              class="text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-gray-900 rounded px-2 py-1 flex items-center min-h-[44px] transition-colors"
+              aria-label="Read our Code of Conduct"
+            >
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              Code of Conduct
             </a>
           </div>
         </div>
@@ -278,7 +318,8 @@ const logoUrl = `${basePath}logo.png`;
       // Click event
       aboutDropdownButton.addEventListener('click', function(e) {
         e.preventDefault();
-        hideWishlistsDropdown(); // Close other dropdown
+        hideWishlistsDropdown(); // Close other dropdowns
+        hidePractitionersDropdown();
         toggleAboutDropdown();
       });
       
@@ -351,7 +392,8 @@ const logoUrl = `${basePath}logo.png`;
       // Click event
       wishlistsDropdownButton.addEventListener('click', function(e) {
         e.preventDefault();
-        hideAboutDropdown(); // Close other dropdown
+        hideAboutDropdown(); // Close other dropdowns
+        hidePractitionersDropdown();
         toggleWishlistsDropdown();
       });
       
@@ -392,6 +434,71 @@ const logoUrl = `${basePath}logo.png`;
       });
     }
     
+    // Practitioners dropdown functionality
+    const practitionersDropdownButton = document.getElementById('practitioners-dropdown-button');
+    const practitionersMenu = document.getElementById('practitioners-menu');
+    const practitionersDropdown = document.getElementById('practitioners-dropdown');
+    
+    if (practitionersDropdownButton && practitionersMenu && practitionersDropdown) {
+      function togglePractitionersDropdown() {
+        const icon = practitionersDropdownButton.querySelector('svg');
+        const isExpanded = practitionersMenu.classList.contains('hidden');
+        
+        if (isExpanded) {
+          practitionersMenu.classList.remove('hidden');
+          practitionersDropdownButton.setAttribute('aria-expanded', 'true');
+          if (icon) icon.style.transform = 'rotate(180deg)';
+          const firstItem = practitionersMenu.querySelector('a');
+          if (firstItem) firstItem.focus();
+        } else {
+          practitionersMenu.classList.add('hidden');
+          practitionersDropdownButton.setAttribute('aria-expanded', 'false');
+          if (icon) icon.style.transform = 'rotate(0deg)';
+        }
+      }
+      
+      practitionersDropdownButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        hideAboutDropdown();
+        hideWishlistsDropdown();
+        togglePractitionersDropdown();
+      });
+      
+      practitionersDropdownButton.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          togglePractitionersDropdown();
+        } else if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          if (practitionersMenu.classList.contains('hidden')) {
+            togglePractitionersDropdown();
+          }
+        }
+      });
+      
+      const practitionersMenuItems = practitionersMenu.querySelectorAll('a');
+      practitionersMenuItems.forEach((item, index) => {
+        item.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape') {
+            e.preventDefault();
+            hidePractitionersDropdown();
+            practitionersDropdownButton.focus();
+          } else if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            const nextItem = practitionersMenuItems[index + 1];
+            if (nextItem) nextItem.focus();
+          } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (index === 0) {
+              practitionersDropdownButton.focus();
+            } else {
+              practitionersMenuItems[index - 1].focus();
+            }
+          }
+        });
+      });
+    }
+    
     // Global functions for closing dropdowns
     function hideAboutDropdown() {
       if (aboutDropdownButton && aboutMenu) {
@@ -410,6 +517,15 @@ const logoUrl = `${basePath}logo.png`;
         if (icon) icon.style.transform = 'rotate(0deg)';
       }
     }
+    
+    function hidePractitionersDropdown() {
+      if (practitionersDropdownButton && practitionersMenu) {
+        const icon = practitionersDropdownButton.querySelector('svg');
+        practitionersMenu.classList.add('hidden');
+        practitionersDropdownButton.setAttribute('aria-expanded', 'false');
+        if (icon) icon.style.transform = 'rotate(0deg)';
+      }
+    }
 
     // Close dropdowns when clicking outside
     document.addEventListener('click', function(event) {
@@ -419,6 +535,9 @@ const logoUrl = `${basePath}logo.png`;
       if (wishlistsDropdown && !wishlistsDropdown.contains(event.target)) {
         hideWishlistsDropdown();
       }
+      if (practitionersDropdown && !practitionersDropdown.contains(event.target)) {
+        hidePractitionersDropdown();
+      }
     });
 
     // Close dropdowns and mobile menu when pressing Escape
@@ -426,6 +545,7 @@ const logoUrl = `${basePath}logo.png`;
       if (event.key === 'Escape') {
         hideAboutDropdown();
         hideWishlistsDropdown();
+        hidePractitionersDropdown();
         if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
           mobileMenu.classList.add('hidden');
           if (mobileMenuButton) {

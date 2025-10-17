@@ -4,6 +4,7 @@ description: "Comprehensive onboarding program to establish, vet and setup for s
 type: "service"
 service_type: "consulting"
 estimated_hours: "12-16 hours"
+flat_rate: "$3,000 USD"
 tags: ["community", "leadership"]
 featured: true
 prerequisites: "New or transitioning project leadership role"

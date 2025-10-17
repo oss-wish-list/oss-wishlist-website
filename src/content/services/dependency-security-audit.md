@@ -4,6 +4,7 @@ description: "Comprehensive security assessment, and implementation  of project 
 type: "service"
 service_type: "audit"
 estimated_hours: "40-60 hours"
+flat_rate: "$8,000 USD"
 tags: ["security"]
 featured: true
 available: false

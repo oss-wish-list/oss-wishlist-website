@@ -259,6 +259,11 @@ export const GET: APIRoute = async () => {
         },
         created_at: issue.created_at,
         updated_at: issue.updated_at,
+        // Optional fields
+        timeline: parsed.timeline,
+        organizationType: parsed.organizationType,
+        organizationName: parsed.organizationName,
+        additionalNotes: parsed.additionalNotes,
       };
     });
 

@@ -1,17 +1,11 @@
 ---
 title: "How will Sponsors know how their money is spent?"
 description: "Transparency and accountability measures for Sponsor investments"
-category: "For Ecosystem Sponsors"
+category: "For Wishlist Sponsors"
 order: 11
 ---
 
-We provide comprehensive transparency and accountability measures for Sponsor investments:e: "How will Guardians know how their money is spent?"
-description: "Transparency and accountability measures for Guardian investments"
-category: "For Ecosystem Guardians"
-order: 2
----
-
-We provide comprehensive transparency and accountability measures for Guardian investments:
+We provide comprehensive transparency and accountability measures for Sponsor investments:
 
 **Regular Reporting:**
 - **Progress Updates**: Bi-weekly status reports during active work

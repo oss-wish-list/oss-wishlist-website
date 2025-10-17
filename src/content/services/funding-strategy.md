@@ -4,6 +4,7 @@ description: "Develop sustainable funding strategies for your open source projec
 type: "service"
 service_type: "consulting"
 estimated_hours: "12-18 hours"
+flat_rate: "$3,500 USD"
 tags: ["funding"]
 featured: true
 available: false

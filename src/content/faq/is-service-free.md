@@ -5,4 +5,4 @@ category: "General"
 order: 3
 ---
 
-For maintainers, creating and managing wishlists is completely free. The platform is funded by Ecosystem Sponsors who sponsor the fulfillment of wishes, and practitioners are compensated for their work through these sponsorships.
+For maintainers, creating and managing wishlists is completely free. The platform is funded by Wishlist Sponsors who sponsor the fulfillment of wishes, and practitioners are compensated for their work through these sponsorships.

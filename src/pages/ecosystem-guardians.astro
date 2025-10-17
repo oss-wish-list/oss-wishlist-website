@@ -4,17 +4,17 @@ const basePath = getBasePath();
 import Layout from '../components/Layout.astro';
 import { getCollection } from 'astro:content';
 
-const allGuardians = await getCollection('guardians');
-const featuredGuardians = allGuardians.filter(guardian => guardian.data.featured);
+const guardians = await getCollection('guardians');
+const sortedGuardians = guardians.sort((a, b) => a.data.name.localeCompare(b.data.name));
 ---
 
-<Layout title="Ecosystem Sponsors - Open Source Wishlist" description="Organizations and individuals protecting and supporting the open source ecosystem">
+<Layout title="Wishlist Sponsors - Open Source Wishlist" description="Organizations and individuals protecting and supporting the open source ecosystem">
   <!-- Hero Section -->
   <section class="bg-gradient-to-br from-gray-100 to-gray-200 py-20">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="max-w-4xl mx-auto text-center">
         <h1 class="text-5xl font-bold text-gray-900 mb-6">
-          <span class="text-emerald-600">Ecosystem Sponsors</span>
+          <span class="text-emerald-600">Wishlist Sponsors</span>
         </h1>
         <p class="text-xl text-gray-600 mb-8">
           Meet the organizations, foundations and individuals protecting and nurturing the open source ecosystem. 
@@ -115,21 +115,9 @@ const featuredGuardians = allGuardians.filter(guardian => guardian.data.featured
         </p>
       </div>
 
-      <!-- Filter by Focus Area -->
-      <div class="flex flex-wrap justify-center gap-2 mb-8">
-        <button class="px-4 py-2 bg-gray-600 text-white rounded-lg text-sm font-medium">
-          All
-        </button>
-        {Array.from(new Set(allGuardians.flatMap(guardian => guardian.data.focus_areas))).map((area) => (
-          <button key={area} class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200">
-            {area}
-          </button>
-        ))}
-      </div>
-
       <!-- Sponsors Grid -->
       <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {allGuardians.map((guardian) => (
+        {sortedGuardians.map((guardian) => (
           <div key={guardian.slug} class="bg-white rounded-lg shadow-sm border p-6">
             <div class="flex items-start space-x-4 mb-4">
               {guardian.data.logo_url && (
