@@ -13,7 +13,7 @@ export default defineConfig({
   }),
   server: {
     port: 4324,
-    host: true
+    host: 'localhost' // Restrict to localhost in development for security
   },
   vite: {
     ssr: {

@@ -14,93 +14,12 @@ const sortedGuardians = guardians.sort((a, b) => a.data.name.localeCompare(b.dat
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="max-w-4xl mx-auto text-center">
         <h1 class="text-5xl font-bold text-gray-900 mb-6">
-          Wishlist <span class="text-gray-600">Sponsors</span>
+          Open Source Wishlist <span class="text-gray-600">Sponsors</span>
         </h1>
         <p class="text-xl text-gray-600 max-w-3xl mx-auto">
           Meet the organizations, foundations and individuals protecting and nurturing the open source ecosystem. 
           From security audits to funding programs, these sponsors help ensure OSS remains healthy and sustainable.
         </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Fund Specific Project Wishes Section -->
-  <section class="py-16 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-12">
-        <h2 class="text-3xl font-bold text-gray-900 mb-4">Fund Specific Project Wishes</h2>
-        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-          Browse real project needs and fund exactly what matters to your organization. 
-          Direct, transparent, immediate impact.
-        </p>
-      </div>
-      
-      <div class="grid md:grid-cols-2 gap-8 mb-12">
-        <div class="bg-white rounded-lg shadow-sm border p-8">
-          <h3 class="text-2xl font-bold text-gray-900 mb-4">How It Works</h3>
-          <div class="space-y-6">
-            <div class="flex items-start">
-              <div class="bg-gray-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-4 flex-shrink-0 mt-1">1</div>
-              <div>
-                <h4 class="font-semibold text-gray-900">Browse Project Wishes</h4>
-                <p class="text-gray-600">See real needs from maintainers - security audits, governance help, training</p>
-              </div>
-            </div>
-            <div class="flex items-start">
-              <div class="bg-gray-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-4 flex-shrink-0 mt-1">2</div>
-              <div>
-                <h4 class="font-semibold text-gray-900">Choose What to Fund</h4>
-                <p class="text-gray-600">Fund specific services that align with your priorities or dependencies</p>
-              </div>
-            </div>
-            <div class="flex items-start">
-              <div class="bg-gray-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-4 flex-shrink-0 mt-1">3</div>
-              <div>
-                <h4 class="font-semibold text-gray-900">Get Direct Updates</h4>
-                <p class="text-gray-600">Receive progress reports and deliverables from the work you funded</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-lg shadow-sm border p-8">
-          <h3 class="text-2xl font-bold text-gray-900 mb-4">Perfect For</h3>
-          <ul class="space-y-3">
-            <li class="flex items-center">
-              <svg class="w-5 h-5 text-gray-600 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-              </svg>
-              <span class="text-gray-700">One-time budget allocations</span>
-            </li>
-            <li class="flex items-center">
-              <svg class="w-5 h-5 text-gray-600 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-              </svg>
-              <span class="text-gray-700">Supporting dependencies you use</span>
-            </li>
-            <li class="flex items-center">
-              <svg class="w-5 h-5 text-gray-600 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-              </svg>
-              <span class="text-gray-700">Testing the waters with open source giving</span>
-            </li>
-            <li class="flex items-center">
-              <svg class="w-5 h-5 text-gray-600 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-              </svg>
-              <span class="text-gray-700">Teams with specific expertise to share</span>
-            </li>
-          </ul>
-        </div>
-      </div>
-      
-      <!-- CTA for browsing wishes -->
-      <div class="text-center bg-gray-50 rounded-lg shadow-sm border p-8">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">Ready to Fund Some Wishes?</h3>
-        <p class="text-gray-600 mb-6">Browse current project needs and choose what resonates with your mission</p>
-        <a href={`${basePath}wishlists`} class="inline-block bg-gray-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
-          Browse Project Wishes
-        </a>
       </div>
     </div>
   </section>

@@ -5,6 +5,9 @@ import Layout from '../components/Layout.astro';
 import AuthenticatedForm from '../components/AuthenticatedForm.tsx';
 import { getCollection } from 'astro:content';
 
+// Get user from session
+const user = Astro.locals.user;
+
 // Get all services from the catalog (exclude resources)
 const allServices = await getCollection('services');
 const services = allServices.filter(s => s.data.type === 'service');
@@ -12,7 +15,7 @@ const serviceCategories = [...new Set(services.map(s => s.data.service_category 
 ---
 
 <Layout title="Apply to be an Practitioner - OSS Wishlist" description="Join our community of verified open source practitioners. Help projects succeed while building your professional network.">
-  <AuthenticatedForm client:load formType="practitioner application">
+  <AuthenticatedForm client:load user={user} formType="practitioner application">
   <section class="py-16 bg-gray-50">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Header -->
