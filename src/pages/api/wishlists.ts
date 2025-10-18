@@ -243,6 +243,23 @@ export const GET: APIRoute = async () => {
       // Combine services and resources into wishes array
       const wishes = [...parsed.services, ...parsed.resources];
       
+      // Add dummy technologies for existing test wishlists if none exist
+      let technologies = parsed.technologies;
+      if (!technologies || technologies.length === 0) {
+        // Assign random dummy technologies for testing
+        const dummyTechSets = [
+          ['JavaScript', 'Node.js', 'React'],
+          ['Python', 'Django', 'PostgreSQL'],
+          ['Rust', 'WebAssembly'],
+          ['Go', 'Docker', 'Kubernetes'],
+          ['TypeScript', 'Vue', 'MongoDB'],
+          ['Java', 'Spring'],
+          ['Ruby', 'Rails', 'Redis'],
+          ['C++', 'CMake']
+        ];
+        technologies = dummyTechSets[issue.number % dummyTechSets.length];
+      }
+      
       return {
         id: issue.number,
         title: issue.title,
@@ -250,6 +267,7 @@ export const GET: APIRoute = async () => {
         projectTitle: parsed.project || issue.title,
         maintainerName: parsed.maintainer || issue.user.login,
         wishes: wishes,
+        technologies: technologies,
         urgency: parsed.urgency,
         status,
         labels: issue.labels,

@@ -48,6 +48,8 @@ export const wishlistFormDataSchema = z.object({
   
   timeline: createOptionalModeratedString(),
   
+  technologies: z.array(z.string()).optional(),
+  
   repositories: z.array(z.object({
     name: z.string(),
     url: z.string().url(),

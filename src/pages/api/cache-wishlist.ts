@@ -16,6 +16,7 @@ interface WishlistData {
   projectTitle: string;
   maintainerName: string;
   wishes: string[];
+  technologies?: string[];
   urgency: string;
   status: string;
   labels: Array<{ name: string; color: string }>;
@@ -111,6 +112,7 @@ async function fetchAndCacheWishlist(issueNumber: number): Promise<WishlistData 
       projectTitle: parsed.project,
       maintainerName: parsed.maintainer || issue.user?.login || 'Unknown',
       wishes: parsed.services,
+      technologies: parsed.technologies,
       urgency: parsed.urgency,
       status: issue.state === 'open' ? 'Open' : 'Closed',
       labels: issue.labels.map((label: any) => ({

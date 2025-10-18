@@ -54,37 +54,7 @@ const logoUrl = `${basePath}logo.png`;
             <div class="py-1" role="none">
               <a href={`${basePath}maintainers`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Manage Wishlists</a>
               <a href={`${basePath}practitioners`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Browse Practitioners</a>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Community Dropdown -->
-        <div class="relative" id="community-dropdown">
-          <button 
-            class="text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 rounded px-2 py-1 flex items-center space-x-1 min-h-[44px]"
-            aria-expanded="false"
-            aria-haspopup="true"
-            aria-label="Community menu"
-            id="community-dropdown-button"
-          >
-            <span>Community</span>
-            <svg class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-            </svg>
-          </button>
-          
-          <div 
-            id="community-menu"
-            class="absolute left-0 mt-2 w-64 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none hidden z-50"
-            role="menu"
-            aria-orientation="vertical"
-            aria-labelledby="community-dropdown-button"
-          >
-            <div class="py-1" role="none">
-              <a href="https://join.slack.com/t/opensourcewishlist/shared_invite/zt-3dvyh48xf-y6uqKHyd6Ur~WfkcawReuQ" target="_blank" rel="noopener noreferrer" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Join the Community (Slack)</a>
-              <a href={`${basePath}apply-practitioner`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Become a Practitioner</a>
-              <a href={`${basePath}practitioners`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Browse Practitioners</a>
-              <a href={`${basePath}CODE_OF_CONDUCT.md`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Code of Conduct</a>
+              <a href={`${basePath}browse-sponsors`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Browse Sponsors</a>
             </div>
           </div>
         </div>
@@ -114,7 +84,36 @@ const logoUrl = `${basePath}logo.png`;
             <div class="py-1" role="none">
               <a href={`${basePath}wishlists`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Browse Wishlists</a>
               <a href={`${basePath}ecosystem-guardians`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Sponsor Directory</a>
-              <a href={`${basePath}apply-sponsor`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Become a Sponsor</a>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Community Dropdown -->
+        <div class="relative" id="community-dropdown">
+          <button 
+            class="text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 rounded px-2 py-1 flex items-center space-x-1 min-h-[44px]"
+            aria-expanded="false"
+            aria-haspopup="true"
+            aria-label="Community menu"
+            id="community-dropdown-button"
+          >
+            <span>Community</span>
+            <svg class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+          
+          <div 
+            id="community-menu"
+            class="absolute left-0 mt-2 w-64 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none hidden z-50"
+            role="menu"
+            aria-orientation="vertical"
+            aria-labelledby="community-dropdown-button"
+          >
+            <div class="py-1" role="none">
+              <a href="https://join.slack.com/t/opensourcewishlist/shared_invite/zt-3dvyh48xf-y6uqKHyd6Ur~WfkcawReuQ" target="_blank" rel="noopener noreferrer" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Join the Community (Slack)</a>
+              <a href={`${basePath}apply-practitioner`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Become a Practitioner</a>
+              <a href={`${basePath}CODE_OF_CONDUCT.md`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Code of Conduct</a>
             </div>
           </div>
         </div>

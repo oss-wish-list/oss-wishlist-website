@@ -8,6 +8,7 @@ interface ParsedIssueForm {
   urgency: string;
   services: string[];
   resources: string[];
+  technologies?: string[];
   additionalContext?: string;
   wantsFundingYml: boolean;
   // Optional form fields
@@ -27,6 +28,13 @@ export function parseIssueForm(body: string): ParsedIssueForm {
     resources: [],
     wantsFundingYml: false
   };
+
+  // Parse technologies from anywhere in the body
+  // Look for "- **Technologies:** comma, separated, list"
+  const techMatch = body.match(/[-*]\s*\*\*Technologies:\*\*\s*(.+?)(?:\n|$)/);
+  if (techMatch) {
+    result.technologies = techMatch[1].split(',').map(t => t.trim()).filter(t => t);
+  }
 
   // Issue forms create sections with ### headers
   const sections = body.split('###').map(s => s.trim()).filter(Boolean);
@@ -141,6 +149,7 @@ export function formatIssueFormBody(data: {
   organizationType?: 'individual' | 'company' | 'nonprofit' | 'foundation';
   organizationName?: string;
   additionalNotes?: string;
+  technologies?: string[];
 }): string {
   const urgencyDisplay: Record<string, string> = {
     'low': 'Low - Planning for future',
@@ -154,6 +163,12 @@ export function formatIssueFormBody(data: {
   body += `### Project Name\n\n${data.project}\n\n`;
   body += `### Maintainer GitHub Username\n\n${data.maintainer}\n\n`;
   body += `### Project Repository\n\n${data.repository}\n\n`;
+  
+  // Add technologies section if provided
+  if (data.technologies && data.technologies.length > 0) {
+    body += `### Technologies\n\n${data.technologies.join(', ')}\n\n`;
+  }
+  
   body += `### Urgency Level\n\n${urgencyDisplay[data.urgency] || 'Medium - Needed within months'}\n\n`;
   
   body += `### Services Requested\n\n`;

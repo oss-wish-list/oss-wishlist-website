@@ -18,6 +18,9 @@ const servicesData = services.map(service => ({
   tags: service.data.tags,
   slug: service.slug
 }));
+
+// Get user from middleware
+const user = Astro.locals.user;
 ---
 
 <Layout title="Services for Open Source Maintainers - OSS Wishlist" description="Practitioner services to help open source maintainers scale projects, build communities, and create sustainable funding.">
@@ -39,8 +42,8 @@ const servicesData = services.map(service => ({
   <!-- Wishlist Form Section -->
   <section id="wishlist-form-section" class="py-4 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <!-- Wishlist Form Component -->
-      <AuthenticatedForm client:load>
+      <!-- Wishlist Form Component with Auth -->
+      <AuthenticatedForm client:load user={user}>
         <WishlistForm client:load services={servicesData} />
       </AuthenticatedForm>
     </div>

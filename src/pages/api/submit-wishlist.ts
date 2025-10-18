@@ -81,7 +81,8 @@ export const POST: APIRoute = async ({ request }) => {
         timeline: formData.timeline,
         organizationType: formData.organizationType,
         organizationName: formData.organizationName,
-        additionalNotes: formData.additionalNotes
+        additionalNotes: formData.additionalNotes,
+        technologies: formData.technologies
       });
     }
 

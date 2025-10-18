@@ -63,7 +63,7 @@ export function verifyState(receivedState: string, expectedState: string): boole
 /**
  * Generate the GitHub OAuth authorization URL
  */
-export function getGitHubAuthUrl(clientId: string, redirectUri: string, state: string): string {
+export function getGitHubAuthUrl(clientId: string, redirectUri: string, state: string, forceLogin: boolean = false): string {
   const params = new URLSearchParams({
     client_id: clientId,
     redirect_uri: redirectUri,
@@ -71,6 +71,11 @@ export function getGitHubAuthUrl(clientId: string, redirectUri: string, state: s
     state: state,
     response_type: 'code'
   });
+
+  // Add prompt=login to force re-authentication (useful for testing)
+  if (forceLogin) {
+    params.append('prompt', 'login');
+  }
 
   return `https://github.com/login/oauth/authorize?${params.toString()}`;
 }
@@ -149,6 +154,34 @@ export async function fetchUserRepositories(username: string): Promise<GitHubRep
   
   // Return all repositories (they're already filtered to ones the user owns)
   return repos;
+}
+
+/**
+ * Revoke a GitHub OAuth access token
+ */
+export async function revokeGitHubToken(
+  clientId: string,
+  clientSecret: string,
+  accessToken: string
+): Promise<boolean> {
+  try {
+    const response = await fetch(`https://api.github.com/applications/${clientId}/token`, {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/vnd.github+json',
+        'Authorization': `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString('base64')}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        access_token: accessToken
+      })
+    });
+
+    return response.status === 204; // 204 = successfully revoked
+  } catch (error) {
+    console.error('[Auth] Failed to revoke GitHub token:', error);
+    return false;
+  }
 }
 
 /**

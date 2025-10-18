@@ -10,13 +10,13 @@ const sortedGuardians = guardians.sort((a, b) => a.data.name.localeCompare(b.dat
 
 <Layout title="Wishlist Sponsors - Open Source Wishlist" description="Organizations and individuals protecting and supporting the open source ecosystem">
   <!-- Hero Section -->
-  <section class="bg-gradient-to-br from-gray-100 to-gray-200 py-20">
+  <section class="py-16 bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="max-w-4xl mx-auto text-center">
         <h1 class="text-5xl font-bold text-gray-900 mb-6">
-          <span class="text-gray-700">Wishlist Sponsors</span>
+          Wishlist <span class="text-gray-600">Sponsors</span>
         </h1>
-        <p class="text-xl text-gray-600 mb-8">
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
           Meet the organizations, foundations and individuals protecting and nurturing the open source ecosystem. 
           From security audits to funding programs, these sponsors help ensure OSS remains healthy and sustainable.
         </p>
@@ -36,56 +36,56 @@ const sortedGuardians = guardians.sort((a, b) => a.data.name.localeCompare(b.dat
       </div>
       
       <div class="grid md:grid-cols-2 gap-8 mb-12">
-        <div class="bg-gray-100 p-8 rounded-lg">
-          <h3 class="text-2xl font-bold text-gray-800 mb-4">How It Works</h3>
+        <div class="bg-white rounded-lg shadow-sm border p-8">
+          <h3 class="text-2xl font-bold text-gray-900 mb-4">How It Works</h3>
           <div class="space-y-6">
             <div class="flex items-start">
-              <div class="bg-gray-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-4 mt-1">1</div>
+              <div class="bg-gray-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-4 flex-shrink-0 mt-1">1</div>
               <div>
-                <h4 class="font-semibold text-gray-800">Browse Project Wishes</h4>
-                <p class="text-gray-700">See real needs from maintainers - security audits, governance help, training</p>
+                <h4 class="font-semibold text-gray-900">Browse Project Wishes</h4>
+                <p class="text-gray-600">See real needs from maintainers - security audits, governance help, training</p>
               </div>
             </div>
             <div class="flex items-start">
-              <div class="bg-gray-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-4 mt-1">2</div>
+              <div class="bg-gray-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-4 flex-shrink-0 mt-1">2</div>
               <div>
-                <h4 class="font-semibold text-gray-800">Choose What to Fund</h4>
-                <p class="text-gray-700">Fund specific services that align with your priorities or dependencies</p>
+                <h4 class="font-semibold text-gray-900">Choose What to Fund</h4>
+                <p class="text-gray-600">Fund specific services that align with your priorities or dependencies</p>
               </div>
             </div>
             <div class="flex items-start">
-              <div class="bg-gray-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-4 mt-1">3</div>
+              <div class="bg-gray-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-4 flex-shrink-0 mt-1">3</div>
               <div>
-                <h4 class="font-semibold text-gray-800">Get Direct Updates</h4>
-                <p class="text-gray-700">Receive progress reports and deliverables from the work you funded</p>
+                <h4 class="font-semibold text-gray-900">Get Direct Updates</h4>
+                <p class="text-gray-600">Receive progress reports and deliverables from the work you funded</p>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="bg-gray-200 p-8 rounded-lg">
-          <h3 class="text-2xl font-bold text-gray-800 mb-4">Perfect For</h3>
+        <div class="bg-white rounded-lg shadow-sm border p-8">
+          <h3 class="text-2xl font-bold text-gray-900 mb-4">Perfect For</h3>
           <ul class="space-y-3">
             <li class="flex items-center">
-              <svg class="w-5 h-5 text-gray-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="w-5 h-5 text-gray-600 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
               </svg>
               <span class="text-gray-700">One-time budget allocations</span>
             </li>
             <li class="flex items-center">
-              <svg class="w-5 h-5 text-gray-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="w-5 h-5 text-gray-600 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
               </svg>
               <span class="text-gray-700">Supporting dependencies you use</span>
             </li>
             <li class="flex items-center">
-              <svg class="w-5 h-5 text-gray-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="w-5 h-5 text-gray-600 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
               </svg>
               <span class="text-gray-700">Testing the waters with open source giving</span>
             </li>
             <li class="flex items-center">
-              <svg class="w-5 h-5 text-gray-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="w-5 h-5 text-gray-600 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
               </svg>
               <span class="text-gray-700">Teams with specific expertise to share</span>
@@ -95,10 +95,10 @@ const sortedGuardians = guardians.sort((a, b) => a.data.name.localeCompare(b.dat
       </div>
       
       <!-- CTA for browsing wishes -->
-      <div class="text-center bg-gray-50 p-8 rounded-lg">
+      <div class="text-center bg-gray-50 rounded-lg shadow-sm border p-8">
         <h3 class="text-xl font-bold text-gray-900 mb-4">Ready to Fund Some Wishes?</h3>
         <p class="text-gray-600 mb-6">Browse current project needs and choose what resonates with your mission</p>
-        <a href={`${basePath}/wishlists`} class="bg-gray-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
+        <a href={`${basePath}wishlists`} class="inline-block bg-gray-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
           Browse Project Wishes
         </a>
       </div>
@@ -109,7 +109,7 @@ const sortedGuardians = guardians.sort((a, b) => a.data.name.localeCompare(b.dat
     <!-- All Sponsors -->
     <section class="mb-16">
       <div class="text-center mb-12">
-        <h2 class="text-3xl font-bold text-gray-900 mb-4">🌟 All Sponsors</h2>
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">All Sponsors</h2>
         <p class="text-lg text-gray-600 max-w-2xl mx-auto">
           Discover all the organizations supporting the open source ecosystem.
         </p>
@@ -118,7 +118,7 @@ const sortedGuardians = guardians.sort((a, b) => a.data.name.localeCompare(b.dat
       <!-- Sponsors Grid -->
       <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {sortedGuardians.map((guardian) => (
-          <div key={guardian.slug} class="bg-white rounded-lg shadow-sm border p-6">
+          <div key={guardian.slug} class="bg-white rounded-lg shadow-sm border p-6 hover:shadow-md transition-shadow">
             <div class="flex items-start space-x-4 mb-4">
               {guardian.data.logo_url && (
                 <img 
@@ -146,14 +146,22 @@ const sortedGuardians = guardians.sort((a, b) => a.data.name.localeCompare(b.dat
             <div class="flex items-center justify-between">
               <div class="flex items-center space-x-2">
                 {guardian.data.verified && (
-                  <span class="text-gray-700 text-xs">✓ Verified</span>
+                  <div class="flex items-center text-gray-700 text-xs">
+                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    Verified
+                  </div>
                 )}
               </div>
               <a 
-                href={`/oss-wishlist-website/guardians/${guardian.slug}`}
-                class="text-gray-600 hover:text-gray-700 text-sm font-medium"
+                href={`${basePath}guardians/${guardian.slug}`}
+                class="text-gray-600 hover:text-gray-700 text-sm font-medium flex items-center"
               >
-                View →
+                View
+                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
               </a>
             </div>
           </div>

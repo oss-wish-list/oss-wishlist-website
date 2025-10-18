@@ -103,6 +103,7 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
   const [wishlistData, setWishlistData] = useState({
     projectTitle: '',
     selectedServices: [] as string[],
+    technologies: [] as string[],
     urgency: 'medium' as 'low' | 'medium' | 'high',
     timeline: '',
     organizationType: 'individual' as 'individual' | 'company' | 'nonprofit' | 'foundation',
@@ -229,11 +230,7 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
     try {
       // Use the API endpoint to get cached wishlist data
       const apiUrl = getApiPath(`/api/get-wishlist?issueNumber=${issueNumber}`);
-      console.log('Fetching cached data from:', apiUrl);
       const response = await fetch(apiUrl);
-      
-      console.log('Response status:', response.status);
-      console.log('Response ok:', response.ok);
       
       if (!response.ok) {
         console.error('Failed to load cached wishlist data, status:', response.status);
@@ -243,7 +240,6 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
       }
       
       const cachedData = await response.json();
-      console.log('Loaded cached data:', cachedData);
       
       const updatedData: any = {
         projectTitle: cachedData.projectTitle || '',
@@ -253,20 +249,17 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
         organizationType: cachedData.organizationType || 'individual',
         organizationName: cachedData.organizationName || '',
         additionalNotes: cachedData.additionalNotes || '',
+        technologies: cachedData.technologies || [],
       };
-      
-      console.log('Prepared updated data:', updatedData);
       
       // Set original services for comparison
       setOriginalServices(cachedData.wishes || []);
       
       // Update all form data directly (not using prev callback)
       setWishlistData(updatedData);
-      console.log('Set wishlistData to:', updatedData);
       
       setIsEditingExisting(true);
       setExistingIssueNumber(issueNumber);
-      console.log('Set isEditingExisting to true, issueNumber:', issueNumber);
       
       return true;
       
@@ -431,6 +424,7 @@ ${repositories.map(repo => `  - [${repo.name}](${repo.url}) - ${repo.description
 
 ## Project Information
 ${repositoriesSection}
+${wishlistData.technologies.length > 0 ? `- **Technologies:** ${wishlistData.technologies.join(', ')}` : ''}
 
 ## Services Requested
 ${wishlistData.selectedServices.map(serviceId => {
@@ -475,6 +469,7 @@ ${wishlistData.additionalNotes || 'None provided'}
             projectUrl: repositories[0].url, // Use first repo as primary
             maintainer: repositories[0].username,
             services: wishlistData.selectedServices,
+            technologies: wishlistData.technologies,
             urgency: wishlistData.urgency,
             description: repositories[0].description || '',
             additionalNotes: wishlistData.additionalNotes || '',
@@ -830,9 +825,7 @@ ${wishlistData.additionalNotes || 'None provided'}
                         // Set editing state FIRST before loading data
                         setIsEditingExisting(true);
                         setExistingIssueNumber(hasExisting.issueNumber);
-                        console.log('Set editing mode for issue #', hasExisting.issueNumber);
                         const success = await loadExistingWishlistData(hasExisting.issueNumber);
-                        console.log('Wishlist data loaded, success:', success);
                         setLoading(false);
                         // Only navigate if data loaded successfully
                         if (success) {
@@ -954,14 +947,7 @@ ${wishlistData.additionalNotes || 'None provided'}
               
               <div className="flex space-x-3">
                 <button
-                  onClick={() => {
-                    console.log('=== REPO CONFIRMATION PAGE ===');
-                    console.log('isEditingExisting:', isEditingExisting);
-                    console.log('existingIssueNumber:', existingIssueNumber);
-                    console.log('wishlistData:', wishlistData);
-                    console.log('=============================');
-                    proceedToWishlist();
-                  }}
+                  onClick={proceedToWishlist}
                   className="flex-1 bg-gray-900 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-800 flex items-center justify-center gap-2"
                 >
                   {isEditingExisting ? (
@@ -1015,13 +1001,6 @@ ${wishlistData.additionalNotes || 'None provided'}
 
   // Step 3: Wishlist Creation Form
   if (currentStep === 'wishlist') {
-    // Debug: Log current state when rendering wishlist form
-    console.log('=== RENDERING WISHLIST FORM ===');
-    console.log('isEditingExisting:', isEditingExisting);
-    console.log('wishlistData:', wishlistData);
-    console.log('selectedServices:', wishlistData.selectedServices);
-    console.log('================================');
-    
     // Show success state if wishlist was created
     if (success) {
       return (
@@ -1069,6 +1048,7 @@ ${wishlistData.additionalNotes || 'None provided'}
                     setWishlistData({
                       projectTitle: '',
                       selectedServices: [],
+                      technologies: [],
                       urgency: 'medium',
                       timeline: '',
                       organizationType: 'individual',
@@ -1180,6 +1160,102 @@ ${wishlistData.additionalNotes || 'None provided'}
             <p className="text-sm text-gray-500 mt-2">
               This will be the main title for your wishlist and how people will identify and triage your project or projects
             </p>
+          </div>
+
+          {/* Technologies */}
+          <div className="bg-white p-6 rounded-lg shadow-sm border">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              🔧 Technologies
+            </h3>
+            
+            {/* Common technology buttons */}
+            <div className="flex flex-wrap gap-2 mb-4">
+              {['JavaScript', 'Python', 'TypeScript', 'Java', 'Go', 'Rust', 'C++', 'C#', 'Ruby', 'PHP', 
+                'React', 'Vue', 'Node.js', 'Django', 'Flask', 'Spring', 'Docker', 'Kubernetes', 'AWS', 'PostgreSQL', 'MongoDB'].map((tech) => {
+                const isSelected = wishlistData.technologies.includes(tech);
+                return (
+                  <button
+                    key={tech}
+                    type="button"
+                    onClick={() => {
+                      setWishlistData(prev => ({
+                        ...prev,
+                        technologies: isSelected 
+                          ? prev.technologies.filter(t => t !== tech)
+                          : [...prev.technologies, tech]
+                      }));
+                    }}
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                      isSelected
+                        ? 'bg-gray-700 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {tech}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Custom technology input */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Add custom technologies (comma-separated)
+              </label>
+              <input
+                type="text"
+                placeholder="e.g., TensorFlow, FastAPI, Redis"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const input = e.currentTarget;
+                    const value = input.value.trim();
+                    if (value) {
+                      const newTechs = value.split(',').map(t => t.trim()).filter(t => t && !wishlistData.technologies.includes(t));
+                      if (newTechs.length > 0) {
+                        setWishlistData(prev => ({
+                          ...prev,
+                          technologies: [...prev.technologies, ...newTechs]
+                        }));
+                        input.value = '';
+                      }
+                    }
+                  }
+                }}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+              />
+              <p className="text-xs text-gray-500 mt-1">Press Enter to add</p>
+            </div>
+
+            {/* Selected technologies display */}
+            {wishlistData.technologies.length > 0 && (
+              <div className="mt-4">
+                <p className="text-sm font-medium text-gray-700 mb-2">Selected technologies:</p>
+                <div className="flex flex-wrap gap-2">
+                  {wishlistData.technologies.map((tech) => (
+                    <span
+                      key={tech}
+                      className="inline-flex items-center gap-1 px-3 py-1 bg-gray-700 text-white rounded-lg text-sm"
+                    >
+                      {tech}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setWishlistData(prev => ({
+                            ...prev,
+                            technologies: prev.technologies.filter(t => t !== tech)
+                          }));
+                        }}
+                        className="hover:text-gray-300"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
           </div>
 
           {/* Services Selection */}

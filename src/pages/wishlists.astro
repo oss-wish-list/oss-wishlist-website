@@ -1,6 +1,10 @@
 ---
 import { getBasePath } from '../lib/paths';
 import Layout from '../components/Layout.astro';
+import AuthenticatedForm from '../components/AuthenticatedForm.tsx';
+
+// Check authentication
+const user = Astro.locals.user;
 
 // We'll fetch wishlists client-side from our API endpoint
 const basePath = getBasePath();
@@ -23,6 +27,7 @@ const urgencyColors = {
 ---
 
 <Layout title="Browse Project Wishlists - OSS Wishlist" description="Discover open source projects seeking support. Find opportunities to sponsor, contribute, or provide services to maintainers.">
+  <AuthenticatedForm client:load user={user}>
   <!-- Hero Section -->
   <section class="bg-gradient-to-br from-gray-100 to-gray-200 py-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -81,12 +86,12 @@ const urgencyColors = {
           <p class="text-gray-600">Active Wishlists</p>
         </div>
         <div>
-          <div class="text-3xl font-bold text-slate-600">15+</div>
+          <div class="text-3xl font-bold text-gray-600" id="technologies-count">0</div>
           <p class="text-gray-600">Technologies Represented</p>
         </div>
         <div>
-          <div class="text-3xl font-bold text-gray-600">Live</div>
-          <p class="text-gray-600">GitHub Integration</p>
+          <div class="text-3xl font-bold text-gray-600">0</div>
+          <p class="text-gray-600">Wishes Fulfilled</p>
         </div>
       </div>
     </div>
@@ -165,6 +170,7 @@ const urgencyColors = {
       </div>
     </div>
   </section>
+  </AuthenticatedForm>
 
 <script>
   // Wishlist data
@@ -208,6 +214,19 @@ const urgencyColors = {
       
       // Update stats
       document.getElementById('wishlist-count').textContent = allWishlists.length;
+      
+      // Count unique technologies
+      const allTechnologies = new Set();
+      allWishlists.forEach(wishlist => {
+        if (wishlist.technologies && Array.isArray(wishlist.technologies)) {
+          wishlist.technologies.forEach(tech => {
+            if (tech && tech.trim()) {
+              allTechnologies.add(tech.trim().toLowerCase());
+            }
+          });
+        }
+      });
+      document.getElementById('technologies-count').textContent = allTechnologies.size;
       
       // Display wishlists
       displayWishlists(allWishlists);

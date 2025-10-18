@@ -90,17 +90,21 @@ if (issueNumber && GITHUB_TOKEN) {
 ---
 
 <Layout title="Fulfill a Wishlist">
-  <main class="min-h-screen bg-gray-50 py-12">
+  <!-- Hero Section -->
+  <section class="py-16 bg-gray-50">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="bg-white rounded-lg shadow-lg p-8">
-        <h1 class="text-5xl font-bold text-gray-900 mb-8">
-          Fulfill an <span class="text-orange-500">OSS</span> Wishlist
+      <!-- Header -->
+      <div class="text-center mb-12">
+        <h1 class="text-5xl font-bold text-gray-900 mb-6">
+          Fulfill an <span class="text-gray-600">Open Source Wishlist</span>
         </h1>
-        
-        <p class="text-gray-600 mb-8">
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
           Thank you for your interest in supporting open source projects. Please fill out this form to begin the fulfillment process for a wishlist.
         </p>
+      </div>
 
+      <!-- Form Section -->
+      <div class="bg-white rounded-lg shadow-sm border p-8">
         <form class="space-y-6" method="POST" action="/api/fulfill-wishlist">
           <!-- Wishlist Selection -->
           <div>
@@ -152,7 +156,7 @@ if (issueNumber && GITHUB_TOKEN) {
           {wishlistData && wishlistData.wishes && wishlistData.wishes.length > 0 && (
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-3">
-                Which specific wishes do you want to fulfill?
+                Which specific wishes do you want to fulfill? <span class="text-red-600">*</span>
               </label>
               <div class="space-y-3 mb-4">
                 <p class="text-sm text-green-700 mb-4">
@@ -168,7 +172,7 @@ if (issueNumber && GITHUB_TOKEN) {
                           id={`service-${serviceName.replace(/\s+/g, '-').toLowerCase()}`}
                           name="funded-services" 
                           value={serviceName}
-                          class="mt-1 mr-3 h-4 w-4 text-gray-600 focus:ring-gray-500 border-gray-300 rounded"
+                          class="mt-1 mr-3 h-4 w-4 text-gray-600 focus:ring-gray-500 border-gray-300 rounded funded-service-checkbox"
                         />
                         <div class="flex-1">
                           <label 
@@ -221,7 +225,7 @@ if (issueNumber && GITHUB_TOKEN) {
           <!-- Practitioner Selection -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-3">
-              Practitioner Selection
+              Practitioner Selection <span class="text-red-600">*</span>
             </label>
             <div class="space-y-3">
               <div>
@@ -299,8 +303,8 @@ if (issueNumber && GITHUB_TOKEN) {
 
           <!-- Timeline -->
           <div>
-            <label for="timeline" class="block text-sm font-medium text-gray-700 mb-2">
-              Proposed Timeline
+            <label for="timeline" class="block text-sm font-medium text-gray-600 mb-2">
+              Proposed Timeline (optional)
             </label>
             <input 
               type="text" 
@@ -308,7 +312,6 @@ if (issueNumber && GITHUB_TOKEN) {
               name="timeline" 
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
               placeholder="e.g., 3 months, Q2 2024, etc."
-              required
             />
           </div>
 
@@ -316,7 +319,7 @@ if (issueNumber && GITHUB_TOKEN) {
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label for="contact-person" class="block text-sm font-medium text-gray-700 mb-2">
-                Contact Person
+                Contact Person <span class="text-red-600">*</span>
               </label>
               <input 
                 type="text" 
@@ -329,7 +332,7 @@ if (issueNumber && GITHUB_TOKEN) {
             
             <div>
               <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
+                Email Address <span class="text-red-600">*</span>
               </label>
               <input 
                 type="email" 
@@ -344,7 +347,7 @@ if (issueNumber && GITHUB_TOKEN) {
           <!-- Company -->
           <div>
             <label for="company" class="block text-sm font-medium text-gray-700 mb-2">
-              Company/Organization
+              Company/Organization <span class="text-red-600">*</span>
             </label>
             <input 
               type="text" 
@@ -358,7 +361,7 @@ if (issueNumber && GITHUB_TOKEN) {
           <!-- Reason for Fulfillment -->
           <div>
             <label for="reason" class="block text-sm font-medium text-gray-700 mb-2">
-              Reason for Fulfillment
+              Reason for Fulfillment <span class="text-red-600">*</span>
             </label>
             <textarea 
               id="reason" 
@@ -384,7 +387,7 @@ if (issueNumber && GITHUB_TOKEN) {
         </form>
       </div>
     </div>
-  </main>
+  </section>
 
   <script define:vars={{ 
     practitionerData: practitioners.reduce((acc, practitioner) => {
@@ -462,13 +465,12 @@ if (issueNumber && GITHUB_TOKEN) {
     const form = document.querySelector('form');
     form.addEventListener('submit', function(e) {
       const serviceCheckboxes = document.querySelectorAll('input[name="funded-services"]');
-      const additionalItems = document.getElementById('additional-items').value.trim();
       
       if (serviceCheckboxes.length > 0) {
         const checkedServices = document.querySelectorAll('input[name="funded-services"]:checked');
-        if (checkedServices.length === 0 && !additionalItems) {
+        if (checkedServices.length === 0) {
           e.preventDefault();
-          alert('Please select at least one wish from the wishlist or provide additional items description.');
+          alert('Please select at least one wish from the wishlist to fulfill.');
           return false;
         }
       }

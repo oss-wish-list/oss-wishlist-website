@@ -1,5 +1,7 @@
 /// <reference path="../.astro/types.d.ts" />
 
+import type { AuthSession, User } from './lib/auth';
+
 interface ImportMetaEnv {
   readonly GITHUB_TOKEN: string;
   readonly GITHUB_CLIENT_ID: string;
@@ -21,4 +23,11 @@ interface ImportMetaEnv {
 
 interface ImportMeta {
   readonly env: ImportMetaEnv;
+}
+
+declare namespace App {
+  interface Locals {
+    session: AuthSession | null;
+    user: User | null;
+  }
 }

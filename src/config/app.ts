@@ -3,6 +3,10 @@
  * Centralizes all configuration to avoid hardcoding and ensure security best practices
  */
 
+// Site metadata
+export const SITE_TITLE = 'Open Source Wishlist';
+export const SITE_DESCRIPTION = 'Connecting open source projects with expert help and resources';
+
 // Get the base path from environment or default to empty string
 export const BASE_PATH = import.meta.env.PUBLIC_BASE_PATH || '';
 
