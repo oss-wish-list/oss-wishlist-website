@@ -8,7 +8,8 @@
     "build": "astro build",
     "build:gh-pages": "astro build --base /oss-wishlist-website",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "sync-playbooks": "./scripts/sync-playbooks.sh"
   },
   "dependencies": {
     "@2toad/profanity": "^3.2.0",

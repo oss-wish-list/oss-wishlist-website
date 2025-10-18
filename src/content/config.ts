@@ -192,6 +192,17 @@ const pages = defineCollection({
   }),
 });
 
+const playbooks = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    service: z.string(), // Maps to service slug (e.g., 'governance-setup')
+    github_folder: z.string(), // Folder name in wishlist-playbooks repo
+    order: z.number().optional(),
+  }),
+});
+
 export const collections = {
   services,
   wishlists,
@@ -199,4 +210,5 @@ export const collections = {
   guardians,
   faq,
   pages,
+  playbooks,
 };
