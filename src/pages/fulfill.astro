@@ -75,12 +75,20 @@ if (issueNumber && GITHUB_TOKEN) {
       // Extract project name from title or body
       let projectName = githubIssue.title.replace(/^Wishlist:\s*/i, '').trim();
       
+      // Extract open_to_sponsorship flag from issue body
+      let openToSponsorship = false;
+      const sponsorshipMatch = body.match(/Open to (Sponsorship|Honorarium):\*\*\s*(Yes|No)/i);
+      if (sponsorshipMatch && sponsorshipMatch[2].toLowerCase() === 'yes') {
+        openToSponsorship = true;
+      }
+      
       wishlistData = {
         issueNumber: githubIssue.number,
         projectName: projectName,
         wishes: wishes,
         url: githubIssue.html_url,
-        maintainer: githubIssue.user.login
+        maintainer: githubIssue.user.login,
+        openToSponsorship: openToSponsorship
       };
     }
   } catch (error) {
@@ -314,6 +322,29 @@ if (issueNumber && GITHUB_TOKEN) {
               placeholder="e.g., 3 months, Q2 2024, etc."
             />
           </div>
+
+          <!-- Optional Honorarium (only show if maintainer opted in) -->
+          {wishlistData && wishlistData.openToSponsorship && (
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <div class="flex items-start">
+                <input 
+                  type="checkbox" 
+                  id="include-sponsorship" 
+                  name="include-sponsorship"
+                  value="yes"
+                  class="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <div class="ml-3">
+                  <label for="include-sponsorship" class="block text-sm font-medium text-gray-900">
+                    I would like to provide a one-time honorarium to the maintainer
+                  </label>
+                  <p class="text-xs text-gray-600 mt-1">
+                    An honorarium recognizes the maintainer's time and collaboration during wish fulfillment. This is not payment for services or an obligation, but a gesture of appreciation.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
           <!-- Contact Information -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

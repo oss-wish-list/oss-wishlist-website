@@ -108,7 +108,8 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
     timeline: '',
     organizationType: 'individual' as 'individual' | 'company' | 'nonprofit' | 'foundation',
     organizationName: '',
-    additionalNotes: ''
+    additionalNotes: '',
+    openToSponsorship: false
   });
   
   // Checkbox for FUNDING.yml PR
@@ -250,6 +251,7 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
         organizationName: cachedData.organizationName || '',
         additionalNotes: cachedData.additionalNotes || '',
         technologies: cachedData.technologies || [],
+        openToSponsorship: cachedData.openToSponsorship || false,
       };
       
       // Set original services for comparison
@@ -438,6 +440,7 @@ ${wishlistData.selectedServices.map(serviceId => {
 ## Project Details
 - **Urgency:** ${wishlistData.urgency.charAt(0).toUpperCase() + wishlistData.urgency.slice(1)}
 - **Timeline:** ${wishlistData.timeline || 'Flexible'}
+- **Open to Honorarium:** ${wishlistData.openToSponsorship ? 'Yes' : 'No'}
 
 ## Organization
 - **Type:** ${wishlistData.organizationType.charAt(0).toUpperCase() + wishlistData.organizationType.slice(1)}
@@ -474,7 +477,8 @@ ${wishlistData.additionalNotes || 'None provided'}
             description: repositories[0].description || '',
             additionalNotes: wishlistData.additionalNotes || '',
             repositories: repositories, // Include all repositories
-            createFundingPR: createFundingPR // Include FUNDING.yml PR flag
+            createFundingPR: createFundingPR, // Include FUNDING.yml PR flag
+            openToSponsorship: wishlistData.openToSponsorship // Include sponsorship opt-in
           }
         })
       });
@@ -1053,7 +1057,8 @@ ${wishlistData.additionalNotes || 'None provided'}
                       timeline: '',
                       organizationType: 'individual',
                       organizationName: '',
-                      additionalNotes: ''
+                      additionalNotes: '',
+                      openToSponsorship: false
                     });
                   }}
                   className="bg-gray-200 text-gray-800 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300"
@@ -1355,6 +1360,24 @@ ${wishlistData.additionalNotes || 'None provided'}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                 />
               </div>
+            </div>
+
+            {/* Sponsorship Opt-in */}
+            <div className="mt-6">
+              <label className="flex items-start">
+                <input
+                  type="checkbox"
+                  checked={wishlistData.openToSponsorship}
+                  onChange={(e) => setWishlistData(prev => ({ ...prev, openToSponsorship: e.target.checked }))}
+                  className="mt-1 h-4 w-4 text-gray-600 border-gray-300 rounded focus:ring-gray-500"
+                />
+                <span className="ml-2 text-sm text-gray-700">
+                  I am open to receiving an honorarium as part of wish fulfillment
+                  <span className="block text-xs text-gray-500 mt-1">
+                    Organizations fulfilling your wish may offer an optional honorarium to recognize your time and collaboration (not payment for services or obligation)
+                  </span>
+                </span>
+              </label>
             </div>
           </div>
 

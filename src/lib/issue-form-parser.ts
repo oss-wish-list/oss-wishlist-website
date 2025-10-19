@@ -11,6 +11,7 @@ interface ParsedIssueForm {
   technologies?: string[];
   additionalContext?: string;
   wantsFundingYml: boolean;
+  openToSponsorship: boolean;
   // Optional form fields
   timeline?: string;
   organizationType?: 'individual' | 'company' | 'nonprofit' | 'foundation';
@@ -26,7 +27,8 @@ export function parseIssueForm(body: string): ParsedIssueForm {
     urgency: 'medium',
     services: [],
     resources: [],
-    wantsFundingYml: false
+    wantsFundingYml: false,
+    openToSponsorship: false
   };
 
   // Parse technologies from anywhere in the body
@@ -102,6 +104,12 @@ export function parseIssueForm(body: string): ParsedIssueForm {
         result.wantsFundingYml = content.includes('- [x]') || content.includes('- [X]');
         break;
       
+      case 'Open to Sponsorship':
+      case 'Open to Honorarium':
+        // Check if "Yes" appears in the content
+        result.openToSponsorship = content.toLowerCase().includes('yes');
+        break;
+      
       case 'Timeline':
         if (content !== '_No response_') {
           result.timeline = content;
@@ -145,6 +153,7 @@ export function formatIssueFormBody(data: {
   resources: string[];
   additionalContext?: string;
   wantsFundingYml?: boolean;
+  openToSponsorship?: boolean;
   timeline?: string;
   organizationType?: 'individual' | 'company' | 'nonprofit' | 'foundation';
   organizationName?: string;
@@ -215,6 +224,10 @@ export function formatIssueFormBody(data: {
   
   if (data.additionalNotes) {
     body += `### Additional Notes\n\n${data.additionalNotes}\n\n`;
+  }
+  
+  if (data.openToSponsorship !== undefined) {
+    body += `### Open to Honorarium\n\n${data.openToSponsorship ? 'Yes' : 'No'}\n\n`;
   }
   
   if (data.wantsFundingYml) {

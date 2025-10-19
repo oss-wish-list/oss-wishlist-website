@@ -68,6 +68,7 @@ const wishlists = defineCollection({
     urgency: z.enum(['low', 'medium', 'high']),
     timeline: z.string().optional(),
     budget_range: z.enum(['volunteer', 'under-1k', '1k-5k', '5k-20k', '20k-50k', '50k-plus', 'ongoing-sponsorship']).optional(),
+    open_to_sponsorship: z.boolean().default(false), // Maintainer opt-in for one-time sponsorship
     
     // Status & Metadata
     status: z.enum(['draft', 'active', 'in-progress', 'fulfilled', 'paused', 'archived']).default('active'),
