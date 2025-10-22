@@ -37,6 +37,9 @@ const GUEST_ONLY_ROUTES: string[] = [
 export const onRequest = defineMiddleware(async (context, next) => {
   const { url, cookies, locals, redirect } = context;
   
+  // Add X-Robots-Tag header if indexing is disabled (for staging environments)
+  const disableIndexing = import.meta.env.DISABLE_INDEXING === 'true';
+  
   // Get current path (without base path)
   const pathname = url.pathname.replace(getBasePath(), '/').replace('//', '/');
   
@@ -71,5 +74,13 @@ export const onRequest = defineMiddleware(async (context, next) => {
     return redirect(redirectUrl);
   }
   
-  return next();
+  // Continue to next middleware/page
+  const response = await next();
+  
+  // Add noindex header if indexing is disabled
+  if (disableIndexing) {
+    response.headers.set('X-Robots-Tag', 'noindex, nofollow');
+  }
+  
+  return response;
 });

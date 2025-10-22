@@ -167,13 +167,28 @@ npm run build    # Build for production
 npm run preview  # Preview built site locally
 ```
 
-## � Common Issues
+## 🔒 Common Issues
 
 **Port already in use?** The dev server will automatically try different ports (4323, 4324, 4325, etc.)
 
 **Changes not showing?** The dev server auto-reloads, but try refreshing your browser.
 
 **Content not loading?** Check the markdown frontmatter matches the schema in `src/content/config.ts`
+
+## 🚀 Staging Environment Setup
+
+For staging deployments, prevent search engine indexing by adding to your `.env`:
+
+```env
+DISABLE_INDEXING=true
+```
+
+This will:
+- Add `X-Robots-Tag: noindex, nofollow` headers to all pages
+- Generate a `robots.txt` that disallows all crawlers
+- Prevent search engines from indexing your staging site
+
+**For production**: Omit `DISABLE_INDEXING` or set it to `false` in your `.env`
 
 ## 📝 Quick Reference
 

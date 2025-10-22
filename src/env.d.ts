@@ -19,6 +19,7 @@ interface ImportMetaEnv {
   readonly SLACK_WEBHOOK_URL: string;
   readonly NODE_ENV: 'development' | 'production' | 'test';
   readonly PUBLIC_SITE_URL: string;
+  readonly DISABLE_INDEXING?: string;
 }
 
 interface ImportMeta {
