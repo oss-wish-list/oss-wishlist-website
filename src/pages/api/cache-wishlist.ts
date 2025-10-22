@@ -15,7 +15,7 @@ const WishlistDataSchema = z.object({
   id: z.number().int().positive(),
   title: z.string().min(1),
   url: z.string().url(),
-  wishlistUrl: z.string().url(),
+  wishlistUrl: z.string().url().optional(), // Optional for backward compatibility
   projectTitle: z.string().min(1),
   maintainerName: z.string().min(1),
   wishes: z.array(z.string()).min(1),
@@ -42,7 +42,7 @@ interface WishlistData {
   id: number;
   title: string;
   url: string;
-  wishlistUrl: string;
+  wishlistUrl?: string; // Optional for backward compatibility
   projectTitle: string;
   maintainerName: string;
   wishes: string[];

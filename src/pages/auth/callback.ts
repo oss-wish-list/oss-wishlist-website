@@ -153,18 +153,24 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
     });
     
     // Get the return URL from cookie (set during login initiation)
-    const returnTo = cookies.get('oauth_return_to')?.value || 'maintainers';
+    const returnTo = cookies.get('oauth_return_to')?.value;
     
     // Clear the return URL cookie
-    cookies.delete('oauth_return_to', { path: '/' });
+    if (returnTo) {
+      cookies.delete('oauth_return_to', { path: '/' });
+    }
+    
+    // Default to maintainers if no returnTo
+    const finalReturnTo = returnTo || '/maintainers';
     
     // Redirect to the original page or maintainers
     // If returnTo already has the base path, use it as-is, otherwise add base path
     const basePath = import.meta.env.BASE_URL || '/';
-    const redirectPath = returnTo.startsWith(basePath) || returnTo.startsWith('/oss-wishlist-website/')
-      ? returnTo 
-      : withBasePath(returnTo);
+    const redirectPath = finalReturnTo.startsWith(basePath) || finalReturnTo.startsWith('/oss-wishlist-website/')
+      ? finalReturnTo 
+      : withBasePath(finalReturnTo);
     
+    console.log('[OAuth Callback] Redirecting:', { returnTo, finalReturnTo, redirectPath });
     return redirect(redirectPath);
   } catch (error) {
     console.error('Error in GitHub OAuth callback:', error);

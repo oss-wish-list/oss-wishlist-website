@@ -137,6 +137,7 @@ const urgencyColors = {
 <script>
   // Wishlist data
   let allWishlists = [];
+  let basePath = '';
   
   // Status colors mapping
   const statusColors = {
@@ -159,7 +160,7 @@ const urgencyColors = {
   async function fetchWishlists() {
     try {
       const grid = document.getElementById('wishlistsGrid');
-      const basePath = grid?.dataset.basePath || '';
+      basePath = grid?.dataset.basePath || '';
       // Remove trailing slash if present to avoid double slashes
       const cleanBasePath = basePath.replace(/\/$/, '');
       const apiUrl = `${cleanBasePath}/api/wishlists`;
@@ -230,7 +231,17 @@ const urgencyColors = {
       return;
     }
     
-    grid.innerHTML = wishlists.map(wishlist => createWishlistCard(wishlist)).join('');
+    try {
+      grid.innerHTML = wishlists.map(wishlist => createWishlistCard(wishlist)).join('');
+    } catch (error) {
+      console.error('[displayWishlists] Error creating cards:', error);
+      grid.innerHTML = `
+        <div class="col-span-full text-center py-12">
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Error displaying wishlists</h3>
+          <p class="text-gray-600 text-sm">${error.message}</p>
+        </div>
+      `;
+    }
   }
 
   // Create wishlist card HTML
@@ -245,7 +256,16 @@ const urgencyColors = {
           <div class="flex items-center space-x-3">
             <img src="${wishlist.author.avatar_url}" alt="${wishlist.author.login}" class="w-10 h-10 rounded-full" />
             <div>
-              <h3 class="text-lg font-semibold text-gray-900">${wishlist.projectTitle}</h3>
+              <div class="flex items-center gap-2">
+                <h3 class="text-lg font-semibold text-gray-900">${wishlist.projectTitle}</h3>
+                ${wishlist.repositoryUrl ? `
+                  <a href="${wishlist.repositoryUrl}" target="_blank" rel="noopener noreferrer" class="text-gray-600 hover:text-gray-900" title="View project repository">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" aria-label="Project repository link">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" />
+                    </svg>
+                  </a>
+                ` : ''}
+              </div>
               <p class="text-sm text-gray-600">@${wishlist.maintainerName}</p>
             </div>
           </div>

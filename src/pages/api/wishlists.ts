@@ -71,7 +71,13 @@ async function fetchGitHubIssues(): Promise<GitHubIssue[]> {
   }
 
   const data = await response.json();
-  return data;
+  
+  // Filter to only approved wishlists
+  const approvedWishlists = data.filter((issue: GitHubIssue) => 
+    issue.labels.some(label => label.name === 'approved-wishlist')
+  );
+  
+  return approvedWishlists;
 }
 
 async function fetchProjectBoardData(): Promise<Map<number, string>> {
@@ -266,6 +272,7 @@ export const GET: APIRoute = async () => {
         url: issue.html_url,
         projectTitle: parsed.project || issue.title,
         maintainerName: parsed.maintainer || issue.user.login,
+        repositoryUrl: parsed.repository,
         wishes: wishes,
         technologies: technologies,
         urgency: parsed.urgency,

@@ -14,18 +14,34 @@ interface AuthenticatedFormProps {
 export default function AuthenticatedForm({ children, user }: AuthenticatedFormProps) {
   useEffect(() => {
     if (!user) {
-      // Get the current path relative to the base
-      const basePath = import.meta.env.BASE_URL || '';
+      // Get the current full path including search params
+      let basePath = import.meta.env.BASE_URL || '';
+      // Ensure basePath ends with / for proper concatenation
+      if (basePath && !basePath.endsWith('/')) {
+        basePath += '/';
+      }
       const currentPath = window.location.pathname;
+      const searchParams = window.location.search;
       
       // Strip the base path if it exists to get the relative path
-      const relativePath = currentPath.startsWith(basePath) 
-        ? currentPath.slice(basePath.length) || '/'
+      let relativePath = currentPath.startsWith(basePath) 
+        ? currentPath.slice(basePath.length)
         : currentPath;
       
-      // Redirect to login page with return URL (relative path only)
-      const returnTo = encodeURIComponent(relativePath + window.location.search);
-      window.location.href = `${basePath}/login?returnTo=${returnTo}`;
+      // Ensure relativePath starts with / (it's a path, not a fragment)
+      if (relativePath && !relativePath.startsWith('/')) {
+        relativePath = '/' + relativePath;
+      }
+      // Default to / if empty
+      if (!relativePath) {
+        relativePath = '/';
+      }
+      
+      // Redirect to login page with return URL (relative path + search params)
+      const fullReturnPath = relativePath + searchParams;
+      const returnTo = encodeURIComponent(fullReturnPath);
+      // basePath now guaranteed to have trailing slash or be empty
+      window.location.href = `${basePath}login?returnTo=${returnTo}`;
     }
   }, [user]);
 

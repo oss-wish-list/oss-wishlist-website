@@ -200,6 +200,14 @@ const playbooks = defineCollection({
   }),
 });
 
+const playbooksExternal = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string().optional(),
+    description: z.string().optional(),
+  }),
+});
+
 export const collections = {
   services,
   wishlists,
@@ -208,4 +216,5 @@ export const collections = {
   faq,
   pages,
   playbooks,
+  'playbooks-external': playbooksExternal,
 };
