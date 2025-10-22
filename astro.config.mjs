@@ -12,8 +12,10 @@ export default defineConfig({
     mode: 'standalone'
   }),
   server: {
-    port: 4324,
-    host: 'localhost' // Restrict to localhost in development for security
+    // Digital Ocean uses PORT env variable, fallback to 4324 for local dev
+    port: process.env.PORT ? parseInt(process.env.PORT) : 4324,
+    // Use localhost in dev for security, 0.0.0.0 in production for Docker/cloud deployments
+    host: process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost'
   },
   vite: {
     ssr: {
