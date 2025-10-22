@@ -1,0 +1,248 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OSS Wishlist API Schema",
+  "description": "Data schema for OSS Wishlist public API - designed for consumption by external platforms like ecosystem.ms",
+  "version": "1.0.0",
+  
+  "type": "object",
+  "required": ["schema_version", "generated_by", "data_source", "wishlists", "lastUpdated", "count"],
+  
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "API schema version following semver",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "example": "1.0.0"
+    },
+    
+    "generated_by": {
+      "type": "string",
+      "description": "Platform that generated this data",
+      "example": "OSS Wishlist Platform"
+    },
+    
+    "data_source": {
+      "type": "string",
+      "description": "Original source of the data",
+      "example": "GitHub Issues (oss-wishlist/wishlists)"
+    },
+    
+    "documentation": {
+      "type": "string",
+      "format": "uri",
+      "description": "Link to API documentation"
+    },
+    
+    "wishlists": {
+      "type": "array",
+      "description": "Array of wishlist objects",
+      "items": {
+        "$ref": "#/definitions/Wishlist"
+      }
+    },
+    
+    "lastUpdated": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of last cache update",
+      "example": "2025-10-20T12:34:56.789Z"
+    },
+    
+    "count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total number of wishlists"
+    }
+  },
+  
+  "definitions": {
+    "Wishlist": {
+      "type": "object",
+      "required": ["id", "title", "url", "wishlistUrl", "projectTitle", "maintainerName", "wishes", "urgency", "status", "labels", "author", "created_at", "updated_at"],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Unique identifier (GitHub issue number)",
+          "example": 42
+        },
+        
+        "title": {
+          "type": "string",
+          "description": "Wishlist title",
+          "example": "Wishlist: Security audit for MyProject"
+        },
+        
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "GitHub issue URL (canonical source)",
+          "example": "https://github.com/oss-wishlist/wishlists/issues/42"
+        },
+        
+        "wishlistUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "OSS Wishlist platform fulfillment page",
+          "example": "https://oss-wishlist.org/fulfill?issue=42"
+        },
+        
+        "projectTitle": {
+          "type": "string",
+          "description": "Name of the open source project",
+          "example": "MyAwesomeProject"
+        },
+        
+        "maintainerName": {
+          "type": "string",
+          "description": "GitHub username of the maintainer",
+          "example": "octocat"
+        },
+        
+        "wishes": {
+          "type": "array",
+          "description": "Array of requested service types",
+          "items": {
+            "type": "string"
+          },
+          "example": ["dependency-security-audit", "governance-setup"]
+        },
+        
+        "technologies": {
+          "type": "array",
+          "description": "Tech stack of the project (optional)",
+          "items": {
+            "type": "string"
+          },
+          "example": ["JavaScript", "Node.js", "React"]
+        },
+        
+        "urgency": {
+          "type": "string",
+          "enum": ["low", "medium", "high"],
+          "description": "Priority level of the wishlist"
+        },
+        
+        "status": {
+          "type": "string",
+          "enum": ["Open", "Closed"],
+          "description": "Current fulfillment status"
+        },
+        
+        "labels": {
+          "type": "array",
+          "description": "Simplified GitHub labels (name and color only)",
+          "items": {
+            "type": "object",
+            "required": ["name", "color"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Label name",
+                "example": "high-priority"
+              },
+              "color": {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F]{6}$",
+                "description": "Hex color code (without #)",
+                "example": "ff0000"
+              }
+            }
+          }
+        },
+        
+        "author": {
+          "type": "object",
+          "required": ["login", "avatar_url"],
+          "properties": {
+            "login": {
+              "type": "string",
+              "description": "GitHub username",
+              "example": "octocat"
+            },
+            "avatar_url": {
+              "type": "string",
+              "format": "uri",
+              "description": "Avatar image URL",
+              "example": "https://avatars.githubusercontent.com/u/12345"
+            }
+          }
+        },
+        
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp of creation",
+          "example": "2025-10-01T09:00:00.000Z"
+        },
+        
+        "updated_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp of last update",
+          "example": "2025-10-15T14:30:00.000Z"
+        },
+        
+        "timeline": {
+          "type": "string",
+          "description": "Preferred timeline for fulfillment (optional)",
+          "example": "Within 3 months"
+        },
+        
+        "organizationType": {
+          "type": "string",
+          "enum": ["individual", "company", "nonprofit", "foundation"],
+          "description": "Type of organization (optional)"
+        },
+        
+        "organizationName": {
+          "type": "string",
+          "description": "Name of organization (optional)",
+          "example": "Acme Corp"
+        },
+        
+        "additionalNotes": {
+          "type": "string",
+          "description": "Additional context or notes (optional)"
+        }
+      }
+    }
+  },
+  
+  "examples": [
+    {
+      "schema_version": "1.0.0",
+      "generated_by": "OSS Wishlist Platform",
+      "data_source": "GitHub Issues (oss-wishlist/wishlists)",
+      "documentation": "https://github.com/oss-wishlist/oss-wishlist-website#data-api",
+      "wishlists": [
+        {
+          "id": 42,
+          "title": "Wishlist: Security audit for MyProject",
+          "url": "https://github.com/oss-wishlist/wishlists/issues/42",
+          "wishlistUrl": "https://oss-wishlist.org/fulfill?issue=42",
+          "projectTitle": "MyAwesomeProject",
+          "maintainerName": "octocat",
+          "wishes": ["dependency-security-audit", "governance-setup"],
+          "technologies": ["JavaScript", "Node.js", "React"],
+          "urgency": "high",
+          "status": "Open",
+          "labels": [
+            { "name": "high-priority", "color": "ff0000" },
+            { "name": "wishlist", "color": "268b8f" }
+          ],
+          "author": {
+            "login": "octocat",
+            "avatar_url": "https://avatars.githubusercontent.com/u/12345"
+          },
+          "created_at": "2025-10-01T09:00:00.000Z",
+          "updated_at": "2025-10-15T14:30:00.000Z",
+          "timeline": "Within 3 months",
+          "organizationType": "company",
+          "organizationName": "Acme Corp"
+        }
+      ],
+      "lastUpdated": "2025-10-20T12:34:56.789Z",
+      "count": 1
+    }
+  ]
+}

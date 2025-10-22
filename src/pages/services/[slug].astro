@@ -5,6 +5,8 @@ import { getCollection, getEntry } from 'astro:content';
 
 const basePath = getBasePath();
 
+export const prerender = true;
+
 // Generate static paths for all services
 export async function getStaticPaths() {
   const services = await getCollection('services');
@@ -51,14 +53,11 @@ const { Content } = await service.render();
           </div>
         </div>
 
-        <div class="grid md:grid-cols-2 gap-6 pt-6 border-t">
-          <div>
-            <h3 class="font-medium text-gray-900 mb-1">Time Estimate</h3>
-            <p class="text-gray-600">{service.data.estimated_hours}</p>
-          </div>
-          <div>
-            <h3 class="font-medium text-gray-900 mb-1">Service Level</h3>
-            <p class="text-gray-600 capitalize">{service.data.price_tier} complexity</p>
+        <div class="pt-6 border-t">
+          <div class="p-4 bg-blue-50 rounded-lg border border-blue-100">
+            <p class="text-sm text-gray-700">
+              💰 <strong>Pricing:</strong> Visit our <a href={`${basePath}pricing#${service.slug}`} class="text-blue-600 hover:text-blue-800 underline">pricing page</a> to see our tiered pricing for this service based on project size.
+            </p>
           </div>
         </div>
 

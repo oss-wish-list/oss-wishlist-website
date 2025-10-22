@@ -3,7 +3,6 @@ title: "Hosting and Infrastructure"
 description: "Cloud hosting, CI/CD pipelines, and infrastructure resources for open source projects to ensure reliable deployment and operations."
 type: "resource"
 service_type: "hosting"
-estimated_value: "$50-500/month"
 tags: ["infrastructure", "hosting", "devops"]
 featured: true
 prerequisites: "Active open source project requiring hosting or deployment infrastructure"

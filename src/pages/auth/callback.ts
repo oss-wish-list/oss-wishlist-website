@@ -51,13 +51,20 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
   
   // Check if this code was already used (prevents duplicate processing)
   if (usedCodes.has(code)) {
-    return new Response(null, {
-      status: 302,
-      headers: {
-        'Location': withBasePath('maintainers?auth=already_processed'),
-        'Cache-Control': 'no-cache, no-store, must-revalidate'
+    // Check if user has a valid session
+    const existingSession = cookies.get('github_session')?.value;
+    const sessionSecret = import.meta.env.OAUTH_STATE_SECRET;
+    
+    if (existingSession) {
+      const sessionData = verifySession(existingSession, sessionSecret);
+      if (sessionData) {
+        // User is logged in, redirect to maintainers without error
+        return redirect(withBasePath('maintainers'));
       }
-    });
+    }
+    
+    // No valid session, redirect to login
+    return redirect(withBasePath('login?returnTo=' + encodeURIComponent(withBasePath('maintainers'))));
   }
   
   // Mark this code as used immediately
@@ -75,13 +82,20 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
   
   // If no stored state, this might be a duplicate/refresh of the callback
   if (!storedState) {
-    return new Response(null, {
-      status: 302,
-      headers: {
-        'Location': withBasePath('maintainers?auth=already_processed'),
-        'Cache-Control': 'no-cache, no-store, must-revalidate'
+    // Check if user has a valid session
+    const existingSession = cookies.get('github_session')?.value;
+    const sessionSecret = import.meta.env.OAUTH_STATE_SECRET;
+    
+    if (existingSession) {
+      const sessionData = verifySession(existingSession, sessionSecret);
+      if (sessionData) {
+        // User is logged in, redirect to maintainers without error
+        return redirect(withBasePath('maintainers'));
       }
-    });
+    }
+    
+    // No valid session, redirect to login
+    return redirect(withBasePath('login?returnTo=' + encodeURIComponent(withBasePath('maintainers'))));
   }
   
   if (!verifyState(state, storedState)) {

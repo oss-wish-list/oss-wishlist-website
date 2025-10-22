@@ -195,9 +195,6 @@ if (issueNumber && GITHUB_TOKEN) {
                                 {serviceDetails.data.description}
                               </p>
                               <div class="flex flex-wrap gap-4 text-xs text-gray-500">
-                                {serviceDetails.data.estimated_hours && (
-                                  <span><strong>Time:</strong> {serviceDetails.data.estimated_hours}</span>
-                                )}
                                 {serviceDetails.data.service_type && (
                                   <span><strong>Type:</strong> {serviceDetails.data.service_type}</span>
                                 )}

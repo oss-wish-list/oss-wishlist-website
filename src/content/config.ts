@@ -20,10 +20,6 @@ const services = defineCollection({
       'hosting',
       'tool'
     ]),
-    price_tier: z.enum(['low', 'medium', 'high', 'enterprise']).optional(),
-    estimated_hours: z.string().optional(),
-    estimated_value: z.string().optional(),
-    flat_rate: z.string().optional(), // Flat rate pricing in USD (e.g., "$5,000", "$10,000")
     tags: z.array(z.string()),
     featured: z.boolean().default(false),
     available: z.boolean().default(true),

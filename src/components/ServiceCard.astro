@@ -4,8 +4,6 @@ const basePath = getBasePath();
 export interface Props {
   title: string;
   description: string;
-  price_tier: 'low' | 'medium' | 'high' | 'enterprise';
-  estimated_hours: string;
   slug: string;
   tags: string[];
   type: 'service' | 'resource';
@@ -13,14 +11,7 @@ export interface Props {
   unavailable_reason?: string;
 }
 
-const { title, description, price_tier, estimated_hours, slug, tags, type, available = true, unavailable_reason } = Astro.props;
-
-const priceTiers = {
-  low: { label: 'Budget', color: 'bg-gray-100 text-gray-800' },
-  medium: { label: 'Standard', color: 'bg-gray-200 text-gray-900' },
-  high: { label: 'Premium', color: 'bg-slate-100 text-slate-800' },
-  enterprise: { label: 'Enterprise', color: 'bg-gray-300 text-gray-900' }
-};
+const { title, description, slug, tags, type, available = true, unavailable_reason } = Astro.props;
 ---
 
 <div class={`service-card bg-white p-6 rounded-lg shadow-sm border transition-shadow ${!available ? 'opacity-60 grayscale' : 'hover:shadow-md'}`}>
@@ -42,9 +33,6 @@ const priceTiers = {
   </div>
   
   <div class="mb-4">
-    <div class="flex justify-between items-center mb-3">
-      <span class={`text-sm ${!available ? 'text-gray-400' : 'text-gray-500'}`}>Est. {estimated_hours}</span>
-    </div>
     <div class="flex flex-wrap gap-2">
       {tags.map(tag => (
         <span class={`px-2 py-1 text-xs rounded ${!available ? 'bg-gray-50 text-gray-400' : 'bg-gray-100 text-gray-600'}`}>
@@ -56,7 +44,7 @@ const priceTiers = {
   
   {available ? (
     <a 
-      href={`${basePath}/services/${slug}`} 
+      href={`${basePath}services/${slug}`} 
       class="inline-block bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition-colors text-sm font-medium"
     >
       Learn More

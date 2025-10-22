@@ -13,10 +13,10 @@ const services = await getCollection('services');
       <div class="text-center mb-12">
         <h1 class="text-5xl font-bold text-gray-900 mb-6">Services & Resources</h1>
         <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-          Each <b>service</b> addresses a critical project component that, when missing, outdated, or fragmented - can introduce significant risk. Our playbooks build on industry frameworks, best practices and metrics. These, and rubrics are openly licensed and welcome contributions.
+          Each <b>service</b> addresses a critical risk to project sustainability and which require expertise and time.
         </p>
         <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-          <b>Resources</b> are reflective of technology needs outside of pracitioner time, but which many projects require for sustainability.
+         <b>Resources</b> are those things which can be be solved purely with dollars.
         </p>
       </div>
 
@@ -75,7 +75,7 @@ const services = await getCollection('services');
 
             <div class="pt-4 border-t">
               {service.data.available ? (
-                <a href={`${basePath}/services/${service.slug}`} 
+                <a href={`${basePath}services/${service.slug}`} 
                    class="text-gray-600 font-medium hover:text-gray-700">
                   Learn more →
                 </a>

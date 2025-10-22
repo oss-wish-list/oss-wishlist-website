@@ -120,9 +120,10 @@ The placeholder page displays:
 
 ## 🛠️ Tech Stack
 
-- **Astro** (v4.x) - Static site framework
-- **Tailwind CSS** - Styling
-- **React** - Interactive components
+- **Astro** (v5.x) - SSR with Node adapter
+- **Tailwind CSS** (v3.x) - Styling
+- **React** + **TypeScript** - Interactive components
+- **GitHub OAuth** - Authentication
 - **Markdown** - Content management
 
 ## � Key Files & Folders

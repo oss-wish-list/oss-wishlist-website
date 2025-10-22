@@ -1,7 +1,8 @@
 ---
-question: "Don't the maintainers also get paid?"
-order: 7
+title: "Don't the maintainers also get paid?"
+description: "Learn about maintainer compensation and optional honorariums through OSS Wishlist"
 category: "general"
+order: 7
 ---
 
 Yes, and they absolutely should be! This platform is designed to help provide critical human support that many maintainers need - such as governance advice, security audits, funding strategy, and community moderation - **not to replace the need to pay maintainers for their work**.

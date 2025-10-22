@@ -14,9 +14,18 @@ interface AuthenticatedFormProps {
 export default function AuthenticatedForm({ children, user }: AuthenticatedFormProps) {
   useEffect(() => {
     if (!user) {
-      // Redirect to login page with return URL
-      const returnTo = encodeURIComponent(window.location.pathname + window.location.search);
-      window.location.href = `/oss-wishlist-website/login?returnTo=${returnTo}`;
+      // Get the current path relative to the base
+      const basePath = import.meta.env.BASE_URL || '';
+      const currentPath = window.location.pathname;
+      
+      // Strip the base path if it exists to get the relative path
+      const relativePath = currentPath.startsWith(basePath) 
+        ? currentPath.slice(basePath.length) || '/'
+        : currentPath;
+      
+      // Redirect to login page with return URL (relative path only)
+      const returnTo = encodeURIComponent(relativePath + window.location.search);
+      window.location.href = `${basePath}/login?returnTo=${returnTo}`;
     }
   }, [user]);
 

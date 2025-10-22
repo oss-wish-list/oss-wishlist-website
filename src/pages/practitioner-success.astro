@@ -1,0 +1,113 @@
+---
+import { getBasePath } from '../lib/paths';
+import Layout from '../components/Layout.astro';
+
+const basePath = getBasePath();
+---
+
+<Layout title="Application Submitted - OSS Wishlist" description="Your practitioner application has been successfully submitted">
+  <section class="py-16 bg-gradient-to-br from-green-50 to-green-100">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="bg-white rounded-lg shadow-sm border p-8 text-center">
+        <!-- Success Icon -->
+        <div class="mb-6">
+          <svg class="w-16 h-16 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+
+        <!-- Success Message -->
+        <h1 class="text-3xl font-bold text-gray-900 mb-4">
+          Application Submitted Successfully!
+        </h1>
+        <p class="text-lg text-gray-600 mb-8">
+          Thank you for applying to become a practitioner. We'll review your application and get back to you soon.
+        </p>
+
+        <!-- Community Callout -->
+        <div class="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-6 mb-8">
+          <div class="flex items-center justify-center gap-3 mb-3">
+            <svg class="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5-9h10v2H7z"></path>
+            </svg>
+            <h3 class="text-xl font-semibold text-gray-900">Join Our Community</h3>
+          </div>
+          <p class="text-gray-700 text-center mb-4">
+            While you wait, join our Slack community and say hi! Connect with maintainers, practitioners, and supporters.
+          </p>
+          <div class="text-center">
+            <a 
+              href="https://join.slack.com/t/opensourcewishlist/shared_invite/zt-3dvyh48xf-y6uqKHyd6Ur~WfkcawReuQ" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-2 bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors"
+            >
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zM8.834 6.313a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528 2.528 0 0 1 2.522-2.521h6.312zM18.956 8.834a2.528 2.528 0 0 1 2.522-2.521A2.528 2.528 0 0 1 24 8.834a2.528 2.528 0 0 1-2.522 2.521h-2.522V8.834zM17.688 8.834a2.528 2.528 0 0 1-2.523 2.521 2.527 2.527 0 0 1-2.52-2.521V2.522A2.527 2.527 0 0 1 15.165 0a2.528 2.528 0 0 1 2.523 2.522v6.312zM15.165 18.956a2.528 2.528 0 0 1 2.523 2.522A2.528 2.528 0 0 1 15.165 24a2.527 2.527 0 0 1-2.52-2.522v-2.522h2.52zM15.165 17.688a2.527 2.527 0 0 1-2.52-2.523 2.526 2.526 0 0 1 2.52-2.52h6.313A2.527 2.527 0 0 1 24 15.165a2.528 2.528 0 0 1-2.522 2.523h-6.313z"/>
+              </svg>
+              Join Slack Community
+            </a>
+          </div>
+        </div>
+
+        <!-- Next Steps -->
+        <div class="bg-gray-50 rounded-lg p-6 mb-8 text-left">
+          <h2 class="text-xl font-semibold text-gray-900 mb-4">What Happens Next?</h2>
+          <ol class="space-y-3 text-gray-700">
+            <li class="flex items-start">
+              <span class="flex-shrink-0 w-6 h-6 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm font-semibold mr-3">1</span>
+              <span>Our team will review your application (typically within 3-5 business days)</span>
+            </li>
+            <li class="flex items-start">
+              <span class="flex-shrink-0 w-6 h-6 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm font-semibold mr-3">2</span>
+              <span>We'll verify your expertise and experience</span>
+            </li>
+            <li class="flex items-start">
+              <span class="flex-shrink-0 w-6 h-6 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm font-semibold mr-3">3</span>
+              <span>You'll receive an email with next steps or any questions we might have</span>
+            </li>
+            <li class="flex items-start">
+              <span class="flex-shrink-0 w-6 h-6 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm font-semibold mr-3">4</span>
+              <span>Once approved, your profile will be added to our practitioner directory</span>
+            </li>
+          </ol>
+        </div>
+
+        <!-- Helpful Resources -->
+        <div class="bg-blue-50 rounded-lg p-6 mb-8 text-left">
+          <h2 class="text-xl font-semibold text-gray-900 mb-4">Helpful Resources</h2>
+          <div class="space-y-3">
+            <a href={`${basePath}pricing`} class="flex items-center text-blue-600 hover:text-blue-800">
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <span class="font-medium">View Service Pricing Tiers</span>
+            </a>
+            <a href={`${basePath}faq`} class="flex items-center text-blue-600 hover:text-blue-800">
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <span class="font-medium">Frequently Asked Questions</span>
+            </a>
+            <a href={`${basePath}catalog`} class="flex items-center text-blue-600 hover:text-blue-800">
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+              </svg>
+              <span class="font-medium">Browse Service Catalog</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a href={basePath} class="bg-gray-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
+            Return to Home
+          </a>
+          <a href={`${basePath}practitioners`} class="border border-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+            Browse Practitioners
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

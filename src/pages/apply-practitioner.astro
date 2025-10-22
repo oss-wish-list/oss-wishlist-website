@@ -24,28 +24,9 @@ const serviceCategories = [...new Set(services.map(s => s.data.service_category 
           Sign up as an <span class="text-gray-600">Open Source  Practitioner</span>
         </h1>
         <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-          Join our community of verified practitioners and help open source projects thrive. 
-          Connect with maintainers who need your expertise.
+          Help open source projects thrive by offering your verified expertise. 
+          Connect with maintainers who need your skills.
         </p>
-      </div>
-
-      <!-- Benefits Section -->
-      <div class="bg-gray-100 rounded-lg p-8 mb-12">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Why Join Our Practitioner Community?</h2>
-        <div class="grid md:grid-cols-3 gap-6">
-          <div class="text-center">
-            <h3 class="font-semibold text-gray-900 mb-2">Connect with opportunity</h3>
-            <p class="text-sm text-gray-700">Connect with projects that need your specific skills and get paid for your expertise.</p>
-          </div>
-          <div class="text-center">
-            <h3 class="font-semibold text-gray-900 mb-2">Build Reputation</h3>
-            <p class="text-sm text-gray-700">Showcase your expertise and build credibility in the open source community.</p>
-          </div>
-          <div class="text-center">
-            <h3 class="font-semibold text-gray-900 mb-2">Give Back</h3>
-            <p class="text-sm text-gray-700">Help open source projects overcome challenges, and  improve the sustainability of the ecosystem</p>
-          </div>
-        </div>
       </div>
 
     <!-- Application Form -->
@@ -141,7 +122,9 @@ const serviceCategories = [...new Set(services.map(s => s.data.service_category 
               <label class="flex items-start" key={service.slug}>
                 <input type="checkbox" name="specialties" value={service.data.title} class="mr-2 rounded mt-1" />
                 <span class="text-sm">
-                  {service.data.title}
+                  <a href={`${basePath}services/${service.slug}`} target="_blank" class="text-blue-600 hover:text-blue-800 underline">
+                    {service.data.title}
+                  </a>
                   {service.data.service_category && (
                     <span class="text-xs text-gray-500 block">({service.data.service_category})</span>
                   )}
@@ -378,9 +361,9 @@ const serviceCategories = [...new Set(services.map(s => s.data.service_category 
         const result = await response.json();
 
         if (response.ok && result.success) {
-          // Show success message
-          alert('Application submitted successfully! We\'ll review it and get back to you within 5-7 business days.');
-          this.reset();
+          // Redirect to success page
+          const basePath = import.meta.env.BASE_URL || '';
+          window.location.href = `${basePath}/practitioner-success`;
         } else {
           throw new Error(result.error || 'Failed to submit application');
         }

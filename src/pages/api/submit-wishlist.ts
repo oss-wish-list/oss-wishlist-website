@@ -36,6 +36,10 @@ export const POST: APIRoute = async ({ request }) => {
     
     const { title, body: issueBody, labels, formData, isUpdate, issueNumber } = validationResult.data;
 
+    // Get origin and basePath for URLs
+    const origin = new URL(request.url).origin;
+    const basePath = import.meta.env.BASE_URL || '';
+
     // Add 'funding-yml-requested' label if user wants FUNDING.yml PR
     let finalLabels = labels || ['wishlist'];
     if (formData?.createFundingPR === true) {
@@ -86,20 +90,41 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
-    // If this is an update, add a comment instead of creating a new issue
+    // If this is an update, update the issue body AND add a comment
     if (isUpdate && issueNumber) {
       const updateTimestamp = new Date().toISOString();
       
+      // First, update the issue body itself
+      const updateIssueResponse = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.ORG}/${GITHUB_CONFIG.REPO}/issues/${issueNumber}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${githubToken}`,
+          'Accept': 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json',
+          'User-Agent': 'OSS-Wishlist-Bot'
+        },
+        body: JSON.stringify({
+          body: finalIssueBody
+        })
+      });
+
+      if (!updateIssueResponse.ok) {
+        const errorData = await updateIssueResponse.text();
+        console.error('GitHub API error updating issue:', updateIssueResponse.status, errorData);
+        return jsonError(
+          'Failed to update wishlist',
+          updateIssueResponse.status === 401 ? 'Authentication failed' : 'GitHub API error',
+          updateIssueResponse.status
+        );
+      }
+      
+      // Then, add a comment to notify about the update
       const commentBody = `## 📝 Wishlist Updated
 
-The wishlist has been updated with the following information:
+This wishlist has been updated.
 
-${finalIssueBody}
-
----
 **Last Updated:** ${updateTimestamp}
 
----
 *Updated via [OSS Wishlist Platform](${import.meta.env.PUBLIC_SITE_URL || 'https://oss-wishlist.com'})*`;
 
       const response = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.ORG}/${GITHUB_CONFIG.REPO}/issues/${issueNumber}/comments`, {
@@ -139,9 +164,6 @@ ${finalIssueBody}
       const issue = await issueResponse.json();
       
       // Cache the updated wishlist and refresh the main cache
-      const origin = new URL(request.url).origin;
-      const basePath = import.meta.env.BASE_URL || '';
-      
       // Cache this specific wishlist
       fetch(`${origin}${basePath}/api/cache-wishlist?issueNumber=${issueNumber}`).catch(() => {});
       
@@ -163,6 +185,32 @@ ${finalIssueBody}
     }
 
     // Create GitHub issue via API
+    // First, get the latest issue number to predict the next one
+    let nextIssueNumber: number | null = null;
+    try {
+      const latestIssueResponse = await fetch(`${GITHUB_CONFIG.API_ISSUES_URL}?per_page=1&state=all&sort=created&direction=desc`, {
+        headers: {
+          'Authorization': `Bearer ${githubToken}`,
+          'Accept': 'application/vnd.github.v3+json',
+          'User-Agent': 'OSS-Wishlist-Bot'
+        }
+      });
+      
+      if (latestIssueResponse.ok) {
+        const latestIssues = await latestIssueResponse.json();
+        if (latestIssues.length > 0) {
+          nextIssueNumber = latestIssues[0].number + 1;
+        }
+      }
+    } catch (error) {
+      console.warn('Could not fetch latest issue number:', error);
+    }
+    
+    // Add fulfillment link to the issue body if we have a predicted issue number
+    if (nextIssueNumber) {
+      finalIssueBody += `\n\n---\n\n**🎯 Fulfill this wishlist:** ${origin}${basePath}/fulfill?issue=${nextIssueNumber}`;
+    }
+    
     const response = await fetch(GITHUB_CONFIG.API_ISSUES_URL, {
       method: 'POST',
       headers: {
@@ -191,9 +239,6 @@ ${finalIssueBody}
     const issue = await response.json();
     
     // Cache the individual wishlist and refresh the all-wishlists cache
-    const origin = new URL(request.url).origin;
-    const basePath = import.meta.env.BASE_URL || '';
-    
     // Cache this specific wishlist
     fetch(`${origin}${basePath}/api/cache-wishlist?issueNumber=${issue.number}`).catch(() => {});
     

@@ -2,6 +2,7 @@
 import type { APIRoute } from 'astro';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
+import { z } from 'zod';
 import { GITHUB_CONFIG } from '../../config/github.js';
 import { parseIssueForm } from '../../lib/issue-form-parser.js';
 
@@ -9,16 +10,45 @@ export const prerender = false;
 
 const CACHE_DIR = join(process.cwd(), 'public', 'wishlist-cache');
 
+// Validation schema for wishlist data
+const WishlistDataSchema = z.object({
+  id: z.number().int().positive(),
+  title: z.string().min(1),
+  url: z.string().url(),
+  wishlistUrl: z.string().url(),
+  projectTitle: z.string().min(1),
+  maintainerName: z.string().min(1),
+  wishes: z.array(z.string()).min(1),
+  technologies: z.array(z.string()).optional(),
+  urgency: z.enum(['low', 'medium', 'high']),
+  status: z.enum(['Open', 'Closed']),
+  labels: z.array(z.object({
+    name: z.string(),
+    color: z.string().regex(/^[0-9a-fA-F]{6}$/)
+  })),
+  author: z.object({
+    login: z.string(),
+    avatar_url: z.string().url()
+  }),
+  created_at: z.string().datetime(),
+  updated_at: z.string().datetime(),
+  timeline: z.string().optional(),
+  organizationType: z.enum(['individual', 'company', 'nonprofit', 'foundation']).optional(),
+  organizationName: z.string().optional(),
+  additionalNotes: z.string().optional(),
+});
+
 interface WishlistData {
   id: number;
   title: string;
   url: string;
+  wishlistUrl: string;
   projectTitle: string;
   maintainerName: string;
   wishes: string[];
   technologies?: string[];
-  urgency: string;
-  status: string;
+  urgency: 'low' | 'medium' | 'high';
+  status: 'Open' | 'Closed';
   labels: Array<{ name: string; color: string }>;
   author: {
     login: string;
@@ -26,7 +56,6 @@ interface WishlistData {
   };
   created_at: string;
   updated_at: string;
-  // Optional form fields
   timeline?: string;
   organizationType?: 'individual' | 'company' | 'nonprofit' | 'foundation';
   organizationName?: string;
@@ -49,10 +78,17 @@ async function cacheWishlist(wishlist: WishlistData) {
   const filepath = join(CACHE_DIR, filename);
   
   try {
-    await writeFile(filepath, JSON.stringify(wishlist, null, 2));
+    // Validate data before caching
+    const validatedWishlist = WishlistDataSchema.parse(wishlist);
+    
+    await writeFile(filepath, JSON.stringify(validatedWishlist, null, 2));
     return true;
   } catch (error) {
-    console.error(`Error caching wishlist ${wishlist.id}:`, error);
+    if (error instanceof z.ZodError) {
+      console.error(`Validation error for wishlist ${wishlist.id}:`, error.errors);
+    } else {
+      console.error(`Error caching wishlist ${wishlist.id}:`, error);
+    }
     return false;
   }
 }
@@ -64,6 +100,9 @@ async function updateMasterIndex(wishlists: WishlistData[]) {
   
   try {
     await writeFile(filepath, JSON.stringify({
+      schema_version: '1.0.0',
+      generated_by: 'OSS Wishlist Platform',
+      data_source: 'GitHub Issues (oss-wishlist/wishlists)',
       wishlists,
       lastUpdated: new Date().toISOString(),
       count: wishlists.length
@@ -101,19 +140,68 @@ async function fetchAndCacheWishlist(issueNumber: number): Promise<WishlistData 
 
     const issue = await response.json();
     
-    // Parse the issue body
-    const parsed = parseIssueForm(issue.body || '');
+    // Fetch comments to get the most recent update
+    const commentsResponse = await fetch(
+      `https://api.github.com/repos/${GITHUB_CONFIG.ORG}/${GITHUB_CONFIG.REPO}/issues/${issueNumber}/comments`,
+      {
+        headers: {
+          'Authorization': `Bearer ${githubToken}`,
+          'Accept': 'application/vnd.github.v3+json',
+        },
+      }
+    );
+
+    let bodyToParse = issue.body || '';
+    
+    if (commentsResponse.ok) {
+      const comments = await commentsResponse.json();
+      
+      // Find the most recent "Wishlist Updated" comment
+      const updateComments = comments.filter((comment: any) => 
+        comment.body && comment.body.includes('📝 Wishlist Updated')
+      );
+      
+      if (updateComments.length > 0) {
+        // Get the most recent update comment
+        const latestUpdate = updateComments[updateComments.length - 1];
+        
+        // Extract the wishlist data from the comment body
+        // The comment format is: "## 📝 Wishlist Updated\n\nThe wishlist has been updated with the following information:\n\n{actualData}"
+        const updateMatch = latestUpdate.body.match(/following information:\s*\n\n([\s\S]+?)\n\n---/);
+        if (updateMatch && updateMatch[1]) {
+          bodyToParse = updateMatch[1];
+        }
+      }
+    }
+    
+    // Parse the most recent body (either from latest update comment or original issue)
+    const parsed = parseIssueForm(bodyToParse);
+    
+    // Build the wishlist URL (platform URL, not GitHub)
+    const basePath = import.meta.env.BASE_URL || '';
+    const origin = import.meta.env.SITE_URL || 'http://localhost:4324';
+    const wishlistUrl = `${origin}${basePath}/fulfill?issue=${issue.number}`;
+    
+    // Normalize urgency to valid enum value
+    const normalizeUrgency = (urgency: string): 'low' | 'medium' | 'high' => {
+      const normalized = urgency.toLowerCase();
+      if (normalized === 'low' || normalized === 'medium' || normalized === 'high') {
+        return normalized as 'low' | 'medium' | 'high';
+      }
+      return 'medium'; // Default fallback
+    };
     
     // Create wishlist data
     const wishlistData: WishlistData = {
       id: issue.number,
       title: issue.title,
       url: issue.html_url,
+      wishlistUrl: wishlistUrl,
       projectTitle: parsed.project,
       maintainerName: parsed.maintainer || issue.user?.login || 'Unknown',
       wishes: parsed.services,
       technologies: parsed.technologies,
-      urgency: parsed.urgency,
+      urgency: normalizeUrgency(parsed.urgency),
       status: issue.state === 'open' ? 'Open' : 'Closed',
       labels: issue.labels.map((label: any) => ({
         name: label.name,

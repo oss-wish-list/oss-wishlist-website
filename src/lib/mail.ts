@@ -106,35 +106,28 @@ async function sendViaResend(options: EmailOptions): Promise<EmailResult> {
     throw new Error('RESEND_API_KEY not configured');
   }
   
+  const { Resend } = await import('resend');
+  const resend = new Resend(apiKey);
+  
   const from = getFromAddress(options.from);
   const fromString = from.name ? `${from.name} <${from.email}>` : from.email;
   
-  const response = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      from: fromString,
-      to: Array.isArray(options.to) ? options.to : [options.to],
-      subject: options.subject,
-      text: options.text,
-      html: options.html
-    })
+  const result = await resend.emails.send({
+    from: fromString,
+    to: Array.isArray(options.to) ? options.to : [options.to],
+    subject: options.subject,
+    text: options.text,
+    html: options.html
   });
   
-  if (!response.ok) {
-    const errorData = await response.text();
-    throw new Error(`Resend API error: ${errorData}`);
+  if (result.error) {
+    throw new Error(`Resend API error: ${JSON.stringify(result.error)}`);
   }
-  
-  const result = await response.json();
   
   return {
     success: true,
     provider: 'resend',
-    messageId: result.id
+    messageId: result.data?.id
   };
 }
 

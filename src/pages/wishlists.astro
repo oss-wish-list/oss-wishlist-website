@@ -28,126 +28,88 @@ const urgencyColors = {
 
 <Layout title="Browse Project Wishlists - OSS Wishlist" description="Discover open source projects seeking support. Find opportunities to sponsor, contribute, or provide services to maintainers.">
   <AuthenticatedForm client:load user={user}>
-  <!-- Hero Section -->
-  <section class="bg-gradient-to-br from-gray-100 to-gray-200 py-16">
+  <!-- Compact Hero & Filters Section -->
+  <section class="bg-gradient-to-br from-gray-100 to-gray-200 py-8 border-b">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-12">
-        <h1 class="text-5xl font-bold text-gray-900 mb-6">
-          Discover Projects <span class="text-gray-700">Seeking Support</span>
+      <!-- Header -->
+      <div class="mb-6">
+        <h1 class="text-4xl font-bold text-gray-900 mb-2">
+          Project Wishlists
         </h1>
-        <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-          Browse public wishlists from open source maintainers looking for funding, services, and strategic support. 
-          Find projects that align with your interests or business needs.
+        <p class="text-gray-600 max-w-2xl">
+          Browse open source maintainers seeking support. <a href={`${basePath}/maintainers`} class="text-gray-700 underline hover:text-gray-900">Create your wishlist</a>
         </p>
-        
+      </div>
+      
+      <!-- Search & Filter Inline -->
+      <div class="grid md:grid-cols-12 gap-4 items-center">
         <!-- Search Bar -->
-        <div class="max-w-2xl mx-auto mb-8">
+        <div class="md:col-span-5">
           <div class="relative">
             <input 
               type="text" 
               id="searchInput"
-              placeholder="Search by project name..."
-              class="w-full px-6 py-4 text-lg border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500 pl-12"
+              placeholder="Search projects..."
+              class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500 pl-10"
             />
-            <svg class="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
             </svg>
           </div>
-          <div class="flex items-center justify-between mt-2">
-            <p class="text-sm text-gray-500">Search across GitHub wishlist issues</p>
-            <button 
-              disabled 
-              class="text-sm text-gray-400 px-3 py-1 rounded border border-gray-300 cursor-not-allowed bg-gray-100"
-              title="Coming soon - bulk project search via CSV upload"
-            >
-              Bulk Search (Coming Soon)
-            </button>
-          </div>
         </div>
         
-        <div class="flex justify-center space-x-4">
-          <a href="#filter" class="bg-gray-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
-            Browse Public Wishlists
-          </a>
-          <a href={`${basePath}/maintainers`} class="border border-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
-            Create Your Wishlist
-          </a>
+        <!-- Quick Filters -->
+        <div class="md:col-span-4 flex flex-wrap gap-2">
+          <button class="px-3 py-1.5 text-sm bg-white border rounded-lg hover:bg-gray-50 transition-colors">All</button>
+          <button class="px-3 py-1.5 text-sm bg-white border rounded-lg hover:bg-gray-50 transition-colors">High Urgency</button>
         </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Stats Section -->
-  <section class="py-12 bg-white border-b">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid md:grid-cols-3 gap-8 text-center">
-        <div>
-          <div class="text-3xl font-bold text-gray-600" id="wishlist-count">Loading...</div>
-          <p class="text-gray-600">Active Wishlists</p>
-        </div>
-        <div>
-          <div class="text-3xl font-bold text-gray-600" id="technologies-count">0</div>
-          <p class="text-gray-600">Technologies Represented</p>
-        </div>
-        <div>
-          <div class="text-3xl font-bold text-gray-600">0</div>
-          <p class="text-gray-600">Wishes Fulfilled</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Filters Section -->
-  <section id="filter" class="py-8 bg-gray-50 border-b">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex flex-wrap gap-4 items-center justify-between">
-        <div class="flex flex-wrap gap-2">
-          <button class="px-4 py-2 bg-white border rounded-lg hover:bg-gray-50 transition-colors">All Projects</button>
-          <button class="px-4 py-2 bg-white border rounded-lg hover:bg-gray-50 transition-colors">High Urgency</button>
-          <button class="px-4 py-2 bg-white border rounded-lg hover:bg-gray-50 transition-colors">Popular (1K+ stars)</button>
-        </div>
-        <div class="flex gap-2">
-          <select class="px-3 py-2 bg-white border rounded-lg">
-            <option>All Technologies</option>
+        
+        <!-- Dropdowns -->
+        <div class="md:col-span-3 flex gap-2">
+          <select class="flex-1 px-3 py-2 text-sm bg-white border rounded-lg">
+            <option>All Tech</option>
             <option>JavaScript</option>
             <option>Python</option>
             <option>Rust</option>
-            <option>DevOps</option>
           </select>
-          <select class="px-3 py-2 bg-white border rounded-lg">
-            <option>Sort by Recent</option>
-            <option>Sort by Popularity</option>
-            <option>Sort by Urgency</option>
+          <select class="flex-1 px-3 py-2 text-sm bg-white border rounded-lg">
+            <option>Recent</option>
+            <option>Popular</option>
+            <option>Urgent</option>
           </select>
+        </div>
+      </div>
+      
+      <!-- Stats Bar -->
+      <div class="mt-4 flex items-center justify-between text-sm text-gray-600">
+        <div class="flex gap-6">
+          <span><strong id="wishlist-count" class="text-gray-900">Loading...</strong> active wishlists</span>
+          <span><strong id="technologies-count" class="text-gray-900">0</strong> technologies</span>
+        </div>
+        <div id="searchResults" class="hidden">
+          <span id="resultCount">0</span> project(s) found
         </div>
       </div>
     </div>
   </section>
 
   <!-- Wishlists Grid -->
-  <section class="py-16 bg-white">
+  <section class="py-8 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <!-- Search Results Info -->
-      <div id="searchResults" class="mb-6 hidden">
-        <p class="text-gray-600">
-          <span id="resultCount">0</span> project(s) found for "<span id="searchTerm"></span>"
-        </p>
-      </div>
-      
       <!-- No Results Message -->
       <div id="noResults" class="text-center py-12 hidden">
         <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 20a7.962 7.962 0 01-5-1.709M15 17a2 2 0 11-4 0 2 2 0 014 0z"></path>
         </svg>
         <h3 class="text-lg font-medium text-gray-900 mb-2">No projects found</h3>
-        <p class="text-gray-600">Try adjusting your search terms or browse all projects below.</p>
+        <p class="text-gray-600">Try adjusting your search terms</p>
       </div>
 
-      <div id="wishlistsGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8" data-base-path={basePath}>
+      <div id="wishlistsGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" data-base-path={basePath}>
         <!-- Loading state -->
         <div id="loading" class="col-span-full text-center py-12">
-          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-600 mx-auto mb-4"></div>
-          <p class="text-gray-600">Loading wishlists from GitHub...</p>
+          <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-600 mx-auto mb-3"></div>
+          <p class="text-sm text-gray-600">Loading wishlists...</p>
         </div>
         
         <!-- Wishlists will be populated by JavaScript -->
@@ -326,7 +288,7 @@ const urgencyColors = {
         <div class="flex items-center justify-between pt-4 border-t">
           <div class="flex space-x-2">
             <a 
-              href="/oss-wishlist-website/fulfill?issue=${wishlist.id}"
+              href="${wishlist.wishlistUrl || `${basePath}/fulfill?issue=${wishlist.id}`}"
               class="bg-gray-900 text-white px-4 py-2 rounded text-sm hover:bg-gray-800 transition-colors"
             >
               Fulfill this wish
