@@ -211,6 +211,9 @@ This person specializes in...
 ### Project Status
 This is a working demo platform connecting open source maintainers with practitioners and ecosystem sponsors.
 
+### AI Assistance
+Portions of this codebase were developed with assistance from AI tools, specifically GitHub Copilot with Claude Sonnet 4.5. All AI-generated code has been reviewed, tested, and modified to meet project standards and security requirements.
+
 ### Contributing
 The platform uses markdown-based content management. To add new content, create markdown files in the appropriate `src/content/` subdirectory.
 
