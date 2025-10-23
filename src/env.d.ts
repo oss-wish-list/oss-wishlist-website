@@ -20,6 +20,9 @@ interface ImportMetaEnv {
   readonly NODE_ENV: 'development' | 'production' | 'test';
   readonly PUBLIC_SITE_URL: string;
   readonly DISABLE_INDEXING?: string;
+  readonly REQUIRE_BASIC_AUTH?: string;
+  readonly BASIC_AUTH_USER?: string;
+  readonly BASIC_AUTH_PASSWORD?: string;
 }
 
 interface ImportMeta {

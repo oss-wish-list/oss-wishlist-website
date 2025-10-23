@@ -38,12 +38,13 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const { url, cookies, locals, redirect, request } = context;
   
   // Basic Auth for staging environment
-  const requireBasicAuth = import.meta.env.REQUIRE_BASIC_AUTH === 'true';
+  // Use process.env for server-side runtime variables in Node adapter
+  const requireBasicAuth = process.env.REQUIRE_BASIC_AUTH === 'true';
   
   if (requireBasicAuth) {
     const authHeader = request.headers.get('Authorization');
-    const expectedUser = import.meta.env.BASIC_AUTH_USER || 'staging';
-    const expectedPass = import.meta.env.BASIC_AUTH_PASSWORD || 'changeme';
+    const expectedUser = process.env.BASIC_AUTH_USER || 'staging';
+    const expectedPass = process.env.BASIC_AUTH_PASSWORD || 'changeme';
     
     if (!authHeader || !authHeader.startsWith('Basic ')) {
       return new Response('Unauthorized', {
