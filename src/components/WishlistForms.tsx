@@ -1035,7 +1035,7 @@ ${wishlistData.additionalNotes || 'None provided'}
 
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <a
-                  href={`${window.location.origin}${import.meta.env.BASE_URL || ''}/fulfill?issue=${success.issueNumber}`}
+                  href={`${window.location.origin}${import.meta.env.BASE_URL || ''}fulfill?issue=${success.issueNumber}`}
                   className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 inline-flex items-center justify-center"
                 >
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

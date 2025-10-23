@@ -180,7 +180,7 @@ async function fetchAndCacheWishlist(issueNumber: number): Promise<WishlistData 
     // Build the wishlist URL (platform URL, not GitHub)
     const basePath = import.meta.env.BASE_URL || '';
     const origin = import.meta.env.SITE_URL || 'http://localhost:4324';
-    const wishlistUrl = `${origin}${basePath}/fulfill?issue=${issue.number}`;
+    const wishlistUrl = `${origin}${basePath}fulfill?issue=${issue.number}`;
     
     // Normalize urgency to valid enum value
     const normalizeUrgency = (urgency: string): 'low' | 'medium' | 'high' => {
