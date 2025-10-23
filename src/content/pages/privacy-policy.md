@@ -101,6 +101,23 @@ The following information is **intentionally public**:
 - Approved practitioner profiles
 - Project repository information
 
+### Public JSON Data Feed
+We provide a **public JSON data feed** of all wishlists at `/wishlist-cache/all-wishlists.json`. This feed contains:
+- All public wishlist information (project names, services needed, descriptions, etc.)
+- No personal authentication data or private information
+
+**Purpose:** To enable third-party integrations and discovery tools.
+
+**Third-Party Access:** This JSON feed is publicly accessible and may be ingested by third-party services, including:
+- **[Ecosyste.ms](https://ecosyste.ms/):** An open source project discovery and analysis platform (see [Ecosyste.ms Privacy Policy](https://ecosyste.ms/privacy))
+
+**Data Synchronization:** When you delete or close a wishlist through our UI:
+1. The wishlist is immediately removed from our JSON feed
+2. Third-party services that have ingested the data (like ecosyste.ms) will receive the update on their next synchronization cycle
+3. **Note:** We cannot control the exact timing of when third-party services refresh their cached data. Most services sync periodically (daily or weekly).
+
+**Deletion Propagation:** While we remove data immediately from our systems, it may take additional time for third-party integrations to reflect deletions. Contact the third-party service directly if you need urgent removal from their systems.
+
 ### Third-Party Services
 We use the following third-party services:
 - **GitHub:** For authentication and wishlist storage (see [GitHub Privacy Statement](https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement))
