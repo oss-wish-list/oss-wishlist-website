@@ -208,7 +208,7 @@ This wishlist has been updated.
     
     // Add fulfillment link to the issue body if we have a predicted issue number
     if (nextIssueNumber) {
-      finalIssueBody += `\n\n---\n\n**🎯 Fulfill this wishlist:** ${origin}${basePath}/fulfill?issue=${nextIssueNumber}`;
+      finalIssueBody += `\n\n---\n\n**🎯 Fulfill this wishlist:** ${origin}${basePath}fulfill?issue=${nextIssueNumber}`;
     }
     
     const response = await fetch(GITHUB_CONFIG.API_ISSUES_URL, {

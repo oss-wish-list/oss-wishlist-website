@@ -1,0 +1,61 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../components/Layout.astro';
+import { getBasePath } from '../lib/paths';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const pages = await getCollection('pages');
+  return pages.map((page) => ({
+    params: { slug: page.slug },
+    props: { page },
+  }));
+}
+
+const { page } = Astro.props;
+const { Content } = await page.render();
+const basePath = getBasePath();
+---
+
+<Layout 
+  title={`${page.data.title} - OSS Wishlist`} 
+  description={page.data.description || page.data.title}
+>
+  <article class="py-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Date only (title is in content) -->
+      {page.data.date && (
+        <div class="mb-8">
+          <p class="text-sm text-gray-500">
+            Last updated: {new Date(page.data.date).toLocaleDateString('en-US', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            })}
+          </p>
+        </div>
+      )}
+
+      <!-- Content -->
+      <div class="prose prose-lg prose-gray max-w-none">
+        <Content />
+      </div>
+
+      <!-- Footer Actions -->
+      <div class="mt-12 pt-8 border-t border-gray-200">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <p class="text-sm text-gray-500">
+            Questions about this policy? Contact us at <a href="mailto:info@oss-wishlist.com" class="text-blue-600 hover:text-blue-800">info@oss-wishlist.com</a>
+          </p>
+          <a 
+            href={`${basePath}/`}
+            class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900"
+          >
+            ← Back to Home
+          </a>
+        </div>
+      </div>
+    </div>
+  </article>
+</Layout>
