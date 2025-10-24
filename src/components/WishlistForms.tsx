@@ -76,7 +76,7 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
   const [loadingRepos, setLoadingRepos] = useState(false);
   const [selectedRepo, setSelectedRepo] = useState<GitHubRepository | null>(null);
   const [selectedAction, setSelectedAction] = useState<'create' | 'edit' | 'close' | null>(null);
-  const [existingWishlists, setExistingWishlists] = useState<Record<string, { issueUrl: string; issueNumber: number }>>({});
+  const [existingWishlists, setExistingWishlists] = useState<Record<string, { issueUrl: string; issueNumber: number; isApproved?: boolean }>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState<{
@@ -85,6 +85,7 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
     issueTitle: string;
     isUpdate?: boolean;
   } | null>(null);
+  const [wishlistApprovalStatus, setWishlistApprovalStatus] = useState<Record<number, boolean>>({});
   const [manualRepoUrl, setManualRepoUrl] = useState('');
   const [manualRepoData, setManualRepoData] = useState<{
     name: string;
@@ -209,18 +210,25 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
       
       if (response.ok) {
         const data = await response.json();
-        const existingMap: Record<string, { issueUrl: string; issueNumber: number }> = {};
+        const existingMap: Record<string, { issueUrl: string; issueNumber: number; isApproved?: boolean }> = {};
+        const approvalMap: Record<number, boolean> = {};
         
         for (const [url, info] of Object.entries(data.results)) {
           if ((info as any).exists) {
+            const issueNumber = (info as any).issueNumber;
+            const isApproved = (info as any).isApproved || false;
+            
             existingMap[url] = {
               issueUrl: (info as any).issueUrl,
-              issueNumber: (info as any).issueNumber,
+              issueNumber: issueNumber,
+              isApproved: isApproved,
             };
+            approvalMap[issueNumber] = isApproved;
           }
         }
         
         setExistingWishlists(existingMap);
+        setWishlistApprovalStatus(approvalMap);
       }
     } catch (err) {
       console.error('Error checking existing wishlists:', err);
@@ -744,9 +752,18 @@ ${wishlistData.additionalNotes || 'None provided'}
                         <div className="flex-1">
                           <div className="flex items-start justify-between gap-2">
                             <h4 className="font-semibold text-gray-900">{repo.name}</h4>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 flex-wrap justify-end">
                               {hasExistingWishlist ? (
                                 <>
+                                  {hasExistingWishlist.isApproved ? (
+                                    <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800 border border-green-200 flex items-center gap-1 shrink-0">
+                                      ✓ Approved
+                                    </span>
+                                  ) : (
+                                    <span className="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200 flex items-center gap-1 shrink-0">
+                                      ⏳ Pending
+                                    </span>
+                                  )}
                                   <button
                                     type="button"
                                     onClick={(e) => {
