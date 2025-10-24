@@ -18,23 +18,9 @@ on:
         description: "Path to SBOM file to analyze"
         type: string
         default: sbom.json
-      comment-pr:
-        description: "Post the report as a PR comment (only if run on a PR)"
-        type: boolean
-        default: false
-      create-issue:
-        description: "Create an issue listing dependencies with wishlists needing support"
-        type: boolean
-        default: false
-      dependency-threshold:
-        description: "[Deprecated] Unused for filtering; retained for compatibility"
-        type: string
-        default: "1000"
 
 permissions:
   contents: read
-  issues: write
-  pull-requests: write
 
 jobs:
   analyze-dependencies:
@@ -58,9 +44,8 @@ jobs:
         with:
           sbom-path: ${{ inputs.sbom-path }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          dependency-threshold: ${{ inputs.dependency-threshold }}
-          comment-pr: ${{ inputs.comment-pr && 'true' || 'false' }}
-          create-issue: ${{ inputs.create-issue && 'true' || 'false' }}
+          comment-pr: 'false'
+          create-issue: 'false'
 
       - name: Upload analysis report
         uses: actions/upload-artifact@v4
@@ -69,4 +54,3 @@ jobs:
           name: oss-analysis-report
           path: oss-wishlist-report.md
           retention-days: 30
-
