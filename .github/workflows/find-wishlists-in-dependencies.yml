@@ -1,0 +1,72 @@
+name: Run OSS Wishlist Analyzer (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      generate-sbom:
+        description: "Generate SBOM before analysis"
+        type: boolean
+        default: true
+      sbom-format:
+        description: "SBOM format to generate (if generating)"
+        type: choice
+        options:
+          - spdx-json
+          - cyclonedx-json
+        default: spdx-json
+      sbom-path:
+        description: "Path to SBOM file to analyze"
+        type: string
+        default: sbom.json
+      comment-pr:
+        description: "Post the report as a PR comment (only if run on a PR)"
+        type: boolean
+        default: false
+      create-issue:
+        description: "Create an issue listing dependencies with wishlists needing support"
+        type: boolean
+        default: false
+      dependency-threshold:
+        description: "[Deprecated] Unused for filtering; retained for compatibility"
+        type: string
+        default: "1000"
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  analyze-dependencies:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Optionally generate an SBOM if you don't already have one
+      - name: Generate SBOM
+        if: ${{ inputs.generate-sbom }}
+        uses: anchore/sbom-action@v0
+        with:
+          path: ./
+          format: ${{ inputs.sbom-format }}
+          output-file: ${{ inputs.sbom-path }}
+
+      - name: Run OSS Wishlist Analyzer
+        uses: oss-wishlist/oss-wishlist-dependency-report@main
+        with:
+          sbom-path: ${{ inputs.sbom-path }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          dependency-threshold: ${{ inputs.dependency-threshold }}
+          comment-pr: ${{ inputs.comment-pr && 'true' || 'false' }}
+          create-issue: ${{ inputs.create-issue && 'true' || 'false' }}
+
+      - name: Upload analysis report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: oss-analysis-report
+          path: oss-wishlist-report.md
+          retention-days: 30
+
