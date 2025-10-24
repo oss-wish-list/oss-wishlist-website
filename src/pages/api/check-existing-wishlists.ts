@@ -45,11 +45,14 @@ export const POST: APIRoute = async ({ request }) => {
     const issues: GitHubIssue[] = await response.json();
     
     // Create a map of repository URLs to issue URLs
-    const existingWishlists: Record<string, { issueUrl: string; issueNumber: number }> = {};
+    const existingWishlists: Record<string, { issueUrl: string; issueNumber: number; isApproved: boolean }> = {};
     
     for (const issue of issues) {
       // Parse the issue body to extract repository URLs
       const body = issue.body || '';
+      
+      // Check if issue is approved
+      const isApproved = issue.labels.some(label => label.name === 'approved-wishlist');
       
       // Look for repository URLs in multiple formats:
       // 1. Markdown links: [text](url)
@@ -60,6 +63,7 @@ export const POST: APIRoute = async ({ request }) => {
         existingWishlists[normalizedUrl] = {
           issueUrl: issue.html_url,
           issueNumber: issue.number,
+          isApproved: isApproved,
         };
       }
       
@@ -73,13 +77,14 @@ export const POST: APIRoute = async ({ request }) => {
           existingWishlists[normalizedUrl] = {
             issueUrl: issue.html_url,
             issueNumber: issue.number,
+            isApproved: isApproved,
           };
         }
       }
     }
     
     // Check which of the requested repositories have existing wishlists
-    const results: Record<string, { exists: boolean; issueUrl?: string; issueNumber?: number }> = {};
+    const results: Record<string, { exists: boolean; issueUrl?: string; issueNumber?: number; isApproved?: boolean }> = {};
     
     for (const url of repositoryUrls) {
       const normalizedUrl = url.replace(/\.git$/, '').replace(/\/$/, '');
@@ -89,6 +94,7 @@ export const POST: APIRoute = async ({ request }) => {
           exists: true,
           issueUrl: existingWishlists[normalizedUrl].issueUrl,
           issueNumber: existingWishlists[normalizedUrl].issueNumber,
+          isApproved: existingWishlists[normalizedUrl].isApproved,
         };
       } else {
         results[url] = { exists: false };
