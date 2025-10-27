@@ -8,7 +8,7 @@ date: 2025-10-27
 
 [PHOTO] [PHOTO]
 
-OSS Wishlist is a community-led project created by Emma Irwin, with partnership from long-time friend and open source collaborator Christos Bakarakis.
+OSS Wishlist is a community-led project created by Emma Irwin, with partnership from long-time friend and open source collaborator Christos Bacharakis.
 
 **Practitioners** We are open source pracitioners, but one of MANY open source pracitioners with availability, skill and empathy who can easily step into help open source projects repair, uplevel and build a more sustainable future.  Guided by industry standards, we've all helped write, build and improve - our time can really make a difference - and yet that connection is missing. 
 
