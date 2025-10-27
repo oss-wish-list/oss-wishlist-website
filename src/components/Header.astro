@@ -1,6 +1,5 @@
 ---
 import { getBasePath } from '../lib/paths';
-import AuthButtonAstro from './AuthButtonAstro.astro';
 
 // This is a standalone header component extracted from Layout.astro
 // It contains the navigation menu with dropdowns for:
@@ -14,6 +13,7 @@ import AuthButtonAstro from './AuthButtonAstro.astro';
 
 const basePath = getBasePath(); // Returns with trailing slash
 const logoUrl = `${basePath}logo.png`;
+const user = Astro.locals.user;
 ---
 
 <header class="bg-white shadow-sm border-b">
@@ -25,7 +25,7 @@ const logoUrl = `${basePath}logo.png`;
       </div>
       
       <!-- Desktop Navigation -->
-      <div class="hidden md:flex space-x-6 items-center">
+  <div class="hidden md:flex space-x-6 items-center">
         <!-- Wishlist Services Dropdown -->
         <div class="relative" id="wishlist-services-dropdown">
           <button 
@@ -172,9 +172,26 @@ const logoUrl = `${basePath}logo.png`;
               <a href={`${basePath}how-it-works`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">How It Works</a>
               <a href={`${basePath}pricing`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Pricing</a>
               <a href={`${basePath}faq`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">FAQ</a>
+              <div class="border-t my-1"></div>
+              {user ? (
+                <a href={`${basePath}api/auth/logout`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Logout</a>
+              ) : (
+                <a href={`${basePath}login`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Login</a>
+              )}
             </div>
           </div>
-        </div>        <AuthButtonAstro />
+        </div>
+
+        <!-- Language Switcher -->
+        <div class="relative">
+          <label for="locale-switcher" class="sr-only">Select language</label>
+          <select id="locale-switcher" class="border rounded px-2 py-1 text-sm text-gray-700 min-h-[36px]">
+            <option value="en">English</option>
+            <option value="fr">Français</option>
+            <option value="es">Español</option>
+            <option value="de">Deutsch</option>
+          </select>
+        </div>
       </div>
 
       <!-- Mobile menu button -->
@@ -206,6 +223,11 @@ const logoUrl = `${basePath}logo.png`;
         <a href={`${basePath}playbooks`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Playbooks</a>
         <a href={`${basePath}pricing`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Pricing</a>
         <a href={`${basePath}faq`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">FAQ</a>
+        {user ? (
+          <a href={`${basePath}api/auth/logout`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Logout</a>
+        ) : (
+          <a href={`${basePath}login`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Login</a>
+        )}
       </div>
     </div>
   </nav>
@@ -213,6 +235,36 @@ const logoUrl = `${basePath}logo.png`;
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+    // Language switcher preserves current path
+    const localeSelect = document.getElementById('locale-switcher');
+    if (localeSelect) {
+      // Initialize current locale selection based on URL
+      try {
+        const baseRaw = (import.meta && import.meta.env && import.meta.env.BASE_URL) ? import.meta.env.BASE_URL : '/';
+        const baseNorm = baseRaw.endsWith('/') ? baseRaw : baseRaw + '/';
+        const basePrefix = baseNorm.endsWith('/') ? baseNorm.slice(0, -1) : baseNorm;
+        const path = window.location.pathname;
+        let pathWithoutBase = path.startsWith(basePrefix) ? path.slice(basePrefix.length) : path;
+        if (!pathWithoutBase.startsWith('/')) pathWithoutBase = '/' + pathWithoutBase;
+        const match = pathWithoutBase.match(/^\/(en|fr|es|de)(\/|$)/);
+        const currentLocale = match ? match[1] : 'en';
+        localeSelect.value = currentLocale;
+      } catch {}
+
+      localeSelect.addEventListener('change', (e) => {
+        const selected = e.target.value;
+        const baseRaw = (import.meta && import.meta.env && import.meta.env.BASE_URL) ? import.meta.env.BASE_URL : '/';
+        const baseNorm = baseRaw.endsWith('/') ? baseRaw : baseRaw + '/';
+        const basePrefix = baseNorm.endsWith('/') ? baseNorm.slice(0, -1) : baseNorm;
+        const { pathname, search, hash } = window.location;
+        let pathWithoutBase = pathname.startsWith(basePrefix) ? pathname.slice(basePrefix.length) : pathname;
+        if (!pathWithoutBase.startsWith('/')) pathWithoutBase = '/' + pathWithoutBase;
+        // Remove existing locale prefix
+        const rest = pathWithoutBase.replace(/^\/(en|fr|es|de)(?=\/|$)/, '').replace(/^\/+/, '');
+        const newPath = baseNorm + (selected !== 'en' ? `${selected}/` : '') + rest;
+        window.location.href = newPath + search + hash;
+      });
+    }
     // Mobile menu toggle
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const mobileMenu = document.getElementById('mobile-menu');

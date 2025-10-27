@@ -7,6 +7,22 @@ import node from '@astrojs/node';
 export default defineConfig({
   site: 'https://oss-wish-list.github.io',
   base: '/oss-wishlist-website', // Uncomment for GitHub Pages, comment out for Digital Ocean
+  i18n: {
+    locales: ['en', 'fr', 'es', 'de'],
+    defaultLocale: 'en',
+    // If a localized page does not exist yet, fall back to English content
+    fallback: {
+      fr: 'en',
+      es: 'en',
+      de: 'en',
+    },
+    // Prefix non-default locales in URLs, keep default without prefix
+    routing: {
+      prefixDefaultLocale: false,
+      // Show the fallback content at the requested locale URL instead of redirecting
+      fallbackType: 'rewrite'
+    }
+  },
   output: 'server',
   adapter: node({
     mode: 'standalone'
