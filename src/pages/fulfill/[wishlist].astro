@@ -58,7 +58,7 @@ if (wishlist) {
             ) : (
               <div class="bg-red-50 border border-red-200 rounded-md p-4">
                 <p class="text-red-800">Please access this page via a "Fulfill This List" button from a wishlist.</p>
-                <p class="mt-2"><a href="/oss-wishlist-website/wishlists" class="text-red-600 underline">Go to Wishlists</a></p>
+                <p class="mt-2"><a href={`${basePath}wishlists`} class="text-red-600 underline">Go to Wishlists</a></p>
               </div>
             )}
           </div>
@@ -397,7 +397,7 @@ if (wishlist) {
         try {
           // Submit form data
           const formData = new FormData(form);
-          const response = await fetch('/oss-wishlist-website/api/fulfill-wishlist', {
+          const response = await fetch(`${basePath}api/fulfill-wishlist`, {
             method: 'POST',
             body: formData
           });
@@ -422,7 +422,7 @@ if (wishlist) {
                   <p>We'll contact you at: ${formData.get('email')}</p>
                 </div>
                 <div class="mt-8">
-                  <a href="/oss-wishlist-website/wishlists" class="bg-gray-600 text-white px-6 py-3 rounded-md font-medium hover:bg-gray-700 transition-colors">
+                  <a href={`${basePath}wishlists`} class="bg-gray-600 text-white px-6 py-3 rounded-md font-medium hover:bg-gray-700 transition-colors">
                     View More Wishlists
                   </a>
                 </div>

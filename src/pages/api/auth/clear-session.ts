@@ -13,5 +13,7 @@ export const GET: APIRoute = async ({ cookies, redirect }) => {
   console.log('[Dev] Session cleared');
   
   // Redirect to home or maintainers page
-  return redirect('/oss-wishlist-website/');
+  const basePath = import.meta.env.BASE_URL || '/';
+  const normalized = basePath.endsWith('/') ? basePath : `${basePath}/`;
+  return redirect(normalized);
 };

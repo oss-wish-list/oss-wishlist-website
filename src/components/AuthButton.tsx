@@ -1,5 +1,6 @@
 import React from 'react';
 import type { User } from '../lib/auth';
+import { getBasePath } from '../lib/paths';
 
 interface AuthButtonProps {
   user?: User | null;
@@ -10,10 +11,11 @@ interface AuthButtonProps {
  * Uses plain links for login/logout (no onClick handlers)
  */
 export default function AuthButton({ user }: AuthButtonProps) {
+  const basePath = getBasePath();
   if (user) {
     return (
       <a
-        href="/oss-wishlist-website/api/auth/logout"
+  href={`${basePath}api/auth/logout`}
         className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2"
       >
         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -26,7 +28,7 @@ export default function AuthButton({ user }: AuthButtonProps) {
 
   return (
     <a
-      href="/oss-wishlist-website/login"
+  href={`${basePath}login`}
       className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
     >
       <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">

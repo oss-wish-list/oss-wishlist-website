@@ -5,6 +5,25 @@ import Layout from '../components/Layout.astro';
 import { getCollection } from 'astro:content';
 
 const services = await getCollection('services');
+const playbooks = await getCollection('playbooks');
+
+// Map service slugs to playbook slugs
+const serviceToPlaybook: Record<string, string> = {
+  'dependency-security-audit': 'security-audit',
+  'governance-setup': 'project-and-community-governance',
+  'leadership-onboarding': 'succession-planning',
+  'funding-strategy': 'funding-strategy',
+  'maintainer-task-contributor': 'maintainer-relief',
+};
+
+// Helper function to get playbook for a service
+function getPlaybookForService(serviceSlug: string) {
+  const playbookSlug = serviceToPlaybook[serviceSlug];
+  if (playbookSlug) {
+    return playbooks.find(p => p.slug === playbookSlug);
+  }
+  return null;
+}
 ---
 
 <Layout title="Services & Resources - OSS Wishlist" description="Browse all available services and resources for open source projects">
@@ -40,7 +59,9 @@ const services = await getCollection('services');
 
       <!-- Services Grid -->
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8" id="services-grid">
-        {services.map((service) => (
+        {services.map((service) => {
+          const playbook = getPlaybookForService(service.slug);
+          return (
           <div class="service-card bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow" 
                data-type={service.data.type}>
             <div class="flex justify-between items-start mb-4">
@@ -73,10 +94,10 @@ const services = await getCollection('services');
               <p class="text-xs text-gray-500 italic mb-4">{service.data.unavailable_reason}</p>
             )}
 
-            <div class="pt-4 border-t">
+            <div class="pt-4 border-t space-y-2">
               {service.data.available ? (
                 <a href={`${basePath}services/${service.slug}`} 
-                   class="text-gray-600 font-medium hover:text-gray-700">
+                   class="block text-gray-600 font-medium hover:text-gray-700">
                   Learn more →
                 </a>
               ) : (
@@ -84,14 +105,20 @@ const services = await getCollection('services');
                   <span class="text-sm text-gray-500 italic">Funding needed</span>
                 ) : (
                   <a href={`${basePath}/apply-practitioner`}
-                     class="text-sm text-gray-700 hover:text-gray-900 font-medium">
+                     class="block text-sm text-gray-700 hover:text-gray-900 font-medium">
                     Practitioners needed →
                   </a>
                 )
               )}
+              {playbook && (
+                <a href={`${basePath}playbooks/${playbook.slug}`}
+                   class="block text-sm text-blue-600 hover:text-blue-700 font-medium">
+                  📖 View Playbook
+                </a>
+              )}
             </div>
           </div>
-        ))}
+        )})}
       </div>
 
       <!-- Call to Action -->

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Ecosyste.ms mark</title>
+  <desc id="desc">Monochrome neutral mark representing Ecosyste.ms</desc>
+  <rect x="8" y="8" width="240" height="240" rx="48" fill="#F3F4F6" stroke="#D1D5DB" stroke-width="8"/>
+  <g fill="#111827">
+    <path d="M128 56c-39.764 0-72 32.236-72 72s32.236 72 72 72 72-32.236 72-72-32.236-72-72-72zm0 16c30.928 0 56 25.072 56 56s-25.072 56-56 56-56-25.072-56-56 25.072-56 56-56z" fill="#6B7280"/>
+    <path d="M80 128h96M128 80v96" stroke="#374151" stroke-width="12" stroke-linecap="round"/>
+    <circle cx="128" cy="128" r="10" fill="#111827"/>
+  </g>
+</svg>

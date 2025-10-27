@@ -330,7 +330,7 @@ const serviceCategories = [...new Set(services.map(s => s.data.service_category 
       
       try {
         // Submit practitioner application via API (sends email to admin)
-        const response = await fetch('/oss-wishlist-website/api/submit-practitioner', {
+  const response = await fetch(`${basePath}api/submit-practitioner`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

@@ -1,5 +1,5 @@
 ---
-title: "Succession Planning and Trusted Leadership"
+title: "Leadership Continuity & Succession Planning"
 description: "Comprehensive onboarding program to establish, vet and setup for success -  new trusted project leaders."
 type: "service"
 service_type: "consulting"

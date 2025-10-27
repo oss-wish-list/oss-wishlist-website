@@ -1,20 +1,13 @@
 ---
 import { getBasePath } from '../../lib/paths';
 import Layout from '../../components/Layout.astro';
-import { getCollection, getEntry } from 'astro:content';
+import { getEntry } from 'astro:content';
 
 const basePath = getBasePath();
 
-export const prerender = true;
+export const prerender = false;
 
-// Generate static paths for all services
-export async function getStaticPaths() {
-  const services = await getCollection('services');
-  return services.map(service => ({
-    params: { slug: service.slug },
-    props: { service }
-  }));
-}
+// Server-rendered: resolve content dynamically at request time
 
 // Get the service from props (static) or params (SSR fallback)
 const { service: propsService } = Astro.props;

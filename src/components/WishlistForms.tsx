@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getApiPath } from '../config/app';
+import { getBasePath } from '../lib/paths';
 
 // Heroicon SVG components
 const PencilIcon = () => (
@@ -134,7 +135,10 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
     
     if (authStatus === 'success' || authStatus === 'already_authenticated') {
       // Clear the URL params
-      window.history.replaceState({}, '', '/oss-wishlist-website/maintainers');
+      {
+        const basePath = getBasePath();
+        window.history.replaceState({}, '', `${basePath}maintainers`);
+      }
       // Check if user is authenticated
       checkUserSession();
     } else if (error) {
@@ -285,7 +289,10 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
     const error = urlParams.get('error');
         
     if (authStatus === 'success') {
-      window.location.href = '/oss-wishlist-website/maintainers';
+      {
+        const basePath = getBasePath();
+        window.location.href = `${basePath}maintainers`;
+      }
     } else if (error) {
       setError(`Authentication failed: ${error.replace('_', ' ')}`);
     }

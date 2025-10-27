@@ -36,6 +36,15 @@ Vetted open source practitioners with validated expertise are matched with funde
 - Work directly with maintainers on critical needs
 - Fair compensation for expertise and labor
 
+### 4. Peer Review Ensures Quality
+
+After practitioners complete their work, peer review ensures the quality and completeness of deliverables.
+
+- Playbooks include rubrics to assess outcomes
+- Other practitioners and community experts review completed work
+- Peer review validates that deliverables meet quality standards
+- Ensures accountability and continuous improvement
+
 ## Who's Involved
 
 ### Maintainers
@@ -77,6 +86,19 @@ Trusted organizations that provide funding, vetted practitioners, or both to sup
 - Sovereign Tech Fund
 
 ## What Makes OSS Wishlist Different
+
+### Community-Owned and Supported
+
+OSS Wishlist is a community-owned initiative, maintained and kept active through sponsorship. We're committed to transparency and community governance.
+
+**Support the platform:**
+- Contribute to our [Open Collective](https://opencollective.com/oss-wishlist)
+- Support project maintainers through our [GitHub Organization](https://github.com/oss-wishlist)
+
+Your contributions help us:
+- Keep the platform running and maintained
+- Support practitioners who build and improve OSS Wishlist
+- Expand services and resources for the community
 
 ### Human-Centered Support
 
