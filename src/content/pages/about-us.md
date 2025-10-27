@@ -16,7 +16,7 @@ We believe that by creating this connection, we can really make a huge differenc
 
 ## Why
 
-You can't turn around without hearing how important open source sustainaiblity is. That's because it is (cue XKCD cartoon). Everyone is talking about it, many foundations, and government entities are doing their very best to make a difference - but there are cracks, giant ravenes of projects being missed because funders don't see what help they need, the associated risk of neglecting that need - or how dollars would make a difference.
+You can't turn around without hearing how important open source sustainaiblity is. That's because it is (queue XKCD cartoon). Everyone is talking about it, many foundations, and government entities are doing their very best to make a difference - but there are cracks, giant ravenes of projects being missed because funders don't see what help they need, the associated risk of neglecting that need - or how dollars would make a difference.
 
 Helping sponsors track the impact of their dollars is really, really hard - that;s another way we believe `Open Source Wishlist` can help!
 
