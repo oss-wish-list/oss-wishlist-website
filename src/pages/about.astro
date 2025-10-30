@@ -1,5 +1,7 @@
 ---
 import Layout from '../components/Layout.astro';
+import { getBasePath } from '../lib/paths';
+const basePath = getBasePath();
 ---
 
 <Layout title="About - OSS Wishlist" description="Learn about project eligibility requirements and how the OSS Wishlist program works">
@@ -135,7 +137,7 @@ import Layout from '../components/Layout.astro';
           Our network includes practitioners in governance, security, community building, developer relations, 
           and many other areas critical to project success.
         </p>
-        <a href="/apply-practitioner" class="inline-block bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
+        <a href={`${basePath}apply-practitioner`} class="inline-block bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
           Apply to Join Our Practitioner Network
         </a>
       </div>
@@ -147,14 +149,14 @@ import Layout from '../components/Layout.astro';
             Ready to Get Started?
           </h2>
           <p class="text-gray-600 mb-6">
-            Browse our service catalog or submit your project's wishlist today
+            Browse our service catalogue or submit your project's wishlist today
           </p>
           <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/catalog" 
+            <a href={`${basePath}catalog`} 
                class="bg-gray-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
               Browse Services
             </a>
-            <a href="/maintainers" 
+            <a href={`${basePath}maintainers`} 
                class="bg-gray-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
               Submit Wishlist
             </a>

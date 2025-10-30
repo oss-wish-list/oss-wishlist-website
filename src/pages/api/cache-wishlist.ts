@@ -21,6 +21,7 @@ const WishlistDataSchema = z.object({
   wishes: z.array(z.string()).min(1),
   technologies: z.array(z.string()).optional(),
   urgency: z.enum(['low', 'medium', 'high']),
+  projectSize: z.enum(['small', 'medium', 'large']).optional(),
   status: z.enum(['Open', 'Closed']),
   labels: z.array(z.object({
     name: z.string(),
@@ -48,6 +49,7 @@ interface WishlistData {
   wishes: string[];
   technologies?: string[];
   urgency: 'low' | 'medium' | 'high';
+  projectSize?: 'small' | 'medium' | 'large';
   status: 'Open' | 'Closed';
   labels: Array<{ name: string; color: string }>;
   author: {
@@ -202,6 +204,7 @@ async function fetchAndCacheWishlist(issueNumber: number): Promise<WishlistData 
       wishes: parsed.services,
       technologies: parsed.technologies,
       urgency: normalizeUrgency(parsed.urgency),
+      projectSize: parsed.projectSize,
       status: issue.state === 'open' ? 'Open' : 'Closed',
       labels: issue.labels.map((label: any) => ({
         name: label.name,

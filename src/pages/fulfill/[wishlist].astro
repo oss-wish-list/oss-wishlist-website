@@ -1,6 +1,7 @@
 ---
 import Layout from '../../components/Layout.astro';
 import { getCollection } from 'astro:content';
+import { getBasePath } from '../../lib/paths';
 
 // Disable prerendering for this dynamic route
 export const prerender = false;
@@ -12,6 +13,7 @@ const { wishlist } = Astro.params;
 const practitioners = await getCollection('practitioners');
 const wishlists = await getCollection('wishlists');
 const services = await getCollection('services');
+const basePath = getBasePath();
 
 // Create a lookup map for services by title
 const servicesByTitle = services.reduce((acc, service) => {
@@ -39,7 +41,7 @@ if (wishlist) {
           Thank you for your interest in supporting open source projects. Please fill out this form to begin the fulfillment process for a wishlist.
         </p>
 
-        <form class="space-y-6" method="POST" action="/api/fulfill-wishlist">
+  <form class="space-y-6" method="POST" action={`${basePath}api/fulfill-wishlist`}>
           <!-- Wishlist Selection -->
           <div>
             <label for="wishlist" class="block text-sm font-medium text-gray-700 mb-2">
@@ -58,7 +60,7 @@ if (wishlist) {
             ) : (
               <div class="bg-red-50 border border-red-200 rounded-md p-4">
                 <p class="text-red-800">Please access this page via a "Fulfill This List" button from a wishlist.</p>
-                <p class="mt-2"><a href="/oss-wishlist-website/wishlists" class="text-red-600 underline">Go to Wishlists</a></p>
+                <p class="mt-2"><a href={`${basePath}wishlists`} class="text-red-600 underline">Go to Wishlists</a></p>
               </div>
             )}
           </div>
@@ -397,7 +399,7 @@ if (wishlist) {
         try {
           // Submit form data
           const formData = new FormData(form);
-          const response = await fetch('/oss-wishlist-website/api/fulfill-wishlist', {
+          const response = await fetch(`${basePath}api/fulfill-wishlist`, {
             method: 'POST',
             body: formData
           });
@@ -422,7 +424,7 @@ if (wishlist) {
                   <p>We'll contact you at: ${formData.get('email')}</p>
                 </div>
                 <div class="mt-8">
-                  <a href="/oss-wishlist-website/wishlists" class="bg-gray-600 text-white px-6 py-3 rounded-md font-medium hover:bg-gray-700 transition-colors">
+                  <a href={`${basePath}wishlists`} class="bg-gray-600 text-white px-6 py-3 rounded-md font-medium hover:bg-gray-700 transition-colors">
                     View More Wishlists
                   </a>
                 </div>

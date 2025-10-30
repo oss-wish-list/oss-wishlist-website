@@ -1,18 +1,13 @@
 ---
 import { getBasePath } from '../../lib/paths';
 import Layout from '../../components/Layout.astro';
-import { getCollection, getEntry } from 'astro:content';
+import { getEntry } from 'astro:content';
 
 const basePath = getBasePath();
 
-// Generate static paths for all wishlists
-export async function getStaticPaths() {
-  const wishlists = await getCollection('wishlists');
-  return wishlists.map(wishlist => ({
-    params: { id: wishlist.slug },
-    props: { wishlist }
-  }));
-}
+export const prerender = false;
+
+// Server-rendered: resolve content dynamically at request time
 
 // Get the wishlist from props (static) or params (SSR fallback)
 const { wishlist: propsWishlist } = Astro.props;
@@ -44,7 +39,7 @@ const stageColors = {
   <!-- Back Navigation -->
   <div class="bg-gray-50 py-4">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <a href={`${basePath}/wishlists`} class="text-gray-600 hover:text-gray-700 flex items-center">
+  <a href={`${basePath}wishlists`} class="text-gray-600 hover:text-gray-700 flex items-center">
         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
         </svg>
@@ -59,7 +54,7 @@ const stageColors = {
       <div class="grid md:grid-cols-3 gap-8">
         <div class="md:col-span-2">
           <div class="flex items-start space-x-4 mb-6">
-            <img src="/oss-wish.webp" alt={wishlist.data.project_name} class="w-16 h-16 rounded-lg" />
+            <img src={`${basePath}oss-wish.webp`} alt={wishlist.data.project_name} class="w-16 h-16 rounded-lg" />
             <div class="flex-1">
               <h1 class="text-4xl font-bold text-gray-900 mb-2">{wishlist.data.project_name}</h1>
               <p class="text-lg text-gray-600 mb-4">@{wishlist.data.maintainer.username}</p>
@@ -195,7 +190,7 @@ const stageColors = {
         >
           Contact Maintainer
         </a>
-        <a href={`${basePath}/wishlists`} class="border border-orange-300 text-white px-8 py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors">
+        <a href={`${basePath}wishlists`} class="border border-orange-300 text-white px-8 py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors">
           Browse Other Projects
         </a>
       </div>

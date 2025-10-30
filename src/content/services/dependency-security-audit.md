@@ -14,6 +14,10 @@ deliverables:
   - "Repository security configuration recommendations"
   - "Dependency vulnerability assessment"
   - "Prioritized remediation roadmap with timelines"
+pricing:
+  small: 4500
+  medium: 8000
+  large: 14000
 ---
 
 ## Overview

@@ -1,6 +1,6 @@
 ---
 title: "Maintainer Relief Support"
-description: "Professional support to help with critical maintainer tasks and responsibilities - from PR reviews to issue triage, releases to security patches"
+description: "Hands-on help to catch up on maintainer tasks - PR reviews, issue triage, documentation, release notes, and community channels."
 type: "service"
 service_type: "support"
 tags: ["maintenance", "support", "relief"]
@@ -11,19 +11,22 @@ deliverables:
   - "Documentation of work completed"
   - "Handoff report and recommendations"
   - "Regular progress updates"
+pricing:
+  small: 4500
+  medium: 8000
+  large: 14000
 ---
 
 ## Overview
 
-Maintainer Relief Support provides professional assistance with the day-to-day tasks that keep your open source project running smoothly. Our experienced practitioners are onboarded to your project's workflows, technical stack, triaging processes, and community norms - ensuring they can step in quickly and contribute effectively. This service helps prevent maintainer burnout and ensures project continuity during busy periods, vacations, or transitions.
+Maintainer Relief Support provides hands-on assistance with the day-to-day tasks that keep your open source project running smoothly. We onboard to your project's workflows, technical stack, triaging processes, and community norms - so we can step in quickly and contribute effectively. This service helps prevent maintainer burnout and ensures project continuity during busy periods, vacations, or transitions.
 
 ## What We Help With
 
 ### Code & Release Management
 - Reviewing and merging pull requests
 - Managing releases and versioning
-- Addressing critical bugs and issues
-- Applying security patches
+- Addressing bugs and issues
 
 ### Issue & Community Triage
 - Triaging and categorizing new issues
@@ -45,10 +48,10 @@ Maintainer Relief Support provides professional assistance with the day-to-day t
 
 ## Benefits
 
-- **Prevent Burnout**: Get professional backup when you need it most
-- **Maintain Project Health**: Keep critical tasks moving forward
+- **Prevent Burnout**: Get backup support when you need it most
+- **Maintain Project Health**: Keep important tasks moving forward
 - **Continuity**: Ensure smooth operation during vacations or busy periods
-- **Expert Help**: Work with experienced maintainers who understand your challenges
+- **Experienced Help**: Work with maintainers who understand your challenges
 - **Flexible Engagement**: Scale support up or down based on your needs
 
 ## Ideal For

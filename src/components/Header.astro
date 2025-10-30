@@ -1,6 +1,5 @@
 ---
 import { getBasePath } from '../lib/paths';
-import AuthButtonAstro from './AuthButtonAstro.astro';
 
 // This is a standalone header component extracted from Layout.astro
 // It contains the navigation menu with dropdowns for:
@@ -14,6 +13,7 @@ import AuthButtonAstro from './AuthButtonAstro.astro';
 
 const basePath = getBasePath(); // Returns with trailing slash
 const logoUrl = `${basePath}logo.png`;
+const user = Astro.locals.user;
 ---
 
 <header class="bg-white shadow-sm border-b">
@@ -25,9 +25,34 @@ const logoUrl = `${basePath}logo.png`;
       </div>
       
       <!-- Desktop Navigation -->
-      <div class="hidden md:flex space-x-6 items-center">
-        <!-- Wish Catalog -->
-        <a href={`${basePath}catalog`} class="text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 rounded px-2 py-1 min-h-[44px] flex items-center">Wish Catalog</a>
+  <div class="hidden md:flex space-x-6 items-center">
+        <!-- Wishlist Services Dropdown -->
+        <div class="relative" id="wishlist-services-dropdown">
+          <button 
+            class="text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 rounded px-2 py-1 flex items-center space-x-1 min-h-[44px]"
+            aria-expanded="false"
+            aria-haspopup="true"
+            aria-label="Wishlist Services menu"
+            id="wishlist-services-dropdown-button"
+          >
+            <span>Wishlist Services</span>
+            <svg class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+          <div 
+            id="wishlist-services-menu"
+            class="absolute left-0 mt-2 w-56 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none hidden z-50"
+            role="menu"
+            aria-orientation="vertical"
+            aria-labelledby="wishlist-services-dropdown-button"
+          >
+            <div class="py-1" role="none">
+              <a href={`${basePath}catalog`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Wish Catalogue</a>
+              <a href={`${basePath}playbooks`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Playbooks</a>
+            </div>
+          </div>
+        </div>
         
         <!-- For Maintainers Dropdown -->
         <div class="relative" id="maintainers-dropdown">
@@ -52,7 +77,7 @@ const logoUrl = `${basePath}logo.png`;
             aria-labelledby="maintainers-dropdown-button"
           >
             <div class="py-1" role="none">
-              <a href={`${basePath}maintainers`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Manage Wishlists</a>
+              <a href={`${basePath}maintainers`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Create and Manage Your Wishlists</a>
               <a href={`${basePath}practitioners`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Browse Practitioners</a>
               <a href={`${basePath}browse-sponsors`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Browse Sponsors</a>
             </div>
@@ -119,38 +144,44 @@ const logoUrl = `${basePath}logo.png`;
           </div>
         </div>
         
-        <!-- Resources Dropdown -->
-        <div class="relative" id="resources-dropdown">
+        <!-- About Dropdown -->
+        <div class="relative" id="about-dropdown">
           <button 
             class="text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 rounded px-2 py-1 flex items-center space-x-1 min-h-[44px]"
             aria-expanded="false"
             aria-haspopup="true"
-            aria-label="Resources menu"
-            id="resources-dropdown-button"
+            aria-label="About menu"
+            id="about-dropdown-button"
           >
-            <span>Resources</span>
+            <span>About</span>
             <svg class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
             </svg>
           </button>
           
           <div 
-            id="resources-menu"
-            class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none hidden z-50"
+            id="about-menu"
+            class="absolute left-0 mt-2 w-64 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none hidden z-50"
             role="menu"
             aria-orientation="vertical"
-            aria-labelledby="resources-dropdown-button"
+            aria-labelledby="about-dropdown-button"
           >
             <div class="py-1" role="none">
+              <a href={`${basePath}about-us`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">About Us</a>
+              <a href="https://calendly.com/emma-irwin-z6wm" target="_blank" rel="noopener noreferrer" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Information Sessions</a>
               <a href={`${basePath}how-it-works`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">How It Works</a>
-              <a href={`${basePath}playbooks`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Playbooks</a>
               <a href={`${basePath}pricing`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Pricing</a>
               <a href={`${basePath}faq`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">FAQ</a>
+              <a href={`${basePath}terms`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Terms & Conditions</a>
+              <div class="border-t my-1"></div>
+              {user ? (
+                <a href={`${basePath}api/auth/logout`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Logout</a>
+              ) : (
+                <a href={`${basePath}login`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Login</a>
+              )}
             </div>
           </div>
         </div>
-        
-        <AuthButtonAstro />
       </div>
 
       <!-- Mobile menu button -->
@@ -170,16 +201,23 @@ const logoUrl = `${basePath}logo.png`;
     <!-- Mobile Navigation Menu -->
     <div id="mobile-menu" class="hidden md:hidden pb-4" role="navigation" aria-label="Mobile navigation">
       <div class="space-y-1">
-        <a href={`${basePath}maintainers`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Your wishlists</a>
+        <a href={`${basePath}maintainers`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Create and Manage Your Wishlists</a>
         <a href={`${basePath}wishlists`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">View wishlists</a>
-        <a href={`${basePath}catalog`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Service Catalog</a>
+  <a href={`${basePath}catalog`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Wish Catalogue</a>
         <a href={`${basePath}practitioners`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Practitioner Community</a>
+  <a href={`${basePath}about-us`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">About Us</a>
+  <a href="https://calendly.com/emma-irwin-z6wm" target="_blank" rel="noopener noreferrer" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Information Sessions</a>
         <a href={`${basePath}apply-practitioner`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Become a Practitioner</a>
         <a href={`${basePath}ecosystem-guardians`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Wishlist Sponsors</a>
         <a href={`${basePath}how-it-works`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">How it works</a>
         <a href={`${basePath}playbooks`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Playbooks</a>
         <a href={`${basePath}pricing`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Pricing</a>
         <a href={`${basePath}faq`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">FAQ</a>
+        {user ? (
+          <a href={`${basePath}api/auth/logout`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Logout</a>
+        ) : (
+          <a href={`${basePath}login`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Login</a>
+        )}
       </div>
     </div>
   </nav>
@@ -201,10 +239,11 @@ const logoUrl = `${basePath}logo.png`;
     
     // Dropdown IDs
     const dropdowns = [
+      { id: 'wishlist-services', button: 'wishlist-services-dropdown-button', menu: 'wishlist-services-menu', container: 'wishlist-services-dropdown' },
       { id: 'maintainers', button: 'maintainers-dropdown-button', menu: 'maintainers-menu', container: 'maintainers-dropdown' },
       { id: 'community', button: 'community-dropdown-button', menu: 'community-menu', container: 'community-dropdown' },
       { id: 'sponsors', button: 'sponsors-dropdown-button', menu: 'sponsors-menu', container: 'sponsors-dropdown' },
-      { id: 'resources', button: 'resources-dropdown-button', menu: 'resources-menu', container: 'resources-dropdown' }
+      { id: 'about', button: 'about-dropdown-button', menu: 'about-menu', container: 'about-dropdown' }
     ];
     
     // Initialize each dropdown
@@ -330,5 +369,6 @@ const logoUrl = `${basePath}logo.png`;
         }
       }
     });
+    
   });
 </script>

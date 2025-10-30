@@ -33,6 +33,11 @@ export const wishlistFormDataSchema = z.object({
   maintainer: z.string().min(1, 'Maintainer is required'),
   
   services: z.array(z.string()).min(1, 'At least one service must be selected'),
+
+  // New: Project size selection for pricing context
+  projectSize: z.enum(['small', 'medium', 'large'], {
+    errorMap: () => ({ message: 'Project size must be small, medium, or large' })
+  }),
   
   urgency: z.enum(['low', 'medium', 'high'], {
     errorMap: () => ({ message: 'Urgency must be low, medium, or high' })

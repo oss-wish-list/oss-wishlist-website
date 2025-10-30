@@ -5,6 +5,6 @@ category: "For Maintainers"
 order: 1
 ---
 
-Services and resourecs are focused  on those things that have proven to be most challenging for maintainers and which have high likelyhood to improve sustainablity of projects.
+Services and resources are focused on those things that have proven to be most challenging for maintainers and which have high likelihood to improve the sustainability of projects.
 
-[See the servivc catalog for a full list](../../pages/catalog.astro).
+[See the service catalogue for a full list](../../pages/catalog.astro).

@@ -1,20 +1,15 @@
 ---
-import { getCollection } from 'astro:content';
+import { getEntry } from 'astro:content';
 import Layout from '../../components/Layout.astro';
 import { getBasePath } from '../../lib/paths';
 const basePath = getBasePath();
 
-export const prerender = true;
+export const prerender = false;
 
-export async function getStaticPaths() {
-  const playbooks = await getCollection('playbooks');
-  return playbooks.map((playbook) => ({
-    params: { slug: playbook.slug },
-    props: { playbook },
-  }));
-}
-
-const { playbook } = Astro.props;
+// Server-rendered: resolve content dynamically at request time
+const { playbook: propsPlaybook } = Astro.props;
+const { slug } = Astro.params;
+const playbook = propsPlaybook || await getEntry('playbooks', slug);
 
 // Check if playbook exists
 if (!playbook) {

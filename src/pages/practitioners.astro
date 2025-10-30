@@ -6,8 +6,10 @@ import { getCollection } from 'astro:content';
 
 const allPractitioners = await getCollection('practitioners');
 
+export const prerender = false;
+
 // Get wishlist context from URL parameters
-const url = new URL(Astro.request.url);
+const url = Astro.url;
 const wishlistSlug = url.searchParams.get('wishlist');
 const projectName = url.searchParams.get('project');
 
@@ -123,7 +125,7 @@ if (wishlistSlug) {
               </div>
               <div class="flex space-x-2">
                 <a 
-                  href={`/oss-wishlist-website/practitioners/${practitioner.slug}`}
+                  href={`${basePath}practitioners/${practitioner.slug}`}
                   class="text-gray-600 hover:text-gray-700 text-sm font-medium"
                 >
                   View →
@@ -164,7 +166,7 @@ if (wishlistSlug) {
               View Project
             </a>
             <a 
-              href={`${basePath}/wishlists`}
+              href={`${basePath}wishlists`}
               class="bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-800"
             >
               Browse More Projects

@@ -23,7 +23,8 @@ import { getBasePath } from './lib/paths';
 const PROTECTED_ROUTES = [
   '/api/wishlists/create',
   '/api/wishlists/update',
-  // Add more protected routes as needed
+  '/api/submit-wishlist',
+  '/api/close-wishlist',
 ];
 
 /**

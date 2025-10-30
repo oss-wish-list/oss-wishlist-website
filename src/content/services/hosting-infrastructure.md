@@ -11,6 +11,10 @@ deliverables:
   - "CI/CD pipeline setup and maintenance"
   - "Domain registration and SSL certificates"
   - "Monitoring and alerting setup"
+pricing:
+  small: null
+  medium: null
+  large: null
 ---
 
 ## Resource Overview

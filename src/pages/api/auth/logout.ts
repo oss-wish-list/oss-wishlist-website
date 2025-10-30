@@ -9,7 +9,9 @@ export const GET: APIRoute = async ({ cookies, redirect }) => {
     path: '/',
   });
   
-  return redirect('/oss-wishlist-website/?logout=success');
+  const basePath = import.meta.env.BASE_URL || '/';
+  const normalized = basePath.endsWith('/') ? basePath : `${basePath}/`;
+  return redirect(`${normalized}?logout=success`);
 };
 
 export const POST: APIRoute = async ({ cookies, redirect }) => {
@@ -18,5 +20,7 @@ export const POST: APIRoute = async ({ cookies, redirect }) => {
     path: '/',
   });
   
-  return redirect('/oss-wishlist-website/?logout=success');
+  const basePath = import.meta.env.BASE_URL || '/';
+  const normalized = basePath.endsWith('/') ? basePath : `${basePath}/`;
+  return redirect(`${normalized}?logout=success`);
 };

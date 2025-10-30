@@ -1,7 +1,6 @@
 ---
 import { getBasePath } from '../lib/paths';
 import Layout from '../components/Layout.astro';
-import AuthenticatedForm from '../components/AuthenticatedForm.tsx';
 
 // Check authentication
 const user = Astro.locals.user;
@@ -27,7 +26,7 @@ const urgencyColors = {
 ---
 
 <Layout title="Browse Project Wishlists - OSS Wishlist" description="Discover open source projects seeking support. Find opportunities to sponsor, contribute, or provide services to maintainers.">
-  <AuthenticatedForm client:load user={user}>
+  
   <!-- Compact Hero & Filters Section -->
   <section class="bg-gradient-to-br from-gray-100 to-gray-200 py-8 border-b">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -60,22 +59,18 @@ const urgencyColors = {
         
         <!-- Quick Filters -->
         <div class="md:col-span-4 flex flex-wrap gap-2">
-          <button class="px-3 py-1.5 text-sm bg-white border rounded-lg hover:bg-gray-50 transition-colors">All</button>
-          <button class="px-3 py-1.5 text-sm bg-white border rounded-lg hover:bg-gray-50 transition-colors">High Urgency</button>
+          <button id="filterAll" class="px-3 py-1.5 text-sm bg-gray-900 text-white border border-gray-900 rounded-lg hover:bg-gray-800 transition-colors">All</button>
+          <button id="filterUrgent" class="px-3 py-1.5 text-sm bg-white border rounded-lg hover:bg-gray-50 transition-colors">High Urgency</button>
         </div>
         
         <!-- Dropdowns -->
         <div class="md:col-span-3 flex gap-2">
-          <select class="flex-1 px-3 py-2 text-sm bg-white border rounded-lg">
-            <option>All Tech</option>
-            <option>JavaScript</option>
-            <option>Python</option>
-            <option>Rust</option>
+          <select id="techFilter" class="flex-1 px-3 py-2 text-sm bg-white border rounded-lg">
+            <option value="all">All Tech</option>
           </select>
-          <select class="flex-1 px-3 py-2 text-sm bg-white border rounded-lg">
-            <option>Recent</option>
-            <option>Popular</option>
-            <option>Urgent</option>
+          <select id="sortSelect" class="flex-1 px-3 py-2 text-sm bg-white border rounded-lg">
+            <option value="recent">Sort: Recent</option>
+            <option value="oldest">Sort: Oldest</option>
           </select>
         </div>
       </div>
@@ -132,7 +127,7 @@ const urgencyColors = {
       </div>
     </div>
   </section>
-  </AuthenticatedForm>
+  
 
 <script>
   // Wishlist data
@@ -156,6 +151,12 @@ const urgencyColors = {
     critical: 'bg-gray-800 text-white'
   };
 
+  // UI state for filters and sorting
+  let activeUrgency = 'all'; // 'all' | 'high'
+  let activeTech = 'all'; // 'all' | '<tech>'
+  let searchQuery = '';
+  let sortBy = 'recent'; // 'recent' | 'oldest'
+
   // Fetch wishlists from GitHub
   async function fetchWishlists() {
     try {
@@ -178,8 +179,8 @@ const urgencyColors = {
       // Update stats
       document.getElementById('wishlist-count').textContent = allWishlists.length;
       
-      // Count unique technologies
-      const allTechnologies = new Set();
+  // Count unique technologies
+  const allTechnologies = new Set();
       allWishlists.forEach(wishlist => {
         if (wishlist.technologies && Array.isArray(wishlist.technologies)) {
           wishlist.technologies.forEach(tech => {
@@ -189,10 +190,11 @@ const urgencyColors = {
           });
         }
       });
-      document.getElementById('technologies-count').textContent = allTechnologies.size;
-      
-      // Display wishlists
-      displayWishlists(allWishlists);
+  document.getElementById('technologies-count').textContent = allTechnologies.size;
+
+  // Populate technology filter and render initial list
+  populateTechFilter(Array.from(allTechnologies).sort());
+  applyFilters();
       
     } catch (error) {
       console.error('[fetchWishlists] Error:', error);
@@ -244,10 +246,79 @@ const urgencyColors = {
     }
   }
 
+  // Populate technologies dropdown dynamically
+  function populateTechFilter(techs) {
+    const techSelect = document.getElementById('techFilter');
+    if (!techSelect) return;
+    techSelect.innerHTML = '<option value="all">All Tech</option>' +
+      techs.map(t => `<option value="${t}">${t.charAt(0).toUpperCase() + t.slice(1)}</option>`).join('');
+  }
+
+  function sortWishlists(list) {
+    const arr = [...list];
+    if (sortBy === 'recent') {
+      arr.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
+    } else if (sortBy === 'oldest') {
+      arr.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+    }
+    return arr;
+  }
+
+  function applyFilters() {
+    let filtered = allWishlists;
+
+    // Urgency filter: High includes 'high' and 'critical'
+    if (activeUrgency === 'high') {
+      filtered = filtered.filter(w => w.urgency === 'high' || w.urgency === 'critical');
+    }
+
+    // Tech filter
+    if (activeTech !== 'all') {
+      filtered = filtered.filter(w => Array.isArray(w.technologies) && w.technologies.map(t => (t || '').toLowerCase()).includes(activeTech));
+    }
+
+    // Search filter
+    const q = (searchQuery || '').toLowerCase().trim();
+    if (q) {
+      filtered = filtered.filter(w =>
+        (w.title || '').toLowerCase().includes(q) ||
+        (w.projectTitle || '').toLowerCase().includes(q) ||
+        (w.maintainerName || '').toLowerCase().includes(q) ||
+        (Array.isArray(w.wishes) && w.wishes.some(wish => (wish || '').toLowerCase().includes(q)))
+      );
+    }
+
+    // Sort and display
+    const result = sortWishlists(filtered);
+
+    const resultCount = document.getElementById('resultCount');
+    const searchResults = document.getElementById('searchResults');
+    const noResults = document.getElementById('noResults');
+
+    if (resultCount) resultCount.textContent = String(result.length);
+    if (searchResults) {
+      if (q || activeUrgency !== 'all' || activeTech !== 'all') {
+        searchResults.classList.remove('hidden');
+      } else {
+        searchResults.classList.add('hidden');
+      }
+    }
+
+    if (noResults) {
+      if (result.length === 0) noResults.classList.remove('hidden'); else noResults.classList.add('hidden');
+    }
+
+    displayWishlists(result);
+  }
+
   // Create wishlist card HTML
   function createWishlistCard(wishlist) {
     const statusColorClass = statusColors[wishlist.status] || 'bg-gray-100 text-gray-800';
     const urgencyColorClass = urgencyColors[wishlist.urgency] || 'bg-gray-100 text-gray-800';
+    const sizeLabel = wishlist.projectSize ? (wishlist.projectSize.charAt(0).toUpperCase() + wishlist.projectSize.slice(1)) : null;
+    const orgTypeMap = { individual: 'Individual', company: 'Company', nonprofit: 'Nonprofit', foundation: 'Foundation' };
+    const orgTypeLabel = wishlist.organizationType ? (orgTypeMap[wishlist.organizationType] || wishlist.organizationType) : null;
+    const repoLink = wishlist.repositoryUrl ? `<a href="${wishlist.repositoryUrl}" target="_blank" rel="noopener noreferrer" class="text-gray-600 hover:text-gray-900 underline text-xs">Repository</a>` : '';
     
     // Check if wishlist is approved
     const isApproved = wishlist.labels.some(label => label.name === 'approved-wishlist');
@@ -264,25 +335,17 @@ const urgencyColors = {
             <div>
               <div class="flex items-center gap-2">
                 <h3 class="text-lg font-semibold text-gray-900">${wishlist.projectTitle}</h3>
-                ${wishlist.repositoryUrl ? `
-                  <a href="${wishlist.repositoryUrl}" target="_blank" rel="noopener noreferrer" class="text-gray-600 hover:text-gray-900" title="View project repository">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" aria-label="Project repository link">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" />
-                    </svg>
-                  </a>
-                ` : ''}
               </div>
               <p class="text-sm text-gray-600">@${wishlist.maintainerName}</p>
             </div>
           </div>
           <div class="flex flex-col space-y-1">
             ${approvalBadge}
-            <span class="px-2 py-1 text-xs rounded-full ${statusColorClass}">
-              ${wishlist.status}
-            </span>
-            <span class="px-2 py-1 text-xs rounded-full ${urgencyColorClass}">
-              ${wishlist.urgency} priority
-            </span>
+            ${wishlist.status && wishlist.status !== 'Open' ? `
+              <span class="px-2 py-1 text-xs rounded-full ${statusColorClass}">
+                ${wishlist.status}
+              </span>
+            ` : ''}
           </div>
         </div>
 
@@ -302,13 +365,11 @@ const urgencyColors = {
           </ul>
         </div>
 
-        <!-- Labels -->
-        <div class="flex flex-wrap gap-2 mb-4">
-          ${wishlist.labels.map(label => `
-            <span class="px-2 py-1 text-xs rounded" style="background-color: #${label.color}20; color: #${label.color};">
-              ${label.name}
-            </span>
-          `).join('')}
+        <!-- Meta: size, org, priority -->
+        <div class="flex flex-wrap gap-2 mb-4 text-xs">
+          ${sizeLabel ? `<span class="px-2 py-1 rounded bg-gray-100 text-gray-800 border border-gray-200">Size: ${sizeLabel}</span>` : ''}
+          ${orgTypeLabel ? `<span class="px-2 py-1 rounded bg-gray-100 text-gray-800 border border-gray-200">Organization: ${orgTypeLabel}</span>` : ''}
+          <span class="px-2 py-1 rounded ${urgencyColorClass} border border-gray-200">Priority: ${wishlist.urgency}</span>
         </div>
 
         <!-- Actions -->
@@ -320,61 +381,28 @@ const urgencyColors = {
             >
               Fulfill this wish
             </a>
+            ${wishlist.repositoryUrl ? `
             <a 
-              href="${wishlist.url}"
+              href="${wishlist.repositoryUrl}"
               target="_blank"
               rel="noopener noreferrer"
               class="bg-gray-100 text-gray-700 px-4 py-2 rounded text-sm hover:bg-gray-200 transition-colors"
             >
-              View on GitHub
+              View Project
             </a>
+            ` : ''}
           </div>
-          <span class="text-xs text-gray-500">
-            Issue #${wishlist.id}
-          </span>
+          
         </div>
       </div>
     `;
   }
 
-  // Search functionality
+  // Search functionality integrated with filters
   function performSearch() {
-    const searchInput = document.getElementById('searchInput');
-    const searchResults = document.getElementById('searchResults');
-    const searchTerm = document.getElementById('searchTerm');
-    const resultCount = document.getElementById('resultCount');
-    const noResults = document.getElementById('noResults');
-    
-    const query = searchInput.value.toLowerCase().trim();
-    
-    if (query === '') {
-      // Show all wishlists
-      displayWishlists(allWishlists);
-      searchResults.classList.add('hidden');
-      noResults.classList.add('hidden');
-      return;
-    }
-    
-    // Filter wishlists based on search
-    const filteredWishlists = allWishlists.filter(wishlist => 
-      wishlist.title.toLowerCase().includes(query) ||
-      wishlist.projectTitle.toLowerCase().includes(query) ||
-      wishlist.maintainerName.toLowerCase().includes(query) ||
-      wishlist.wishes.some(wish => wish.toLowerCase().includes(query))
-    );
-    
-    // Update search results info
-    searchTerm.textContent = query;
-    resultCount.textContent = filteredWishlists.length;
-    searchResults.classList.remove('hidden');
-    
-    if (filteredWishlists.length === 0) {
-      noResults.classList.remove('hidden');
-      document.getElementById('wishlistsGrid').innerHTML = '';
-    } else {
-      noResults.classList.add('hidden');
-      displayWishlists(filteredWishlists);
-    }
+    const input = document.getElementById('searchInput');
+    searchQuery = (input?.value || '');
+    applyFilters();
   }
 
   // Initialize on page load
@@ -389,6 +417,49 @@ const urgencyColors = {
     searchInput.addEventListener('input', function() {
       clearTimeout(searchTimeout);
       searchTimeout = setTimeout(performSearch, 300);
+    });
+
+    // Filters
+    const btnAll = document.getElementById('filterAll');
+    const btnUrgent = document.getElementById('filterUrgent');
+    const techSelect = document.getElementById('techFilter');
+    const sortSelect = document.getElementById('sortSelect');
+
+    function updateUrgencyButtons() {
+      if (!btnAll || !btnUrgent) return;
+      if (activeUrgency === 'all') {
+        btnAll.classList.add('bg-gray-900','text-white','border-gray-900');
+        btnAll.classList.remove('bg-white');
+        btnUrgent.classList.remove('bg-gray-900','text-white','border-gray-900');
+        btnUrgent.classList.add('bg-white');
+      } else {
+        btnUrgent.classList.add('bg-gray-900','text-white','border-gray-900');
+        btnUrgent.classList.remove('bg-white');
+        btnAll.classList.remove('bg-gray-900','text-white','border-gray-900');
+        btnAll.classList.add('bg-white');
+      }
+    }
+
+    btnAll?.addEventListener('click', function() {
+      activeUrgency = 'all';
+      updateUrgencyButtons();
+      applyFilters();
+    });
+
+    btnUrgent?.addEventListener('click', function() {
+      activeUrgency = 'high';
+      updateUrgencyButtons();
+      applyFilters();
+    });
+
+    techSelect?.addEventListener('change', function(e) {
+      activeTech = (e.target?.value || 'all');
+      applyFilters();
+    });
+
+    sortSelect?.addEventListener('change', function(e) {
+      sortBy = (e.target?.value || 'recent');
+      applyFilters();
     });
   });
 </script>

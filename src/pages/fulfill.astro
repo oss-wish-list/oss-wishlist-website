@@ -2,6 +2,7 @@
 import Layout from '../components/Layout.astro';
 import { getCollection } from 'astro:content';
 import { GITHUB_CONFIG } from '../config/github.js';
+import { getPriceForService, formatPrice } from '../lib/pricing.js';
 import { getBasePath } from '../lib/paths';
 
 const basePath = getBasePath();
@@ -13,17 +14,19 @@ const practitioners = await getCollection('practitioners');
 // Get services for detailed display
 const services = await getCollection('services');
 
-// Create a lookup map for services by title
-const servicesByTitle = services.reduce((acc, service) => {
-  acc[service.data.title] = service;
+// Create a lookup map for services by both title and slug
+const servicesByKey: Record<string, any> = services.reduce((acc, service) => {
+  if (service.data.title) acc[service.data.title] = service;
+  if ((service as any).slug) acc[(service as any).slug] = service;
   return acc;
-}, {});
+}, {} as Record<string, any>);
 
 // Try to get URL parameters
 const url = Astro.url;
 let wishlistData = null;
 let issueNumber = null;
 let githubIssue = null;
+let projectSize: 'small' | 'medium' | 'large' | null = null;
 
 // Check for issue parameter (GitHub issue number)
 issueNumber = url.searchParams.get('issue');
@@ -74,6 +77,15 @@ if (issueNumber && GITHUB_TOKEN) {
         }
       }
       
+      // Try to detect Project Size section
+      const sizeMatch = body.match(/###\s*Project Size\s*\n+([A-Za-z]+)/);
+      if (sizeMatch) {
+        const size = sizeMatch[1].trim().toLowerCase();
+        if (size === 'small' || size === 'medium' || size === 'large') {
+          projectSize = size as 'small' | 'medium' | 'large';
+        }
+      }
+
       // Extract project name from title or body
       let projectName = githubIssue.title.replace(/^Wishlist:\s*/i, '').trim();
       
@@ -151,7 +163,7 @@ if (issueNumber && GITHUB_TOKEN) {
                     <div class="mt-2 text-sm text-red-700">
                       <p>This page can only be accessed by clicking "Fulfill This Wish" from a specific wishlist.</p>
                       <p class="mt-2">
-                        <a href="/oss-wishlist-website/wishlists" class="font-medium underline hover:text-red-600">
+                        <a href={`${basePath}wishlists`} class="font-medium underline hover:text-red-600">
                           Go to Wishlists page to select a wishlist to fulfill
                         </a>
                       </p>
@@ -173,10 +185,13 @@ if (issueNumber && GITHUB_TOKEN) {
                   <strong>Wishes available for fulfillment</strong> from <strong>{wishlistData.projectName}</strong>:
                 </p>
                 {wishlistData.wishes.map((serviceName: string) => {
-                  const serviceDetails = servicesByTitle[serviceName];
+                  const serviceDetails = servicesByKey[serviceName];
+                  const sizeForPricing = projectSize ?? 'medium';
+                  const priceValue = getPriceForService(serviceName, sizeForPricing, services);
+                  const priceText = formatPrice(priceValue);
                   return (
                     <div class="border border-gray-200 rounded-lg p-4 hover:border-gray-300 transition-colors">
-                      <div class="flex items-start">
+                      <div class="flex items-start justify-between gap-3">
                         <input 
                           type="checkbox" 
                           id={`service-${serviceName.replace(/\s+/g, '-').toLowerCase()}`}
@@ -196,15 +211,21 @@ if (issueNumber && GITHUB_TOKEN) {
                               <p class="text-sm text-gray-600">
                                 {serviceDetails.data.description}
                               </p>
-                              <div class="flex flex-wrap gap-4 text-xs text-gray-500">
-                                {serviceDetails.data.service_type && (
-                                  <span><strong>Type:</strong> {serviceDetails.data.service_type}</span>
-                                )}
-                                {serviceDetails.data.prerequisites && (
-                                  <span><strong>Prerequisites:</strong> {serviceDetails.data.prerequisites}</span>
-                                )}
-                              </div>
+                              {projectSize && (
+                                <div class="text-xs text-gray-500">
+                                  <strong>Project size:</strong>{' '}
+                                  {projectSize.charAt(0).toUpperCase() + projectSize.slice(1)}
+                                </div>
+                              )}
                             </div>
+                          )}
+                        </div>
+                        <div class="flex-shrink-0 text-right">
+                          <div class="inline-flex items-center px-2 py-1 rounded bg-gray-100 text-gray-800 text-xs border border-gray-200" title={`Estimated price for ${sizeForPricing} project`}>
+                            {priceText}
+                          </div>
+                          {!projectSize && (
+                            <div class="mt-1 text-[10px] text-gray-500">Assumes Medium size</div>
                           )}
                         </div>
                       </div>

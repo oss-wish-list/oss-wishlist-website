@@ -1,15 +1,12 @@
 ---
 import Layout from '../../components/Layout.astro';
-import { getCollection, getEntry } from 'astro:content';
+import { getEntry } from 'astro:content';
+import { getBasePath } from '../../lib/paths';
 
-// Generate static paths for all practitioners
-export async function getStaticPaths() {
-  const practitioners = await getCollection('practitioners');
-  return practitioners.map(practitioner => ({
-    params: { slug: practitioner.slug },
-    props: { practitioner }
-  }));
-}
+export const prerender = false;
+const basePath = getBasePath();
+
+// Server-rendered: resolve content dynamically at request time
 
 // Get the practitioner from props (static) or params (SSR fallback)
 const { practitioner: propsPractitioner } = Astro.props;
@@ -228,7 +225,7 @@ const { Content } = await practitioner.render();
           </a>
         )}
         <a 
-          href="/oss-wishlist-website/maintainers"
+          href={`${basePath}maintainers`}
           class="bg-white text-gray-600 border border-blue-600 px-6 py-2 rounded-lg font-medium hover:bg-blue-50"
         >
           Create Wishlist

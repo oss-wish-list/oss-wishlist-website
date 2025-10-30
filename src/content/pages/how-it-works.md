@@ -11,7 +11,7 @@ A simple three-step process that connects needs with resources
 
 ### 1. Maintainers Create Wishlists
 
-Open source maintainers browse our catalog of services and resources, then create a wishlist identifying critical needs for their project's sustainability.
+Open source maintainers browse our catalogue of services and resources, then create a wishlist identifying critical needs for their project's sustainability.
 
 - Choose from curated services and resources
 - Services include security audits, governance setup, funding strategy, and more
@@ -35,6 +35,15 @@ Vetted open source practitioners with validated expertise are matched with funde
 - Hired through our platform or provided by Wishlist Sponsors
 - Work directly with maintainers on critical needs
 - Fair compensation for expertise and labor
+
+### 4. Peer Review Ensures Quality
+
+After practitioners complete their work, peer review ensures the quality and completeness of deliverables.
+
+- Playbooks include rubrics to assess outcomes
+- Other practitioners and community experts review completed work
+- Peer review validates that deliverables meet quality standards
+- Ensures accountability and continuous improvement
 
 ## Who's Involved
 
@@ -78,13 +87,26 @@ Trusted organizations that provide funding, vetted practitioners, or both to sup
 
 ## What Makes OSS Wishlist Different
 
+### Community-Owned and Supported
+
+OSS Wishlist is a community-owned initiative, maintained and kept active through sponsorship. We're committed to transparency and community governance.
+
+**Support the platform:**
+- Contribute to our [Open Collective](https://opencollective.com/oss-wishlist)
+- Support project maintainers through our [GitHub Organization](https://github.com/oss-wishlist)
+
+Your contributions help us:
+- Keep the platform running and maintained
+- Support practitioners who build and improve OSS Wishlist
+- Expand services and resources for the community
+
 ### Human-Centered Support
 
 While tools and automation are valuable, some problems require human expertise. We focus on connecting projects with experienced practitioners who can provide strategic guidance, hands-on help, and thoughtful solutions.
 
 ### Curated Services
 
-Our catalog is carefully curated to address the most critical needs for project sustainability: security, governance, funding, community health, and infrastructure. We focus on quality over quantity.
+Our catalogue is carefully curated to address the most critical needs for project sustainability: security, governance, funding, community health, and infrastructure. We focus on quality over quantity.
 
 ### Transparent and Accountable
 

@@ -3,6 +3,7 @@ import Layout from '../components/Layout.astro';
 import PlaceholderPage from '../components/PlaceholderPage.astro';
 import { getCollection } from 'astro:content';
 import { getBasePath } from '../lib/paths';
+export const prerender = false;
 
 // Check if site is in placeholder mode
 const basePath = getBasePath();
@@ -49,38 +50,46 @@ const companyServices = services.filter(service =>
           <article class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 flex flex-col" role="listitem">
             <h2 class="text-xl font-semibold text-gray-950 mb-2">Wishlist Sponsors</h2>
             <p class="text-gray-700 mb-4 flex-grow">Fulfill specific, validated needs in projects you depend on. See exactly how your support creates impact.</p>
-            <div class="space-y-3">
-              <a 
-                href={`${basePath}wishlists`} 
-                class="bg-slate-700 text-white px-6 py-3 rounded-lg hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2 transition-colors block text-center min-h-[44px] flex items-center justify-center font-medium"
-                aria-label="Browse wishlists to fulfill"
-              >
-                Fulfill a Wish
-              </a>
-              <a 
-                href="https://github.com/oss-wishlist/oss-wishlist-dependency-report" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                class="flex items-center justify-center gap-2 text-gray-800 hover:text-gray-950 text-sm font-medium underline decoration-gray-300 hover:decoration-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 rounded px-2 py-1"
-                aria-label="View GitHub Action to see wishlists in your dependencies"
-              >
-                <img src={`${basePath}images/ecosystems.svg`} alt="Ecosyste.ms" class="w-4 h-4 flex-shrink-0" aria-hidden="true" />
-                See wishlists in your dependencies
-              </a>
-            </div>
+            <a 
+              href={`${basePath}wishlists`} 
+              class="bg-slate-700 text-white px-6 py-3 rounded-lg hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2 transition-colors block text-center min-h-[44px] flex items-center justify-center font-medium"
+              aria-label="Browse wishlists to fulfill"
+            >
+              Fulfill a Wish
+            </a>
           </article>
           
           <article class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 flex flex-col" role="listitem">
             <h2 class="text-xl font-semibold text-gray-950 mb-2">Open Source Practitioners</h2>
             <p class="text-gray-700 mb-4 flex-grow">Get paid to strengthen open source sustainability with work that values your expertise.</p>
             <a 
-              href={`${basePath}/practitioners`} 
+              href={`${basePath}practitioners`} 
               class="bg-gray-700 text-white px-6 py-3 rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 transition-colors block text-center min-h-[44px] flex items-center justify-center font-medium"
               aria-label="Apply to become a practitioner"
             >
               Become a Practitioner
             </a>
           </article>
+        </div>
+        
+        <!-- Dependency Report Link - Below Cards -->
+        <div class="flex justify-center mt-4">
+          <a 
+            href="https://github.com/oss-wishlist/oss-wishlist-dependency-report" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            class="inline-flex items-center gap-2 bg-blue-50 border border-blue-200 text-blue-900 px-4 py-2.5 rounded-lg hover:bg-blue-100 hover:border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 transition-colors font-medium text-sm"
+            aria-label="View GitHub Action to see wishlists in your dependencies"
+          >
+            <svg class="w-5 h-5 text-blue-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+            </svg>
+            See wishlists in your dependencies
+            <svg class="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </a>
+        </div>
         </div>
       </div>
     </div>

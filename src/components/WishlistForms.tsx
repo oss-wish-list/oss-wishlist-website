@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getApiPath } from '../config/app';
+import { getBasePath, withBasePath, withBaseUrl } from '../lib/paths';
 
 // Heroicon SVG components
 const PencilIcon = () => (
@@ -106,6 +107,7 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
     selectedServices: [] as string[],
     technologies: [] as string[],
     urgency: 'medium' as 'low' | 'medium' | 'high',
+    projectSize: 'medium' as 'small' | 'medium' | 'large',
     timeline: '',
     organizationType: 'individual' as 'individual' | 'company' | 'nonprofit' | 'foundation',
     organizationName: '',
@@ -134,7 +136,10 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
     
     if (authStatus === 'success' || authStatus === 'already_authenticated') {
       // Clear the URL params
-      window.history.replaceState({}, '', '/oss-wishlist-website/maintainers');
+      {
+        const basePath = getBasePath();
+        window.history.replaceState({}, '', `${basePath}maintainers`);
+      }
       // Check if user is authenticated
       checkUserSession();
     } else if (error) {
@@ -254,6 +259,7 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
         projectTitle: cachedData.projectTitle || '',
         selectedServices: cachedData.wishes || [],
         urgency: cachedData.urgency || 'medium',
+        projectSize: cachedData.projectSize || 'medium',
         timeline: cachedData.timeline || '',
         organizationType: cachedData.organizationType || 'individual',
         organizationName: cachedData.organizationName || '',
@@ -285,7 +291,10 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
     const error = urlParams.get('error');
         
     if (authStatus === 'success') {
-      window.location.href = '/oss-wishlist-website/maintainers';
+      {
+        const basePath = getBasePath();
+        window.location.href = `${basePath}maintainers`;
+      }
     } else if (error) {
       setError(`Authentication failed: ${error.replace('_', ' ')}`);
     }
@@ -370,6 +379,12 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
       return;
     }
 
+    // Require a valid project size selection
+    if (!['small', 'medium', 'large'].includes(wishlistData.projectSize)) {
+      setError('Please select a project size');
+      return;
+    }
+
     // Basic client-side validation for spam patterns
     const fieldsToCheck = [
       wishlistData.projectTitle,
@@ -430,7 +445,7 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
 ${repositories.map(repo => `  - [${repo.name}](${repo.url}) - ${repo.description || 'No description'}`).join('\n')}
 - **Maintainer:** @${repositories[0].username}`;
 
-      const issueBody = `# OSS Project Wishlist
+  const issueBody = `# OSS Project Wishlist
 
 ## Project Information
 ${repositoriesSection}
@@ -439,7 +454,7 @@ ${wishlistData.technologies.length > 0 ? `- **Technologies:** ${wishlistData.tec
 ## Services Requested
 ${wishlistData.selectedServices.map(serviceId => {
   const service = availableServices.find(s => s.id === serviceId);
-  const serviceLink = service?.slug ? `${window.location.origin}/services/${service.slug}` : '';
+  const serviceLink = service?.slug ? withBaseUrl(`services/${service.slug}`) : '';
   return `- **${service?.title || serviceId}** (${service?.category || 'General'})
   ${service?.description || 'No description available'}${serviceLink ? `
   [Learn more about this service](${serviceLink})` : ''}`;
@@ -460,11 +475,11 @@ ${wishlistData.additionalNotes || 'None provided'}
 ---
 **Ready to help?** Comment below or reach out to the maintainer!
 
-*Created via [OSS Wishlist Platform](${window.location.origin})*
+*Created via [OSS Wishlist Platform](${withBaseUrl('')})*
 `;
 
       // Submit directly to our API instead of opening GitHub
-      const response = await fetch('/api/submit-wishlist', {
+      const response = await fetch(withBasePath('api/submit-wishlist'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -480,6 +495,7 @@ ${wishlistData.additionalNotes || 'None provided'}
             projectUrl: repositories[0].url, // Use first repo as primary
             maintainer: repositories[0].username,
             services: wishlistData.selectedServices,
+            projectSize: wishlistData.projectSize,
             technologies: wishlistData.technologies,
             urgency: wishlistData.urgency,
             description: repositories[0].description || '',
@@ -1081,6 +1097,7 @@ ${wishlistData.additionalNotes || 'None provided'}
                       selectedServices: [],
                       technologies: [],
                       urgency: 'medium',
+                      projectSize: 'medium',
                       timeline: '',
                       organizationType: 'individual',
                       organizationName: '',
@@ -1360,6 +1377,24 @@ ${wishlistData.additionalNotes || 'None provided'}
               <span>Project Details</span>
             </h3>
             <div className="grid gap-6 md:grid-cols-2">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Project Size <span className="text-red-600">*</span>
+                </label>
+                <select
+                  value={wishlistData.projectSize}
+                  onChange={(e) => setWishlistData(prev => ({ ...prev, projectSize: e.target.value as any }))}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+                >
+                  <option value="small">Small</option>
+                  <option value="medium">Medium</option>
+                  <option value="large">Large</option>
+                </select>
+                <p className="text-xs text-gray-500 mt-1">
+                  Not sure? See our <a className="underline hover:text-gray-900" href={`${getBasePath()}faq#project-size-guidance`} target="_blank" rel="noopener noreferrer">sizing guidance</a>.
+                </p>
+              </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Urgency
