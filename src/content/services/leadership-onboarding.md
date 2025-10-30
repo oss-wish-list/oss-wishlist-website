@@ -12,6 +12,10 @@ deliverables:
   - "Community engagement strategy"
   - "Conflict resolution framework"
   - "Mentorship and succession planning guide"
+pricing:
+  small: 4000
+  medium: 7000
+  large: 12000
 ---
 
 ## Service Overview

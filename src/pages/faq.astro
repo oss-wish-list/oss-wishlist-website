@@ -64,7 +64,7 @@ Object.keys(faqByCategory).forEach(category => {
           >
             <div class="space-y-4 pt-2">
               {faqs.map((faq) => (
-                <div key={faq.slug} class="bg-gray-50 rounded-lg p-4">
+                <div key={faq.slug} id={faq.slug} class="bg-gray-50 rounded-lg p-4">
                   <h3 class="text-lg font-semibold text-gray-900 mb-3">{faq.data.title}</h3>
                   <div class="text-gray-700 prose prose-gray max-w-none prose-sm prose-headings:text-gray-900 prose-h2:text-base prose-h2:font-semibold prose-h3:text-sm prose-h3:font-medium">
                     <faq.Content />
@@ -123,6 +123,28 @@ Object.keys(faqByCategory).forEach(category => {
     const firstToggle = document.querySelector('.faq-toggle');
     if (firstToggle) {
       firstToggle.click();
+    }
+
+    // If there's a hash in the URL, expand the matching category and scroll to it
+    const hash = decodeURIComponent(window.location.hash.replace('#', ''));
+    if (hash) {
+      const target = document.getElementById(hash);
+      if (target) {
+        // Find the containing FAQ section content (id starts with 'faq-')
+        const container = target.closest('[id^="faq-"]');
+        if (container && container.classList.contains('hidden')) {
+          const containerId = container.getAttribute('id');
+          const toggle = Array.from(document.querySelectorAll('.faq-toggle'))
+            .find((btn) => btn.getAttribute('data-target') === containerId);
+          if (toggle) {
+            toggle.dispatchEvent(new Event('click'));
+          }
+        }
+        // After a short delay (to allow expand animation), scroll into view
+        setTimeout(() => {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+      }
     }
   });
 </script>

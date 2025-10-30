@@ -3,6 +3,7 @@ import Layout from '../components/Layout.astro';
 import PlaceholderPage from '../components/PlaceholderPage.astro';
 import { getCollection } from 'astro:content';
 import { getBasePath } from '../lib/paths';
+export const prerender = false;
 
 // Check if site is in placeholder mode
 const basePath = getBasePath();
@@ -62,7 +63,7 @@ const companyServices = services.filter(service =>
             <h2 class="text-xl font-semibold text-gray-950 mb-2">Open Source Practitioners</h2>
             <p class="text-gray-700 mb-4 flex-grow">Get paid to strengthen open source sustainability with work that values your expertise.</p>
             <a 
-              href={`${basePath}/practitioners`} 
+              href={`${basePath}practitioners`} 
               class="bg-gray-700 text-white px-6 py-3 rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 transition-colors block text-center min-h-[44px] flex items-center justify-center font-medium"
               aria-label="Apply to become a practitioner"
             >

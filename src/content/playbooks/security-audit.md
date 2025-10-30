@@ -14,7 +14,7 @@ A playbook for maintainers and pracitioners, in addition to their own resources.
 
 ## Security Audit Peer Review 
 
-# Open Source Security – Peer Review Rubric  
+## Open Source Security – Peer Review Rubric  
 (Aligned with OpenSSF Scorecard + Repository Security Best Practices)
 
 **Purpose:** Evaluate the security posture and resilience of an open source project’s repository, workflows, dependencies, and contributor access.

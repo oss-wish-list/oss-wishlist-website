@@ -193,9 +193,11 @@ export function setCachedSession(session: AuthSession | null): void {
  * CLIENT-SIDE: Fetch current session from server
  * Use this to verify the session is still valid
  */
+import { withBasePath } from './paths';
+
 export async function fetchSession(): Promise<AuthSession | null> {
   try {
-    const response = await fetch('/api/auth/session');
+    const response = await fetch(withBasePath('api/auth/session'));
     
     if (!response.ok) {
       return null;
@@ -249,7 +251,7 @@ export function getLoginUrl(provider: 'github' = 'github'): string {
   // Currently only GitHub, but ready for extension
   switch (provider) {
     case 'github':
-      return '/api/auth/github';
+      return withBasePath('api/auth/github');
     default:
       throw new Error(`Unknown auth provider: ${provider}`);
   }
@@ -259,5 +261,5 @@ export function getLoginUrl(provider: 'github' = 'github'): string {
  * Get logout URL
  */
 export function getLogoutUrl(): string {
-  return '/api/auth/logout';
+  return withBasePath('api/auth/logout');
 }

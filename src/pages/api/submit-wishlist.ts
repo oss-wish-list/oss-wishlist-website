@@ -34,7 +34,7 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
     
-    const { title, body: issueBody, labels, formData, isUpdate, issueNumber } = validationResult.data;
+  const { title, body: issueBody, labels, formData, isUpdate, issueNumber } = validationResult.data;
 
     // Get origin and basePath for URLs
     const origin = new URL(request.url).origin;
@@ -44,6 +44,10 @@ export const POST: APIRoute = async ({ request }) => {
     let finalLabels = labels || ['wishlist'];
     if (formData?.createFundingPR === true) {
       finalLabels.push('funding-yml-requested');
+    }
+    // Include size label if provided
+    if (formData?.projectSize) {
+      finalLabels.push(`size:${formData.projectSize}`);
     }
 
     // Get GitHub token from environment
@@ -77,6 +81,7 @@ export const POST: APIRoute = async ({ request }) => {
         maintainer: formData.maintainer,
         repository: formData.projectUrl,
         urgency: formData.urgency.toLowerCase(),
+        projectSize: formData.projectSize,
         services: services,
         resources: resources,
         additionalContext: formData.description + 

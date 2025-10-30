@@ -48,7 +48,7 @@ const user = Astro.locals.user;
             aria-labelledby="wishlist-services-dropdown-button"
           >
             <div class="py-1" role="none">
-              <a href={`${basePath}catalog`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Wish Catalog</a>
+              <a href={`${basePath}catalog`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Wish Catalogue</a>
               <a href={`${basePath}playbooks`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Playbooks</a>
             </div>
           </div>
@@ -172,6 +172,7 @@ const user = Astro.locals.user;
               <a href={`${basePath}how-it-works`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">How It Works</a>
               <a href={`${basePath}pricing`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Pricing</a>
               <a href={`${basePath}faq`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">FAQ</a>
+              <a href={`${basePath}terms`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Terms & Conditions</a>
               <div class="border-t my-1"></div>
               {user ? (
                 <a href={`${basePath}api/auth/logout`} class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none min-h-[44px] flex items-center" role="menuitem" tabindex="-1">Logout</a>
@@ -180,17 +181,6 @@ const user = Astro.locals.user;
               )}
             </div>
           </div>
-        </div>
-
-        <!-- Language Switcher -->
-        <div class="relative">
-          <label for="locale-switcher" class="sr-only">Select language</label>
-          <select id="locale-switcher" class="border rounded px-2 py-1 text-sm text-gray-700 min-h-[36px]">
-            <option value="en">English</option>
-            <option value="fr">Français</option>
-            <option value="es">Español</option>
-            <option value="de">Deutsch</option>
-          </select>
         </div>
       </div>
 
@@ -213,7 +203,7 @@ const user = Astro.locals.user;
       <div class="space-y-1">
         <a href={`${basePath}maintainers`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Create and Manage Your Wishlists</a>
         <a href={`${basePath}wishlists`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">View wishlists</a>
-        <a href={`${basePath}catalog`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Wish Catalog</a>
+  <a href={`${basePath}catalog`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Wish Catalogue</a>
         <a href={`${basePath}practitioners`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Practitioner Community</a>
   <a href={`${basePath}about-us`} class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">About Us</a>
   <a href="https://calendly.com/emma-irwin-z6wm" target="_blank" rel="noopener noreferrer" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none rounded min-h-[44px] flex items-center">Information Sessions</a>
@@ -235,36 +225,6 @@ const user = Astro.locals.user;
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    // Language switcher preserves current path
-    const localeSelect = document.getElementById('locale-switcher');
-    if (localeSelect) {
-      // Initialize current locale selection based on URL
-      try {
-        const baseRaw = (import.meta && import.meta.env && import.meta.env.BASE_URL) ? import.meta.env.BASE_URL : '/';
-        const baseNorm = baseRaw.endsWith('/') ? baseRaw : baseRaw + '/';
-        const basePrefix = baseNorm.endsWith('/') ? baseNorm.slice(0, -1) : baseNorm;
-        const path = window.location.pathname;
-        let pathWithoutBase = path.startsWith(basePrefix) ? path.slice(basePrefix.length) : path;
-        if (!pathWithoutBase.startsWith('/')) pathWithoutBase = '/' + pathWithoutBase;
-        const match = pathWithoutBase.match(/^\/(en|fr|es|de)(\/|$)/);
-        const currentLocale = match ? match[1] : 'en';
-        localeSelect.value = currentLocale;
-      } catch {}
-
-      localeSelect.addEventListener('change', (e) => {
-        const selected = e.target.value;
-        const baseRaw = (import.meta && import.meta.env && import.meta.env.BASE_URL) ? import.meta.env.BASE_URL : '/';
-        const baseNorm = baseRaw.endsWith('/') ? baseRaw : baseRaw + '/';
-        const basePrefix = baseNorm.endsWith('/') ? baseNorm.slice(0, -1) : baseNorm;
-        const { pathname, search, hash } = window.location;
-        let pathWithoutBase = pathname.startsWith(basePrefix) ? pathname.slice(basePrefix.length) : pathname;
-        if (!pathWithoutBase.startsWith('/')) pathWithoutBase = '/' + pathWithoutBase;
-        // Remove existing locale prefix
-        const rest = pathWithoutBase.replace(/^\/(en|fr|es|de)(?=\/|$)/, '').replace(/^\/+/, '');
-        const newPath = baseNorm + (selected !== 'en' ? `${selected}/` : '') + rest;
-        window.location.href = newPath + search + hash;
-      });
-    }
     // Mobile menu toggle
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const mobileMenu = document.getElementById('mobile-menu');

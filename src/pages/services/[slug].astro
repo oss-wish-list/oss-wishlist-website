@@ -1,7 +1,7 @@
 ---
 import { getBasePath } from '../../lib/paths';
 import Layout from '../../components/Layout.astro';
-import { getEntry } from 'astro:content';
+import { getEntry, getCollection } from 'astro:content';
 
 const basePath = getBasePath();
 
@@ -21,6 +21,10 @@ if (!service) {
   return Astro.redirect('/404');
 }
 
+// Find a related playbook (by service slug)
+const playbooks = await getCollection('playbooks');
+const relatedPlaybook = playbooks.find((pb) => pb.data.service === service.slug);
+
 const { Content } = await service.render();
 ---
 
@@ -33,7 +37,7 @@ const { Content } = await service.render();
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
           </svg>
-          Back to Catalog
+          Back to Catalogue
         </a>
       </div>
 
@@ -53,6 +57,22 @@ const { Content } = await service.render();
             </p>
           </div>
         </div>
+
+        {relatedPlaybook && (
+          <div class="pt-4">
+            <div class="p-4 bg-gray-50 rounded-lg border border-gray-200 flex items-center justify-between">
+              <div class="text-sm text-gray-700">
+                📘 <strong>Playbook available:</strong> Practitioner guidance and rubric for this service.
+              </div>
+              <a
+                href={`${basePath}playbooks/${relatedPlaybook.slug}`}
+                class="inline-flex items-center gap-2 bg-gray-900 text-white px-4 py-2 rounded-md text-sm hover:bg-gray-800 transition-colors"
+              >
+                View Playbook
+              </a>
+            </div>
+          </div>
+        )}
 
         {service.data.prerequisites && (
           <div class="pt-6 border-t mt-6">

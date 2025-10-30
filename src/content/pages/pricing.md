@@ -1,26 +1,35 @@
 ---
-title: "Community Pricing Guide"
+title: "Catalogue Pricing"
 description: "Transparent pricing for open source sustainability services. Fair rates that respect practitioner expertise and project needs."
 ---
 
-Transparent, human-centered pricing that honors the expertise of practitioners and the sustainability needs of open source projects.
+<!-- 
+  NOTE: Pricing values shown below are for display purposes.
+  The source of truth for pricing data is in each service's frontmatter (src/content/services/*.md).
+  When updating prices:
+  1. Update the individual service file frontmatter (e.g., governance-setup.md)
+  2. Update the corresponding table below to match
+  This ensures pricing is consistent across the platform (catalog, wishlist form, fulfill page).
+-->
 
-## Our Community Values
+## Focus on Community
 
-This is not a company. It's a collaborative space where maintainers, practitioners, and sponsors come together to strengthen open source sustainability. Our pricing tiers are community-established guidelines that ensure:
+This is not a company. It's a collaborative space where maintainers, practitioners, and sponsors come together to strengthen open source sustainability. Our pricing tiers are a baseline proposal, and open to evolve with community input.  
 
-- **Fair compensation** that honors practitioners' time and expertise
-- **Realistic budgets** that help maintainers and sponsors plan effectively
-- **Quality outcomes** through properly scoped, human-centered engagements
-- **Sustainable relationships** built on trust and mutual benefit
 
 ### Understanding Our Pricing Tiers
 
-Each pricing tier represents a **complete, quality engagement** guided by community-established standards. The differences in pricing reflect the **human time investment and project complexity**. Larger projects naturally involve more people, more intricate relationships, and more nuanced challenges. A small project governance setup might take 20-30 hours working with 1-2 maintainers, while a medium project involves 40-60 hours with 3-10 maintainers, and a large project could require 80-120 hours coordinating across 20+ people with complex decision-making needs. Each tier delivers thorough, collaborative work appropriate to the community's scale.
+Each pricing tier represents a **complete, quality engagement**. The differences in pricing reflect the **human time investment, project and service complexity**. 
+
+**All services are guided by detailed rubrics and quality standards documented in our [Practitioner Playbooks](/oss-wishlist-website/playbooks)**. These playbooks outline deliverables, success criteria, and assessment frameworks for each service.  
 
 ### Pro Bono & Community Support
 
-Many practitioners generously offer **pro bono services** for projects that align with their values, particularly those from underrepresented communities, critical infrastructure projects, or work with significant public benefit. Pro bono availability varies by practitioner and is offered at their discretion.
+Practitioners generously offer **pro bono services** for projects that align with their values, particularly those from underrepresented communities, critical infrastructure projects, or work with significant public benefit. Pro bono availability varies by practitioner and is offered at their discretion.
+
+### Payment process
+
+Payment will be made directly to practitioners via GitHub Sponsors or Open Collective in advance, once a wishlist fulfillment has been finalized and scheduled. Payment covers a one-time, single-service engagement. Any requests beyond the initial scope are out of scope for this initiative.
 
 ## Pricing Tiers by Service
 
@@ -28,12 +37,12 @@ Many practitioners generously offer **pro bono services** for projects that alig
 
 Establish trusted governance structures, contributor guidelines, and decision-making processes
 
-| Tier | Price | Scope | What's Included |
-|------|-------|-------|-----------------|
-| **Pro Bono** | Free | Qualifying projects | Adapted scope • Limited time commitment • Community benefit focus |
-| **Small** | $3,500 | 1-5 maintainers | Governance framework • Contributor guidelines • Decision-making process • ~20-30 hours |
-| **Medium** | $7,500 | 5-20 maintainers | Multi-stakeholder governance • Working groups structure • Conflict resolution processes • Fund distribution policies • ~40-60 hours |
-| **Large** | $15,000 | 20+ maintainers | Complex governance architecture • Multi-org coordination • Legal entity considerations • Treasury & IP management • ~80-120 hours |
+| Tier | Price | Scope |
+|------|-------|-------|
+| **Pro Bono** | Free | Qualifying projects |
+| **Small** | $5,500 | Few contributors, simple structure |
+| **Medium** | $9,500 | Growing community, multi-stakeholder needs |
+| **Large** | $17,000 | Complex ecosystem, high activity |
 
 ---
 
@@ -41,12 +50,12 @@ Establish trusted governance structures, contributor guidelines, and decision-ma
 
 Comprehensive security assessment including dependencies, repository configuration, and OpenSSF Scorecard alignment
 
-| Tier | Price | Scope | What's Included |
-|------|-------|-------|-----------------|
-| **Pro Bono** | Free | Qualifying projects | Adapted scope • Limited time commitment • Critical infrastructure focus |
-| **Small** | $2,500 | Single repository | OpenSSF Scorecard evaluation • Branch protection setup • Dependabot configuration • Vulnerability scanning • ~15-20 hours |
-| **Medium** | $6,000 | Multiple repositories | Complete OpenSSF alignment • Security automation setup • Supply chain risk assessment • Configuration templates • ~30-40 hours |
-| **Large** | $12,000 | Enterprise scale | Organization-wide assessment • Multi-team coordination • Compliance documentation • Executive reporting • ~60-80 hours |
+| Tier | Price | Scope |
+|------|-------|-------|
+| **Pro Bono** | Free | Qualifying projects |
+| **Small** | $4,500 | Single repository, moderate complexity |
+| **Medium** | $8,000 | Multiple repositories or complex codebase |
+| **Large** | $14,000 | Large-scale ecosystem, high downstream dependencies |
 
 ---
 
@@ -54,12 +63,12 @@ Comprehensive security assessment including dependencies, repository configurati
 
 Comprehensive onboarding for new trusted project leaders
 
-| Tier | Price | Scope | What's Included |
-|------|-------|-------|-----------------|
-| **Pro Bono** | Free | Qualifying projects | Adapted scope • Limited time commitment • Documentation review |
-| **Small** | $2,000 | Single maintainer | Transition roadmap • Knowledge transfer sessions • Candidate vetting • ~10-15 hours |
-| **Medium** | $5,000 | Small team | Multi-person succession planning • Leadership candidate vetting • Structured onboarding program • 6-month transition support • ~25-35 hours |
-| **Large** | $10,000 | Multiple leaders | Complex leadership transitions • Multi-role succession coordination • Leadership team development • 12-month transition support • ~50-70 hours |
+| Tier | Price | Scope |
+|------|-------|-------|
+| **Pro Bono** | Free | Qualifying projects |
+| **Small** | $4,000 | Single leader transition, smaller community |
+| **Medium** | $7,000 | Multiple roles, active contributor base |
+| **Large** | $12,000 | Complex transitions, high-impact project |
 
 ---
 
@@ -67,33 +76,50 @@ Comprehensive onboarding for new trusted project leaders
 
 Professional help with critical maintainer tasks and responsibilities
 
-| Tier | Price | Scope | What's Included |
-|------|-------|-------|-----------------|
-| **Pro Bono** | Free | Qualifying projects | Adapted scope • Limited time commitment • Critical issues focus |
-| **Small** | $2,500/month | Per month | ~10 hours/month • PR reviews & merges • Issue triage • Routine maintenance |
-| **Medium** | $6,000/month | Per month | ~25 hours/month • More stakeholders & coordination • Release management • Security patches • Community moderation |
-| **Large** | $12,000/month | Per month | ~50+ hours/month • Complex multi-repo coordination • Emergency response capability • High-volume PR/issue management • Dedicated practitioner |
+| Tier | Price | Scope |
+|------|-------|-------|
+| **Pro Bono** | Free | Qualifying projects |
+| **Small** | $4,500 | Low activity, routine maintenance |
+| **Medium** | $8,000 | Moderate PR/issue volume, active community |
+| **Large** | $14,000 | High activity, complex coordination needs |
 
 ---
 
-## Community Questions
+### Funding Strategy
 
-### How are project sizes determined?
+Guidance for maintainers to set funding goals, increase visibility for grants, credits, and other opportunities
 
-Project size reflects the number of people involved, community activity, and complexity of needs. During your initial conversation, practitioners work collaboratively with you to determine the most appropriate tier for your community's situation.
+| Tier | Price | Scope |
+|------|-------|-------|
+| **Pro Bono** | Free | Qualifying projects |
+| **Small** | $4,000 | Early-stage project |
+| **Medium** | $6,500 | Established project |
+| **Large** | $11,000 | Large-scale project |
 
-### Are these prices flexible?
+---
 
-Our pricing tiers are community-established guidelines designed to honor fair compensation. Every project is unique, and practitioners may adjust pricing based on specific circumstances, scope changes, or long-term partnerships. However, our community values prevent significant underbidding that devalues people's expertise and time.
+### Developer Relations Strategy
 
-### How does pro bono work happen?
+Build awareness, engagement, and community around your project with strategic approach to developer relations
 
-Practitioners offering pro bono services typically prioritize projects with significant public benefit, those serving underrepresented communities, critical infrastructure, or projects without alternative funding sources. Each practitioner makes their own decisions about pro bono work based on their values and capacity.
+| Tier | Price | Scope |
+|------|-------|-------|
+| **Pro Bono** | Free | Qualifying projects |
+| **Small** | $5,000 | New community |
+| **Medium** | $8,500 | Growing community |
+| **Large** | $15,000 | Large-scale community |
 
-### What's included in the pricing?
+---
 
-All pricing includes the practitioner's time, expertise, and the deliverables outlined in the service description. Any additional tools, travel, or specialized resources are discussed openly and agreed upon together before work begins.
+### Hosting and Infrastructure
 
-### How are practitioners compensated?
+Cloud hosting, CI/CD pipelines, and infrastructure resources for open source projects
 
-Practitioners receive payment directly through their Open Collective or GitHub Sponsors accounts. Sometimes matches are made with people who work at ecosystem sponsor organizations. In these cases, we trust those organizations to recognize and reward their team members' contributions in ways that work for everyone.
+| Tier | Price | Scope |
+|------|-------|-------|
+| **Credits** | Varies | Based on provider |
+| **Managed** | Varies | Setup & configuration |
+
+---
+
+By using OSS Wishlist services, you agree to our [Terms & Conditions](/oss-wishlist-website/terms).

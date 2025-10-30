@@ -169,7 +169,7 @@ async function fetchProjectBoardData(): Promise<Map<number, string>> {
   return statusMap;
 }
 
-export const GET: APIRoute = async () => {
+export const GET: APIRoute = async ({ url }) => {
   try {
     if (!GITHUB_TOKEN) {
       console.error('ERROR: GitHub token not configured');
@@ -179,31 +179,36 @@ export const GET: APIRoute = async () => {
       });
     }
 
-    // Try to load from file cache first (instant!)
-    try {
-      const cacheData = await readFile(CACHE_FILE, 'utf-8');
-      const cached = JSON.parse(cacheData);
-      const cacheAge = Date.now() - new Date(cached.lastUpdated).getTime();
-      
-      // Use file cache if less than 10 minutes old
-      if (cacheAge < CACHE_DURATION) {
-        return new Response(JSON.stringify(cached.wishlists), {
-          status: 200,
-          headers: { 
-            'Content-Type': 'application/json',
-            'X-Cache': 'FILE-HIT',
-            'X-Cache-Age': Math.round(cacheAge / 1000).toString(),
-            'Cache-Control': 'public, max-age=600'
-          },
-        });
+    // Check for refresh parameter to bypass cache
+    const forceRefresh = url.searchParams.get('refresh') === 'true';
+
+    // Try to load from file cache first (instant!) unless forcing refresh
+    if (!forceRefresh) {
+      try {
+        const cacheData = await readFile(CACHE_FILE, 'utf-8');
+        const cached = JSON.parse(cacheData);
+        const cacheAge = Date.now() - new Date(cached.lastUpdated).getTime();
+        
+        // Use file cache if less than 10 minutes old
+        if (cacheAge < CACHE_DURATION) {
+          return new Response(JSON.stringify(cached.wishlists), {
+            status: 200,
+            headers: { 
+              'Content-Type': 'application/json',
+              'X-Cache': 'FILE-HIT',
+              'X-Cache-Age': Math.round(cacheAge / 1000).toString(),
+              'Cache-Control': 'public, max-age=600'
+            },
+          });
+        }
+      } catch (error) {
+        // No file cache available, will fetch from GitHub
       }
-    } catch (error) {
-      // No file cache available, will fetch from GitHub
     }
 
-    // Check if we have valid in-memory cached data
+    // Check if we have valid in-memory cached data (unless forcing refresh)
     const now = Date.now();
-    if (cachedWishlists && (now - cacheTimestamp) < CACHE_DURATION) {
+    if (!forceRefresh && cachedWishlists && (now - cacheTimestamp) < CACHE_DURATION) {
       return new Response(JSON.stringify(cachedWishlists), {
         status: 200,
         headers: { 
@@ -276,6 +281,7 @@ export const GET: APIRoute = async () => {
         wishes: wishes,
         technologies: technologies,
         urgency: parsed.urgency,
+        projectSize: parsed.projectSize || undefined,
         status,
         labels: issue.labels,
         author: {

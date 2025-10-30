@@ -6,6 +6,7 @@ interface ParsedIssueForm {
   maintainer: string;
   repository: string;
   urgency: string;
+  projectSize?: 'small' | 'medium' | 'large';
   services: string[];
   resources: string[];
   technologies?: string[];
@@ -67,6 +68,15 @@ export function parseIssueForm(body: string): ParsedIssueForm {
           'Critical - Needed immediately': 'critical'
         };
         result.urgency = urgencyMap[content] || 'medium';
+        break;
+
+      case 'Project Size':
+        {
+          const size = content.replace('_No response_', '').trim().toLowerCase();
+          if (size === 'small' || size === 'medium' || size === 'large') {
+            result.projectSize = size as 'small' | 'medium' | 'large';
+          }
+        }
         break;
       
       case 'Services Requested':
@@ -149,6 +159,7 @@ export function formatIssueFormBody(data: {
   maintainer: string;
   repository: string;
   urgency: string;
+  projectSize?: 'small' | 'medium' | 'large';
   services: string[];
   resources: string[];
   additionalContext?: string;
@@ -179,6 +190,11 @@ export function formatIssueFormBody(data: {
   }
   
   body += `### Urgency Level\n\n${urgencyDisplay[data.urgency] || 'Medium - Needed within months'}\n\n`;
+
+  if (data.projectSize) {
+    const sizeDisplay = data.projectSize.charAt(0).toUpperCase() + data.projectSize.slice(1);
+    body += `### Project Size\n\n${sizeDisplay}\n\n`;
+  }
   
   body += `### Services Requested\n\n`;
   if (data.services.length > 0) {

@@ -1,6 +1,7 @@
 ---
 import Layout from '../../components/Layout.astro';
 import { getCollection } from 'astro:content';
+import { getBasePath } from '../../lib/paths';
 
 // Disable prerendering for this dynamic route
 export const prerender = false;
@@ -12,6 +13,7 @@ const { wishlist } = Astro.params;
 const practitioners = await getCollection('practitioners');
 const wishlists = await getCollection('wishlists');
 const services = await getCollection('services');
+const basePath = getBasePath();
 
 // Create a lookup map for services by title
 const servicesByTitle = services.reduce((acc, service) => {
@@ -39,7 +41,7 @@ if (wishlist) {
           Thank you for your interest in supporting open source projects. Please fill out this form to begin the fulfillment process for a wishlist.
         </p>
 
-        <form class="space-y-6" method="POST" action="/api/fulfill-wishlist">
+  <form class="space-y-6" method="POST" action={`${basePath}api/fulfill-wishlist`}>
           <!-- Wishlist Selection -->
           <div>
             <label for="wishlist" class="block text-sm font-medium text-gray-700 mb-2">

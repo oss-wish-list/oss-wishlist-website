@@ -34,6 +34,11 @@ export default defineConfig({
     host: process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost'
   },
   vite: {
+    server: {
+      // Enforce using port 4324 in dev; fail if it's already in use
+      port: process.env.PORT ? parseInt(process.env.PORT) : 4324,
+      strictPort: true,
+    },
     ssr: {
       noExternal: ['@astrojs/react']
     }

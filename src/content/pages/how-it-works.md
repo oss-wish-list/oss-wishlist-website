@@ -11,7 +11,7 @@ A simple three-step process that connects needs with resources
 
 ### 1. Maintainers Create Wishlists
 
-Open source maintainers browse our catalog of services and resources, then create a wishlist identifying critical needs for their project's sustainability.
+Open source maintainers browse our catalogue of services and resources, then create a wishlist identifying critical needs for their project's sustainability.
 
 - Choose from curated services and resources
 - Services include security audits, governance setup, funding strategy, and more
@@ -106,7 +106,7 @@ While tools and automation are valuable, some problems require human expertise. 
 
 ### Curated Services
 
-Our catalog is carefully curated to address the most critical needs for project sustainability: security, governance, funding, community health, and infrastructure. We focus on quality over quantity.
+Our catalogue is carefully curated to address the most critical needs for project sustainability: security, governance, funding, community health, and infrastructure. We focus on quality over quantity.
 
 ### Transparent and Accountable
 

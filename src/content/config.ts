@@ -26,6 +26,12 @@ const services = defineCollection({
     unavailable_reason: z.string().optional(),
     prerequisites: z.string().optional(),
     deliverables: z.array(z.string()).optional(),
+    // Pricing by project size
+    pricing: z.object({
+      small: z.number().nullable().optional(),
+      medium: z.number().nullable().optional(),
+      large: z.number().nullable().optional(),
+    }).optional(),
   }),
 });
 

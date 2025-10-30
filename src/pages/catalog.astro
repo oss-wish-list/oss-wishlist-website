@@ -7,7 +7,7 @@ import { getCollection } from 'astro:content';
 const services = await getCollection('services');
 const playbooks = await getCollection('playbooks');
 
-// Map service slugs to playbook slugs
+// Map service slugs to playbook slugs (fallbacks for legacy mismatches)
 const serviceToPlaybook: Record<string, string> = {
   'dependency-security-audit': 'security-audit',
   'governance-setup': 'project-and-community-governance',
@@ -16,26 +16,25 @@ const serviceToPlaybook: Record<string, string> = {
   'maintainer-task-contributor': 'maintainer-relief',
 };
 
-// Helper function to get playbook for a service
+// Helper: prefer frontmatter linkage (playbook.data.service === service.slug), fallback to manual map
 function getPlaybookForService(serviceSlug: string) {
-  const playbookSlug = serviceToPlaybook[serviceSlug];
-  if (playbookSlug) {
-    return playbooks.find(p => p.slug === playbookSlug);
-  }
-  return null;
+  const direct = playbooks.find((p) => p.data.service === serviceSlug);
+  if (direct) return direct;
+  const mappedSlug = serviceToPlaybook[serviceSlug];
+  return mappedSlug ? playbooks.find((p) => p.slug === mappedSlug) : null;
 }
 ---
 
-<Layout title="Services & Resources - OSS Wishlist" description="Browse all available services and resources for open source projects">
+<Layout title="Catalogue of Services & Resources - OSS Wishlist" description="Browse all available services and resources for open source projects">
   <section class="py-16 bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-12">
-        <h1 class="text-5xl font-bold text-gray-900 mb-6">Services & Resources</h1>
+        <h1 class="text-5xl font-bold text-gray-900 mb-6">Catalogue of Services & Resources</h1>
         <p class="text-xl text-gray-600 max-w-3xl mx-auto">
           Each <b>service</b> addresses a critical risk to project sustainability and which require expertise and time.
         </p>
         <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-         <b>Resources</b> are those things which can be be solved purely with dollars.
+         Each <b>resource</b> is meant as a 'capture' for those things projects need, which require dollars (like infrastructure, tokens etc).
         </p>
       </div>
 
@@ -94,26 +93,32 @@ function getPlaybookForService(serviceSlug: string) {
               <p class="text-xs text-gray-500 italic mb-4">{service.data.unavailable_reason}</p>
             )}
 
-            <div class="pt-4 border-t space-y-2">
+            <div class="pt-4 border-t flex gap-3 items-center">
               {service.data.available ? (
                 <a href={`${basePath}services/${service.slug}`} 
-                   class="block text-gray-600 font-medium hover:text-gray-700">
-                  Learn more →
+                   class="inline-flex items-center gap-1 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-200 transition-colors text-sm">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  Learn more
                 </a>
               ) : (
                 service.data.type === 'resource' ? (
                   <span class="text-sm text-gray-500 italic">Funding needed</span>
                 ) : (
                   <a href={`${basePath}/apply-practitioner`}
-                     class="block text-sm text-gray-700 hover:text-gray-900 font-medium">
+                     class="inline-flex items-center gap-1 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-200 transition-colors text-sm">
                     Practitioners needed →
                   </a>
                 )
               )}
               {playbook && (
                 <a href={`${basePath}playbooks/${playbook.slug}`}
-                   class="block text-sm text-blue-600 hover:text-blue-700 font-medium">
-                  📖 View Playbook
+                   class="inline-flex items-center gap-1 bg-blue-50 text-blue-700 px-4 py-2 rounded-lg font-medium hover:bg-blue-100 transition-colors text-sm border border-blue-200">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                  </svg>
+                  Practitioner Playbook
                 </a>
               )}
             </div>
