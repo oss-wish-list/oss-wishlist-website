@@ -19,6 +19,7 @@ pricing:
   medium: 8000
   large: 14000
 ---
+playbook: security-audit
 
 ## Overview
 

@@ -12,32 +12,9 @@ deliverables:
   - "Customized funding strategy document"
   - "List of relevant grants and opportunities"
   - "Pitch and communication templates"
+playbook: funding-strategy
 pricing:
   small: 4000
   medium: 6500
   large: 11000
 ---
-
-## What is Funding Strategy?
-
-A Funding Strategy helps open source maintainers:
-- Set realistic funding goals
-- Identify and prepare for grant, credit, and sponsorship opportunities
-- Improve project visibility to potential funders
-- Understand best practices for communicating value
-
-**Note:** This service does not guarantee funding, but provides actionable steps and resources to improve your chances.
-
-## Who is it for?
-- Maintainers seeking to grow project sustainability
-- Projects interested in grants, credits, or sponsorships
-- Anyone wanting to be more visible to funders
-
-## What you get
-- Strategy session with an expert
-- Review of current funding readiness
-- Recommendations for next steps
-- List of resources and opportunities
-
-## How to get started
-Submit a wishlist request for "Funding Strategy" and connect with a practitioner who can help you build your plan.
