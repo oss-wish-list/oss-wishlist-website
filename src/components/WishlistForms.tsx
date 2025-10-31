@@ -72,6 +72,7 @@ interface GitHubRepository {
 }
 
 const WishlistForm = ({ services = [] }: WishlistFormProps) => {
+  const MAX_WISHES = 3;
   const [user, setUser] = useState<GitHubUser | null>(null);
   const [repositories, setRepositories] = useState<GitHubRepository[]>([]);
   const [loadingRepos, setLoadingRepos] = useState(false);
@@ -255,9 +256,16 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
       
       const cachedData = await response.json();
       
+      // Enforce max wishes when loading existing data
+      let incomingWishes: string[] = cachedData.wishes || [];
+      if (Array.isArray(incomingWishes) && incomingWishes.length > MAX_WISHES) {
+        incomingWishes = incomingWishes.slice(0, MAX_WISHES);
+        setError(`This wishlist currently has more than ${MAX_WISHES} wishes. We trimmed the selection to the first ${MAX_WISHES}.`);
+      }
+
       const updatedData: any = {
         projectTitle: cachedData.projectTitle || '',
-        selectedServices: cachedData.wishes || [],
+        selectedServices: incomingWishes,
         urgency: cachedData.urgency || 'medium',
         projectSize: cachedData.projectSize || 'medium',
         timeline: cachedData.timeline || '',
@@ -269,7 +277,7 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
       };
       
       // Set original services for comparison
-      setOriginalServices(cachedData.wishes || []);
+      setOriginalServices(incomingWishes);
       
       // Update all form data directly (not using prev callback)
       setWishlistData(updatedData);
@@ -358,12 +366,20 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
   };
 
   const handleServiceToggle = (serviceId: string) => {
-    setWishlistData(prev => ({
-      ...prev,
-      selectedServices: prev.selectedServices.includes(serviceId)
-        ? prev.selectedServices.filter(id => id !== serviceId)
-        : [...prev.selectedServices, serviceId]
-    }));
+    setError('');
+    setWishlistData(prev => {
+      const isSelected = prev.selectedServices.includes(serviceId);
+      if (!isSelected && prev.selectedServices.length >= MAX_WISHES) {
+        setError(`You can select up to ${MAX_WISHES} services.`);
+        return prev;
+      }
+      return {
+        ...prev,
+        selectedServices: isSelected
+          ? prev.selectedServices.filter(id => id !== serviceId)
+          : [...prev.selectedServices, serviceId]
+      };
+    });
   };
 
   const handleSubmitWishlist = async (e: React.FormEvent) => {
@@ -376,6 +392,11 @@ const WishlistForm = ({ services = [] }: WishlistFormProps) => {
     
     if (wishlistData.selectedServices.length === 0) {
       setError('Please select at least one service');
+      return;
+    }
+
+    if (wishlistData.selectedServices.length > MAX_WISHES) {
+      setError(`You can select up to ${MAX_WISHES} services.`);
       return;
     }
 
@@ -1312,6 +1333,12 @@ ${wishlistData.additionalNotes || 'None provided'}
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
               Services Needed <span className="text-red-500">*</span>
             </h3>
+            <p className="text-sm mb-3">
+              <span className={`font-medium ${wishlistData.selectedServices.length >= MAX_WISHES ? 'text-red-700' : 'text-gray-600'}`}>
+                Select up to {MAX_WISHES} services
+              </span>
+              <span className="text-gray-500"> — {wishlistData.selectedServices.length} selected</span>
+            </p>
             {isEditingExisting && originalServices.length > 0 && (
               <p className="text-sm text-gray-600 mb-4 bg-gray-50 border border-gray-200 rounded-lg p-3">
                 <span className="font-medium">Currently selected services</span> are highlighted. You can modify your selection below.
@@ -1320,6 +1347,7 @@ ${wishlistData.additionalNotes || 'None provided'}
             <div className="grid gap-4 md:grid-cols-2">
               {availableServices.map((service) => {
                 const isSelected = wishlistData.selectedServices.includes(service.id);
+                const reachedMax = wishlistData.selectedServices.length >= MAX_WISHES;
                 const wasOriginallySelected = originalServices.includes(service.id);
                 
                 return (
@@ -1329,7 +1357,9 @@ ${wishlistData.additionalNotes || 'None provided'}
                     className={`p-4 border rounded-lg cursor-pointer transition-colors ${
                       isSelected
                         ? 'border-gray-900 bg-gray-100'
-                        : 'border-gray-200 hover:border-gray-300'
+                        : reachedMax
+                          ? 'border-gray-200 opacity-60 cursor-not-allowed'
+                          : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
                     <div className="flex items-start justify-between">
@@ -1526,7 +1556,12 @@ ${wishlistData.additionalNotes || 'None provided'}
               </button>
               <button
                 type="submit"
-                disabled={loading || wishlistData.selectedServices.length === 0 || !wishlistData.projectTitle.trim()}
+                disabled={
+                  loading ||
+                  wishlistData.selectedServices.length === 0 ||
+                  wishlistData.selectedServices.length > MAX_WISHES ||
+                  !wishlistData.projectTitle.trim()
+                }
                 className="flex-1 px-8 py-3 bg-gray-900 text-white rounded-lg font-semibold hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2 order-1 sm:order-2"
               >
                 {loading ? (

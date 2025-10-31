@@ -160,7 +160,7 @@ async function fetchAndCacheWishlist(issueNumber: number): Promise<WishlistData 
       
       // Find the most recent "Wishlist Updated" comment
       const updateComments = comments.filter((comment: any) => 
-        comment.body && comment.body.includes('📝 Wishlist Updated')
+        comment.body && comment.body.includes('Wishlist Updated')
       );
       
       if (updateComments.length > 0) {
@@ -168,7 +168,7 @@ async function fetchAndCacheWishlist(issueNumber: number): Promise<WishlistData 
         const latestUpdate = updateComments[updateComments.length - 1];
         
         // Extract the wishlist data from the comment body
-        // The comment format is: "## 📝 Wishlist Updated\n\nThe wishlist has been updated with the following information:\n\n{actualData}"
+        // The comment format is: "## Wishlist Updated\n\nThe wishlist has been updated.\n\nLast Updated: <timestamp>\n\nUpdated via OSS Wishlist Platform"
         const updateMatch = latestUpdate.body.match(/following information:\s*\n\n([\s\S]+?)\n\n---/);
         if (updateMatch && updateMatch[1]) {
           bodyToParse = updateMatch[1];
@@ -180,9 +180,11 @@ async function fetchAndCacheWishlist(issueNumber: number): Promise<WishlistData 
     const parsed = parseIssueForm(bodyToParse);
     
     // Build the wishlist URL (platform URL, not GitHub)
-    const basePath = import.meta.env.BASE_URL || '';
-    const origin = import.meta.env.SITE_URL || 'http://localhost:4324';
-    const wishlistUrl = `${origin}${basePath}fulfill?issue=${issue.number}`;
+  const basePath = import.meta.env.BASE_URL || '';
+  const origin = import.meta.env.SITE_URL || 'http://localhost:4324';
+  // Construct a correct base-path-aware URL for the fulfill page
+  const { withBaseUrl } = await import('../../lib/paths.js');
+  const wishlistUrl = withBaseUrl(`fulfill?issue=${issue.number}`, origin);
     
     // Normalize urgency to valid enum value
     const normalizeUrgency = (urgency: string): 'low' | 'medium' | 'high' => {
