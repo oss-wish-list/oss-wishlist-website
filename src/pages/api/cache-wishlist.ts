@@ -1,6 +1,6 @@
 // API endpoint to cache wishlist data when created/updated
 import type { APIRoute } from 'astro';
-import { writeFile, mkdir } from 'fs/promises';
+import { writeFile, mkdir, readFile } from 'fs/promises';
 import { join } from 'path';
 import { z } from 'zod';
 import { GITHUB_CONFIG } from '../../config/github.js';
@@ -73,23 +73,34 @@ async function ensureCacheDir() {
   }
 }
 
-// Save individual wishlist to cache
-async function cacheWishlist(wishlist: WishlistData) {
+// Upsert a single wishlist into the master index (no per-wishlist files)
+async function upsertWishlistInMaster(wishlist: WishlistData) {
   await ensureCacheDir();
-  const filename = `wishlist-${wishlist.id}.json`;
-  const filepath = join(CACHE_DIR, filename);
-  
   try {
     // Validate data before caching
     const validatedWishlist = WishlistDataSchema.parse(wishlist);
-    
-    await writeFile(filepath, JSON.stringify(validatedWishlist, null, 2));
+
+    // Load existing master (if any)
+    const masterPath = join(CACHE_DIR, 'all-wishlists.json');
+    let existing: WishlistData[] = [];
+    try {
+      const content = await readFile(masterPath, 'utf-8');
+      const parsed = JSON.parse(content);
+      existing = Array.isArray(parsed?.wishlists) ? parsed.wishlists : (Array.isArray(parsed) ? parsed : []);
+    } catch {}
+
+    // Upsert by id
+    const idx = existing.findIndex(w => w.id === validatedWishlist.id);
+    if (idx >= 0) existing[idx] = validatedWishlist; else existing.push(validatedWishlist);
+
+    // Write master index
+    await updateMasterIndex(existing);
     return true;
   } catch (error) {
     if (error instanceof z.ZodError) {
       console.error(`Validation error for wishlist ${wishlist.id}:`, error.errors);
     } else {
-      console.error(`Error caching wishlist ${wishlist.id}:`, error);
+      console.error(`Error upserting wishlist ${wishlist.id}:`, error);
     }
     return false;
   }
@@ -224,8 +235,8 @@ async function fetchAndCacheWishlist(issueNumber: number): Promise<WishlistData 
       additionalNotes: parsed.additionalNotes
     };
 
-    // Cache it
-    await cacheWishlist(wishlistData);
+  // Upsert into master index (no per-wishlist file)
+  await upsertWishlistInMaster(wishlistData);
     
     return wishlistData;
   } catch (error) {
@@ -273,7 +284,7 @@ export const POST: APIRoute = async ({ request }) => {
     
     if (data.wishlist) {
       // Single wishlist update
-      const success = await cacheWishlist(data.wishlist);
+      const success = await upsertWishlistInMaster(data.wishlist);
       return new Response(JSON.stringify({ success }), {
         status: success ? 200 : 500,
         headers: { 'Content-Type': 'application/json' },
@@ -281,11 +292,6 @@ export const POST: APIRoute = async ({ request }) => {
     } else if (data.wishlists) {
       // Bulk update (all wishlists)
       await updateMasterIndex(data.wishlists);
-      
-      // Also cache individual files
-      for (const wishlist of data.wishlists) {
-        await cacheWishlist(wishlist);
-      }
       
       return new Response(JSON.stringify({ 
         success: true,
